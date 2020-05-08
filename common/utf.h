@@ -25,9 +25,6 @@ extern size_t uiprivUTF8UTF16Count(const char *s, size_t nElem);
 extern size_t uiprivUTF16RuneCount(const uint16_t *s, size_t nElem);
 extern size_t uiprivUTF16UTF8Count(const uint16_t *s, size_t nElem);
 
-#ifdef __cplusplus
-}
-
 // TODO sync this back to upstream (need copyright clearance first)
 
 // On Windows, wchar_t is equivalent to uint16_t, but C++ requires
@@ -35,7 +32,7 @@ extern size_t uiprivUTF16UTF8Count(const uint16_t *s, size_t nElem);
 // passing wchar_t pointers directly into these functions from C++
 // on Windows. Otherwise, you'd need to cast to pass a wchar_t
 // pointer, WCHAR pointer, or equivalent to these functions.
-// 
+//
 // This does not apply to MSVC because the situation there is
 // slightly more complicated; see below.
 #if defined(_WIN32) && !defined(_MSC_VER)
@@ -102,4 +99,6 @@ inline size_t uiprivUTF16UTF8Count(const __wchar_t *s, size_t nElem)
 
 #endif
 
+#ifdef __cplusplus
+}
 #endif

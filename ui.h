@@ -31,7 +31,9 @@ extern "C" {
 
 // C++ is really really really really really really dumb about enums, so screw that and just make them anonymous
 // This has the advantage of being ABI-able should we ever need an ABI...
-#define _UI_ENUM(s) typedef unsigned int s; enum
+#define _UI_ENUM(s)         \
+	typedef unsigned int s; \
+	enum
 
 // This constant is provided because M_PI is nonstandard.
 // This comes from Go's math.Pi, which in turn comes from http://oeis.org/A000796.
@@ -40,7 +42,7 @@ extern "C" {
 // TODO uiBool?
 
 // uiForEach represents the return value from one of libui's various ForEach functions.
-_UI_ENUM(uiForEach) {
+_UI_ENUM(uiForEach){
 	uiForEachContinue,
 	uiForEachStop,
 };
@@ -60,6 +62,8 @@ _UI_EXTERN void uiMainSteps(void);
 _UI_EXTERN int uiMainStep(int wait);
 _UI_EXTERN void uiQuit(void);
 
+// after uiQuit or if uiShouldQuit returns nonzero, uiQueueMain's effect is
+// undefined
 _UI_EXTERN void uiQueueMain(void (*f)(void *data), void *data);
 
 // TODO standardize the looping behavior return type, either with some enum or something, and the test expressions throughout the code
@@ -93,7 +97,7 @@ struct uiControl {
 	void (*Disable)(uiControl *);
 };
 // TOOD add argument names to all arguments
-#define uiControl(this) ((uiControl *) (this))
+#define uiControl(this) ((uiControl *)(this))
 _UI_EXTERN void uiControlDestroy(uiControl *);
 _UI_EXTERN uintptr_t uiControlHandle(uiControl *);
 _UI_EXTERN uiControl *uiControlParent(uiControl *);
@@ -116,7 +120,7 @@ _UI_EXTERN int uiControlEnabledToUser(uiControl *);
 _UI_EXTERN void uiUserBugCannotSetParentOnToplevel(const char *type);
 
 typedef struct uiWindow uiWindow;
-#define uiWindow(this) ((uiWindow *) (this))
+#define uiWindow(this) ((uiWindow *)(this))
 _UI_EXTERN char *uiWindowTitle(uiWindow *w);
 _UI_EXTERN void uiWindowSetTitle(uiWindow *w, const char *title);
 _UI_EXTERN void uiWindowContentSize(uiWindow *w, int *width, int *height);
@@ -133,14 +137,14 @@ _UI_EXTERN void uiWindowSetMargined(uiWindow *w, int margined);
 _UI_EXTERN uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar);
 
 typedef struct uiButton uiButton;
-#define uiButton(this) ((uiButton *) (this))
+#define uiButton(this) ((uiButton *)(this))
 _UI_EXTERN char *uiButtonText(uiButton *b);
 _UI_EXTERN void uiButtonSetText(uiButton *b, const char *text);
 _UI_EXTERN void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *b, void *data), void *data);
 _UI_EXTERN uiButton *uiNewButton(const char *text);
 
 typedef struct uiBox uiBox;
-#define uiBox(this) ((uiBox *) (this))
+#define uiBox(this) ((uiBox *)(this))
 _UI_EXTERN void uiBoxAppend(uiBox *b, uiControl *child, int stretchy);
 _UI_EXTERN void uiBoxDelete(uiBox *b, int index);
 _UI_EXTERN int uiBoxPadded(uiBox *b);
@@ -149,7 +153,7 @@ _UI_EXTERN uiBox *uiNewHorizontalBox(void);
 _UI_EXTERN uiBox *uiNewVerticalBox(void);
 
 typedef struct uiCheckbox uiCheckbox;
-#define uiCheckbox(this) ((uiCheckbox *) (this))
+#define uiCheckbox(this) ((uiCheckbox *)(this))
 _UI_EXTERN char *uiCheckboxText(uiCheckbox *c);
 _UI_EXTERN void uiCheckboxSetText(uiCheckbox *c, const char *text);
 _UI_EXTERN void uiCheckboxOnToggled(uiCheckbox *c, void (*f)(uiCheckbox *c, void *data), void *data);
@@ -158,7 +162,7 @@ _UI_EXTERN void uiCheckboxSetChecked(uiCheckbox *c, int checked);
 _UI_EXTERN uiCheckbox *uiNewCheckbox(const char *text);
 
 typedef struct uiEntry uiEntry;
-#define uiEntry(this) ((uiEntry *) (this))
+#define uiEntry(this) ((uiEntry *)(this))
 _UI_EXTERN char *uiEntryText(uiEntry *e);
 _UI_EXTERN void uiEntrySetText(uiEntry *e, const char *text);
 _UI_EXTERN void uiEntryOnChanged(uiEntry *e, void (*f)(uiEntry *e, void *data), void *data);
@@ -169,13 +173,13 @@ _UI_EXTERN uiEntry *uiNewPasswordEntry(void);
 _UI_EXTERN uiEntry *uiNewSearchEntry(void);
 
 typedef struct uiLabel uiLabel;
-#define uiLabel(this) ((uiLabel *) (this))
+#define uiLabel(this) ((uiLabel *)(this))
 _UI_EXTERN char *uiLabelText(uiLabel *l);
 _UI_EXTERN void uiLabelSetText(uiLabel *l, const char *text);
 _UI_EXTERN uiLabel *uiNewLabel(const char *text);
 
 typedef struct uiTab uiTab;
-#define uiTab(this) ((uiTab *) (this))
+#define uiTab(this) ((uiTab *)(this))
 _UI_EXTERN void uiTabAppend(uiTab *t, const char *name, uiControl *c);
 _UI_EXTERN void uiTabInsertAt(uiTab *t, const char *name, int before, uiControl *c);
 _UI_EXTERN void uiTabDelete(uiTab *t, int index);
@@ -185,7 +189,7 @@ _UI_EXTERN void uiTabSetMargined(uiTab *t, int page, int margined);
 _UI_EXTERN uiTab *uiNewTab(void);
 
 typedef struct uiGroup uiGroup;
-#define uiGroup(this) ((uiGroup *) (this))
+#define uiGroup(this) ((uiGroup *)(this))
 _UI_EXTERN char *uiGroupTitle(uiGroup *g);
 _UI_EXTERN void uiGroupSetTitle(uiGroup *g, const char *title);
 _UI_EXTERN void uiGroupSetChild(uiGroup *g, uiControl *c);
@@ -199,32 +203,32 @@ _UI_EXTERN uiGroup *uiNewGroup(const char *title);
 // complaint if min >= max?
 
 typedef struct uiSpinbox uiSpinbox;
-#define uiSpinbox(this) ((uiSpinbox *) (this))
+#define uiSpinbox(this) ((uiSpinbox *)(this))
 _UI_EXTERN int uiSpinboxValue(uiSpinbox *s);
 _UI_EXTERN void uiSpinboxSetValue(uiSpinbox *s, int value);
 _UI_EXTERN void uiSpinboxOnChanged(uiSpinbox *s, void (*f)(uiSpinbox *s, void *data), void *data);
 _UI_EXTERN uiSpinbox *uiNewSpinbox(int min, int max);
 
 typedef struct uiSlider uiSlider;
-#define uiSlider(this) ((uiSlider *) (this))
+#define uiSlider(this) ((uiSlider *)(this))
 _UI_EXTERN int uiSliderValue(uiSlider *s);
 _UI_EXTERN void uiSliderSetValue(uiSlider *s, int value);
 _UI_EXTERN void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *s, void *data), void *data);
 _UI_EXTERN uiSlider *uiNewSlider(int min, int max);
 
 typedef struct uiProgressBar uiProgressBar;
-#define uiProgressBar(this) ((uiProgressBar *) (this))
+#define uiProgressBar(this) ((uiProgressBar *)(this))
 _UI_EXTERN int uiProgressBarValue(uiProgressBar *p);
 _UI_EXTERN void uiProgressBarSetValue(uiProgressBar *p, int n);
 _UI_EXTERN uiProgressBar *uiNewProgressBar(void);
 
 typedef struct uiSeparator uiSeparator;
-#define uiSeparator(this) ((uiSeparator *) (this))
+#define uiSeparator(this) ((uiSeparator *)(this))
 _UI_EXTERN uiSeparator *uiNewHorizontalSeparator(void);
 _UI_EXTERN uiSeparator *uiNewVerticalSeparator(void);
 
 typedef struct uiCombobox uiCombobox;
-#define uiCombobox(this) ((uiCombobox *) (this))
+#define uiCombobox(this) ((uiCombobox *)(this))
 _UI_EXTERN void uiComboboxAppend(uiCombobox *c, const char *text);
 _UI_EXTERN int uiComboboxSelected(uiCombobox *c);
 _UI_EXTERN void uiComboboxSetSelected(uiCombobox *c, int n);
@@ -232,7 +236,7 @@ _UI_EXTERN void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, voi
 _UI_EXTERN uiCombobox *uiNewCombobox(void);
 
 typedef struct uiEditableCombobox uiEditableCombobox;
-#define uiEditableCombobox(this) ((uiEditableCombobox *) (this))
+#define uiEditableCombobox(this) ((uiEditableCombobox *)(this))
 _UI_EXTERN void uiEditableComboboxAppend(uiEditableCombobox *c, const char *text);
 _UI_EXTERN char *uiEditableComboboxText(uiEditableCombobox *c);
 _UI_EXTERN void uiEditableComboboxSetText(uiEditableCombobox *c, const char *text);
@@ -241,7 +245,7 @@ _UI_EXTERN void uiEditableComboboxOnChanged(uiEditableCombobox *c, void (*f)(uiE
 _UI_EXTERN uiEditableCombobox *uiNewEditableCombobox(void);
 
 typedef struct uiRadioButtons uiRadioButtons;
-#define uiRadioButtons(this) ((uiRadioButtons *) (this))
+#define uiRadioButtons(this) ((uiRadioButtons *)(this))
 _UI_EXTERN void uiRadioButtonsAppend(uiRadioButtons *r, const char *text);
 _UI_EXTERN int uiRadioButtonsSelected(uiRadioButtons *r);
 _UI_EXTERN void uiRadioButtonsSetSelected(uiRadioButtons *r, int n);
@@ -250,7 +254,7 @@ _UI_EXTERN uiRadioButtons *uiNewRadioButtons(void);
 
 struct tm;
 typedef struct uiDateTimePicker uiDateTimePicker;
-#define uiDateTimePicker(this) ((uiDateTimePicker *) (this))
+#define uiDateTimePicker(this) ((uiDateTimePicker *)(this))
 // TODO document that tm_wday and tm_yday are undefined, and tm_isdst should be -1
 // TODO document that for both sides
 // TODO document time zone conversions or lack thereof
@@ -264,7 +268,7 @@ _UI_EXTERN uiDateTimePicker *uiNewTimePicker(void);
 
 // TODO provide a facility for entering tab stops?
 typedef struct uiMultilineEntry uiMultilineEntry;
-#define uiMultilineEntry(this) ((uiMultilineEntry *) (this))
+#define uiMultilineEntry(this) ((uiMultilineEntry *)(this))
 _UI_EXTERN char *uiMultilineEntryText(uiMultilineEntry *e);
 _UI_EXTERN void uiMultilineEntrySetText(uiMultilineEntry *e, const char *text);
 _UI_EXTERN void uiMultilineEntryAppend(uiMultilineEntry *e, const char *text);
@@ -275,7 +279,7 @@ _UI_EXTERN uiMultilineEntry *uiNewMultilineEntry(void);
 _UI_EXTERN uiMultilineEntry *uiNewNonWrappingMultilineEntry(void);
 
 typedef struct uiMenuItem uiMenuItem;
-#define uiMenuItem(this) ((uiMenuItem *) (this))
+#define uiMenuItem(this) ((uiMenuItem *)(this))
 _UI_EXTERN void uiMenuItemEnable(uiMenuItem *m);
 _UI_EXTERN void uiMenuItemDisable(uiMenuItem *m);
 _UI_EXTERN void uiMenuItemOnClicked(uiMenuItem *m, void (*f)(uiMenuItem *sender, uiWindow *window, void *data), void *data);
@@ -283,7 +287,7 @@ _UI_EXTERN int uiMenuItemChecked(uiMenuItem *m);
 _UI_EXTERN void uiMenuItemSetChecked(uiMenuItem *m, int checked);
 
 typedef struct uiMenu uiMenu;
-#define uiMenu(this) ((uiMenu *) (this))
+#define uiMenu(this) ((uiMenu *)(this))
 _UI_EXTERN uiMenuItem *uiMenuAppendItem(uiMenu *m, const char *name);
 _UI_EXTERN uiMenuItem *uiMenuAppendCheckItem(uiMenu *m, const char *name);
 _UI_EXTERN uiMenuItem *uiMenuAppendQuitItem(uiMenu *m);
@@ -305,6 +309,10 @@ typedef struct uiAreaKeyEvent uiAreaKeyEvent;
 
 typedef struct uiDrawContext uiDrawContext;
 
+// Yes, you keep ownership of the uiAreaHandler. libui only cares about the
+// address you give uiNewArea(); it doesn't copy anything. You can even use the
+// same uiAreaHandler on multiple uiAreas, which is why you get the uiArea as a
+// parameter in each function.
 struct uiAreaHandler {
 	void (*Draw)(uiAreaHandler *, uiArea *, uiAreaDrawParams *);
 	// TODO document that resizes cause a full redraw for non-scrolling areas; implementation-defined for scrolling areas
@@ -318,7 +326,7 @@ struct uiAreaHandler {
 
 // TODO RTL layouts?
 // TODO reconcile edge and corner naming
-_UI_ENUM(uiWindowResizeEdge) {
+_UI_ENUM(uiWindowResizeEdge){
 	uiWindowResizeEdgeLeft,
 	uiWindowResizeEdgeTop,
 	uiWindowResizeEdgeRight,
@@ -332,7 +340,7 @@ _UI_ENUM(uiWindowResizeEdge) {
 	// TODO way to bring up the system menu instead?
 };
 
-#define uiArea(this) ((uiArea *) (this))
+#define uiArea(this) ((uiArea *)(this))
 // TODO give a better name
 // TODO document the types of width and height
 _UI_EXTERN void uiAreaSetSize(uiArea *a, int width, int height);
@@ -369,20 +377,20 @@ typedef struct uiDrawMatrix uiDrawMatrix;
 
 typedef struct uiDrawBrushGradientStop uiDrawBrushGradientStop;
 
-_UI_ENUM(uiDrawBrushType) {
+_UI_ENUM(uiDrawBrushType){
 	uiDrawBrushTypeSolid,
 	uiDrawBrushTypeLinearGradient,
 	uiDrawBrushTypeRadialGradient,
 	uiDrawBrushTypeImage,
 };
 
-_UI_ENUM(uiDrawLineCap) {
+_UI_ENUM(uiDrawLineCap){
 	uiDrawLineCapFlat,
 	uiDrawLineCapRound,
 	uiDrawLineCapSquare,
 };
 
-_UI_ENUM(uiDrawLineJoin) {
+_UI_ENUM(uiDrawLineJoin){
 	uiDrawLineJoinMiter,
 	uiDrawLineJoinRound,
 	uiDrawLineJoinBevel,
@@ -393,7 +401,7 @@ _UI_ENUM(uiDrawLineJoin) {
 // so we're good to use it too!
 #define uiDrawDefaultMiterLimit 10.0
 
-_UI_ENUM(uiDrawFillMode) {
+_UI_ENUM(uiDrawFillMode){
 	uiDrawFillModeWinding,
 	uiDrawFillModeAlternate,
 };
@@ -417,11 +425,11 @@ struct uiDrawBrush {
 	double A;
 
 	// gradient brushes
-	double X0;		// linear: start X, radial: start X
-	double Y0;		// linear: start Y, radial: start Y
-	double X1;		// linear: end X, radial: outer circle center X
-	double Y1;		// linear: end Y, radial: outer circle center Y
-	double OuterRadius;		// radial gradients only
+	double X0;			// linear: start X, radial: start X
+	double Y0;			// linear: start Y, radial: start Y
+	double X1;			// linear: end X, radial: outer circle center X
+	double Y1;			// linear: end Y, radial: outer circle center Y
+	double OuterRadius; // radial gradients only
 	uiDrawBrushGradientStop *Stops;
 	size_t NumStops;
 	// TODO extend mode
@@ -526,7 +534,7 @@ _UI_EXTERN void uiFreeAttribute(uiAttribute *a);
 // uiAttributeType holds the possible uiAttribute types that may be
 // returned by uiAttributeGetType(). Refer to the documentation for
 // each type's constructor function for details on each type.
-_UI_ENUM(uiAttributeType) {
+_UI_ENUM(uiAttributeType){
 	uiAttributeTypeFamily,
 	uiAttributeTypeSize,
 	uiAttributeTypeWeight,
@@ -576,7 +584,7 @@ _UI_EXTERN double uiAttributeSize(const uiAttribute *a);
 // Arial Black. libui does not do this, even on Windows (because the
 // DirectWrite API libui uses on Windows does not do this); to
 // specify Arial Black, use family Arial and weight uiTextWeightBlack.
-_UI_ENUM(uiTextWeight) {
+_UI_ENUM(uiTextWeight){
 	uiTextWeightMinimum = 0,
 	uiTextWeightThin = 100,
 	uiTextWeightUltraLight = 200,
@@ -607,7 +615,7 @@ _UI_EXTERN uiTextWeight uiAttributeWeight(const uiAttribute *a);
 // shapes, whereas oblique represents italics that are merely slanted
 // versions of the normal glyphs. Most fonts usually have one or the
 // other.
-_UI_ENUM(uiTextItalic) {
+_UI_ENUM(uiTextItalic){
 	uiTextItalicNormal,
 	uiTextItalicOblique,
 	uiTextItalicItalic,
@@ -633,7 +641,7 @@ _UI_EXTERN uiTextItalic uiAttributeItalic(const uiAttribute *a);
 // the DirectWrite API libui uses on Windows does not do this); to
 // specify Arial Condensed, use family Arial and stretch
 // uiTextStretchCondensed.
-_UI_ENUM(uiTextStretch) {
+_UI_ENUM(uiTextStretch){
 	uiTextStretchUltraCondensed,
 	uiTextStretchExtraCondensed,
 	uiTextStretchCondensed,
@@ -671,11 +679,11 @@ _UI_EXTERN uiAttribute *uiNewBackgroundAttribute(double r, double g, double b, d
 // TODO reuse uiAttributeColor() for background colors, or make a new function...
 
 // uiUnderline specifies a type of underline to use on text.
-_UI_ENUM(uiUnderline) {
+_UI_ENUM(uiUnderline){
 	uiUnderlineNone,
 	uiUnderlineSingle,
 	uiUnderlineDouble,
-	uiUnderlineSuggestion,		// wavy or dotted underlines used for spelling/grammar checkers
+	uiUnderlineSuggestion, // wavy or dotted underlines used for spelling/grammar checkers
 };
 
 // uiNewUnderlineAttribute() creates a new uiAttribute that changes
@@ -694,16 +702,16 @@ _UI_EXTERN uiUnderline uiAttributeUnderline(const uiAttribute *a);
 // platform-specific colors for suggestion underlines; to use them
 // correctly, pair them with uiUnderlineSuggestion (though they can
 // be used on other types of underline as well).
-// 
+//
 // If an underline type is applied but no underline color is
 // specified, the text color is used instead. If an underline color
 // is specified without an underline type, the underline color
 // attribute is ignored, but not removed from the uiAttributedString.
-_UI_ENUM(uiUnderlineColor) {
+_UI_ENUM(uiUnderlineColor){
 	uiUnderlineColorCustom,
 	uiUnderlineColorSpelling,
 	uiUnderlineColorGrammar,
-	uiUnderlineColorAuxiliary,		// for instance, the color used by smart replacements on macOS or in Microsoft Office
+	uiUnderlineColorAuxiliary, // for instance, the color used by smart replacements on macOS or in Microsoft Office
 };
 
 // uiNewUnderlineColorAttribute() creates a new uiAttribute that
@@ -730,10 +738,10 @@ _UI_EXTERN void uiAttributeUnderlineColor(const uiAttribute *a, uiUnderlineColor
 // uiOpenTypeFeatures instance. Each value is a 32-bit integer,
 // often used as a Boolean flag, but sometimes as an index to choose
 // a glyph shape to use.
-// 
+//
 // If a font does not support a certain feature, that feature will be
 // ignored. (TODO verify this on all OSs)
-// 
+//
 // See the OpenType specification at
 // https://www.microsoft.com/typography/otspec/featuretags.htm
 // for the complete list of available features, information on specific
@@ -774,7 +782,7 @@ _UI_EXTERN void uiOpenTypeFeaturesRemove(uiOpenTypeFeatures *otf, char a, char b
 // uiOpenTypeFeaturesGet() determines whether the given feature
 // tag is present in otf. If it is, *value is set to the tag's value and
 // nonzero is returned. Otherwise, zero is returned.
-// 
+//
 // Note that if uiOpenTypeFeaturesGet() returns zero, value isn't
 // changed. This is important: if a feature is not present in a
 // uiOpenTypeFeatures, the feature is NOT treated as if its
@@ -912,6 +920,13 @@ _UI_EXTERN size_t uiAttributedStringGraphemeToByteIndex(uiAttributedString *s, s
 // one is needed. Currently, this means as the default font of a
 // uiDrawTextLayout and as the data returned by uiFontButton.
 // All the members operate like the respective uiAttributes.
+//
+// Note:
+// on some unix systems, alpha blending fonts may not be available; this depends
+// on your installed version of pango and is determined at runtime by libui
+//
+// Note:
+// font matching is closest match but the search method is OS defined
 typedef struct uiFontDescriptor uiFontDescriptor;
 
 struct uiFontDescriptor {
@@ -939,7 +954,7 @@ typedef struct uiDrawTextLayout uiDrawTextLayout;
 // uiDrawTextAlign specifies the alignment of lines of text in a
 // uiDrawTextLayout.
 // TODO should this really have Draw in the name?
-_UI_ENUM(uiDrawTextAlign) {
+_UI_ENUM(uiDrawTextAlign){
 	uiDrawTextAlignLeft,
 	uiDrawTextAlignCenter,
 	uiDrawTextAlignRight,
@@ -987,6 +1002,9 @@ _UI_EXTERN void uiDrawText(uiDrawContext *c, uiDrawTextLayout *tl, double x, dou
 // the width passed into uiDrawNewTextLayout() depending on
 // how the text in tl is wrapped. Therefore, you can use this
 // function to get the actual size of the text layout.
+//
+// The extent width can be greater than the requested width if the
+// requested width is small enough that only one character can fit
 _UI_EXTERN void uiDrawTextLayoutExtents(uiDrawTextLayout *tl, double *width, double *height);
 
 // TODO metrics functions
@@ -995,7 +1013,7 @@ _UI_EXTERN void uiDrawTextLayoutExtents(uiDrawTextLayout *tl, double *width, dou
 
 // uiFontButton is a button that allows users to choose a font when they click on it.
 typedef struct uiFontButton uiFontButton;
-#define uiFontButton(this) ((uiFontButton *) (this))
+#define uiFontButton(this) ((uiFontButton *)(this))
 // uiFontButtonFont() returns the font currently selected in the uiFontButton in desc.
 // uiFontButtonFont() allocates resources in desc; when you are done with the font, call uiFreeFontButtonFont() to release them.
 // uiFontButtonFont() does not allocate desc itself; you must do so.
@@ -1011,7 +1029,7 @@ _UI_EXTERN uiFontButton *uiNewFontButton(void);
 // Calling uiFreeFontButtonFont() on a uiFontDescriptor not returned by uiFontButtonFont() results in undefined behavior.
 _UI_EXTERN void uiFreeFontButtonFont(uiFontDescriptor *desc);
 
-_UI_ENUM(uiModifiers) {
+_UI_ENUM(uiModifiers){
 	uiModifierCtrl = 1 << 0,
 	uiModifierAlt = 1 << 1,
 	uiModifierShift = 1 << 2,
@@ -1038,9 +1056,9 @@ struct uiAreaMouseEvent {
 	uint64_t Held1To64;
 };
 
-_UI_ENUM(uiExtKey) {
+_UI_ENUM(uiExtKey){
 	uiExtKeyEscape = 1,
-	uiExtKeyInsert,			// equivalent to "Help" on Apple keyboards
+	uiExtKeyInsert, // equivalent to "Help" on Apple keyboards
 	uiExtKeyDelete,
 	uiExtKeyHome,
 	uiExtKeyEnd,
@@ -1050,7 +1068,7 @@ _UI_ENUM(uiExtKey) {
 	uiExtKeyDown,
 	uiExtKeyLeft,
 	uiExtKeyRight,
-	uiExtKeyF1,			// F1..F12 are guaranteed to be consecutive
+	uiExtKeyF1, // F1..F12 are guaranteed to be consecutive
 	uiExtKeyF2,
 	uiExtKeyF3,
 	uiExtKeyF4,
@@ -1062,8 +1080,8 @@ _UI_ENUM(uiExtKey) {
 	uiExtKeyF10,
 	uiExtKeyF11,
 	uiExtKeyF12,
-	uiExtKeyN0,			// numpad keys; independent of Num Lock state
-	uiExtKeyN1,			// N0..N9 are guaranteed to be consecutive
+	uiExtKeyN0, // numpad keys; independent of Num Lock state
+	uiExtKeyN1, // N0..N9 are guaranteed to be consecutive
 	uiExtKeyN2,
 	uiExtKeyN3,
 	uiExtKeyN4,
@@ -1091,28 +1109,29 @@ struct uiAreaKeyEvent {
 };
 
 typedef struct uiColorButton uiColorButton;
-#define uiColorButton(this) ((uiColorButton *) (this))
+#define uiColorButton(this) ((uiColorButton *)(this))
 _UI_EXTERN void uiColorButtonColor(uiColorButton *b, double *r, double *g, double *bl, double *a);
 _UI_EXTERN void uiColorButtonSetColor(uiColorButton *b, double r, double g, double bl, double a);
 _UI_EXTERN void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *), void *data);
 _UI_EXTERN uiColorButton *uiNewColorButton(void);
 
+// Note: hiding a control also hides its label
 typedef struct uiForm uiForm;
-#define uiForm(this) ((uiForm *) (this))
+#define uiForm(this) ((uiForm *)(this))
 _UI_EXTERN void uiFormAppend(uiForm *f, const char *label, uiControl *c, int stretchy);
 _UI_EXTERN void uiFormDelete(uiForm *f, int index);
 _UI_EXTERN int uiFormPadded(uiForm *f);
 _UI_EXTERN void uiFormSetPadded(uiForm *f, int padded);
 _UI_EXTERN uiForm *uiNewForm(void);
 
-_UI_ENUM(uiAlign) {
+_UI_ENUM(uiAlign){
 	uiAlignFill,
 	uiAlignStart,
 	uiAlignCenter,
 	uiAlignEnd,
 };
 
-_UI_ENUM(uiAt) {
+_UI_ENUM(uiAt){
 	uiAtLeading,
 	uiAtTop,
 	uiAtTrailing,
@@ -1120,7 +1139,7 @@ _UI_ENUM(uiAt) {
 };
 
 typedef struct uiGrid uiGrid;
-#define uiGrid(this) ((uiGrid *) (this))
+#define uiGrid(this) ((uiGrid *)(this))
 _UI_EXTERN void uiGridAppend(uiGrid *g, uiControl *c, int left, int top, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign);
 _UI_EXTERN void uiGridInsertAt(uiGrid *g, uiControl *c, uiControl *existing, uiAt at, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign);
 _UI_EXTERN int uiGridPadded(uiGrid *g);
@@ -1128,7 +1147,7 @@ _UI_EXTERN void uiGridSetPadded(uiGrid *g, int padded);
 _UI_EXTERN uiGrid *uiNewGrid(void);
 
 // uiImage stores an image for display on screen.
-// 
+//
 // Images are built from one or more representations, each with the
 // same aspect ratio but a different pixel size. libui automatically
 // selects the most appropriate representation for drawing the image
@@ -1136,14 +1155,14 @@ _UI_EXTERN uiGrid *uiNewGrid(void);
 // on the pixel density of the target context. Therefore, one can use
 // uiImage to draw higher-detailed images on higher-density
 // displays. The typical use cases are either:
-// 
+//
 // 	- have just a single representation, at which point all screens
 // 	  use the same image, and thus uiImage acts like a simple
 // 	  bitmap image, or
 // 	- have two images, one at normal resolution and one at 2x
 // 	  resolution; this matches the current expectations of some
 // 	  desktop systems at the time of writing (mid-2018)
-// 
+//
 // uiImage is very simple: it only supports premultiplied 32-bit
 // RGBA images, and libui does not provide any image file loading
 // or image format conversion utilities on top of that.
@@ -1196,7 +1215,7 @@ _UI_EXTERN void uiFreeTableValue(uiTableValue *v);
 // be returned by uiTableValueGetType(). Refer to the documentation
 // for each type's constructor function for details on each type.
 // TODO actually validate these
-_UI_ENUM(uiTableValueType) {
+_UI_ENUM(uiTableValueType){
 	uiTableValueTypeString,
 	uiTableValueTypeImage,
 	uiTableValueTypeInt,
@@ -1219,7 +1238,7 @@ _UI_EXTERN const char *uiTableValueString(const uiTableValue *v);
 
 // uiNewTableValueImage() returns a new uiTableValue that contains
 // the given uiImage.
-// 
+//
 // Unlike other similar constructors, uiNewTableValueImage() does
 // NOT copy the image. This is because images are comparatively
 // larger than the other objects in question. Therefore, you MUST
@@ -1388,7 +1407,7 @@ struct uiTableParams {
 // uiTable is a uiControl that shows tabular data, allowing users to
 // manipulate rows of such data at a time.
 typedef struct uiTable uiTable;
-#define uiTable(this) ((uiTable *) (this))
+#define uiTable(this) ((uiTable *)(this))
 
 // uiTableAppendTextColumn() appends a text column to t.
 // name is displayed in the table header.
