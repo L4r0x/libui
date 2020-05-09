@@ -12,6 +12,7 @@ typedef struct uiTableModelClass uiTableModelClass;
 struct uiTableModel {
 	GObject parent_instance;
 	uiTableModelHandler *mh;
+	void *data;
 };
 struct uiTableModelClass {
 	GObjectClass parent_class;

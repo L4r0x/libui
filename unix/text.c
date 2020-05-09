@@ -13,5 +13,10 @@ void uiFreeText(char *t)
 
 int uiprivStricmp(const char *a, const char *b)
 {
-	return strcasecmp(a, b);
+	gchar *a_utf8 = g_utf8_casefold(a, strlen(a));
+	gchar *b_utf8 = g_utf8_casefold(b, strlen(b));
+	int result = g_strcmp0(a_utf8, b_utf8);
+	g_free(a_utf8);
+	g_free(b_utf8);
+	return result;
 }

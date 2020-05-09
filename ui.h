@@ -1304,23 +1304,23 @@ struct uiTableModelHandler {
 	// lifetime of the uiTableModel. This method is not guaranteed
 	// to be called depending on the system.
 	// TODO strongly check column numbers and types on all platforms so these clauses can go away
-	int (*NumColumns)(uiTableModelHandler *, uiTableModel *);
+	int (*NumColumns)(uiTableModel *model, void *tableData);
 	// ColumnType returns the value type of the data stored in
 	// the given model column of the uiTableModel. The returned
 	// values must remain constant through the lifetime of the
 	// uiTableModel. This method is not guaranteed to be called
 	// depending on the system.
-	uiTableValueType (*ColumnType)(uiTableModelHandler *, uiTableModel *, int);
+	uiTableValueType (*ColumnType)(uiTableModel *model, void *tableData, int col);
 	// NumRows returns the number or rows in the uiTableModel.
 	// This value must be non-negative.
-	int (*NumRows)(uiTableModelHandler *, uiTableModel *);
+	int (*NumRows)(uiTableModel *model, void *tableData);
 	// CellValue returns a uiTableValue corresponding to the model
 	// cell at (row, column). The type of the returned uiTableValue
 	// must match column's value type. Under some circumstances,
 	// NULL may be returned; refer to the various methods that add
 	// columns to uiTable for details. Once returned, the uiTable
 	// that calls CellValue will free the uiTableValue returned.
-	uiTableValue *(*CellValue)(uiTableModelHandler *mh, uiTableModel *m, int row, int column);
+	uiTableValue *(*CellValue)(uiTableModel *model, void *tableData, int row, int col);
 	// SetCellValue changes the model cell value at (row, column)
 	// in the uiTableModel. Within this function, either do nothing
 	// to keep the current cell value or save the new cell value as
@@ -1330,13 +1330,14 @@ struct uiTableModelHandler {
 	// methods that add columns to uiTable for details. Once
 	// returned, the uiTable that called SetCellValue will free the
 	// uiTableValue passed in.
-	void (*SetCellValue)(uiTableModelHandler *, uiTableModel *, int, int, const uiTableValue *);
+	void (*SetCellValue)(uiTableModel *model, void *tableData, int row, int col, const uiTableValue *val);
 };
 
 // @role uiTableModel constructor
 // uiNewTableModel() creates a new uiTableModel with the given
 // handler methods.
-_UI_EXTERN uiTableModel *uiNewTableModel(uiTableModelHandler *mh);
+// The tableData user pointer is passed directly to the handler methods.
+_UI_EXTERN uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void *tableData);
 
 // @role uiTableModel destructor
 // uiFreeTableModel() frees the given table model. It is an error to

@@ -3,12 +3,12 @@
 
 static uiTableModelHandler mh;
 
-static int modelNumColumns(uiTableModelHandler *mh, uiTableModel *m)
+static int modelNumColumns(uiTableModel *model, void *data)
 {
 	return 9;
 }
 
-static uiTableValueType modelColumnType(uiTableModelHandler *mh, uiTableModel *m, int column)
+static uiTableValueType modelColumnType(uiTableModel *model, void *data, int column)
 {
 	if (column == 3 || column == 4)
 		return uiTableValueTypeColor;
@@ -19,7 +19,7 @@ static uiTableValueType modelColumnType(uiTableModelHandler *mh, uiTableModel *m
 	return uiTableValueTypeString;
 }
 
-static int modelNumRows(uiTableModelHandler *mh, uiTableModel *m)
+static int modelNumRows(uiTableModel *model, void *data)
 {
 	return 15;
 }
@@ -29,7 +29,7 @@ static char row9text[1024];
 static int yellowRow = -1;
 static int checkStates[15];
 
-static uiTableValue *modelCellValue(uiTableModelHandler *mh, uiTableModel *m, int row, int col)
+static uiTableValue *modelCellValue(uiTableModel *model, void *data, int row, int col)
 {
 	char buf[256];
 
@@ -81,7 +81,7 @@ static uiTableValue *modelCellValue(uiTableModelHandler *mh, uiTableModel *m, in
 	return uiNewTableValueString(buf);
 }
 
-static void modelSetCellValue(uiTableModelHandler *mh, uiTableModel *m, int row, int col, const uiTableValue *val)
+static void modelSetCellValue(uiTableModel *model, void *data, int row, int col, const uiTableValue *val)
 {
 	if (row == 9 && col == 2)
 		strcpy(row9text, uiTableValueString(val));
@@ -91,8 +91,8 @@ static void modelSetCellValue(uiTableModelHandler *mh, uiTableModel *m, int row,
 		prevYellowRow = yellowRow;
 		yellowRow = row;
 		if (prevYellowRow != -1)
-			uiTableModelRowChanged(m, prevYellowRow);
-		uiTableModelRowChanged(m, yellowRow);
+			uiTableModelRowChanged(model, prevYellowRow);
+		uiTableModelRowChanged(model, yellowRow);
 	}
 	if (col == 7)
 		checkStates[row] = uiTableValueInt(val);
@@ -125,7 +125,7 @@ uiBox *makePage16(void)
 	mh.NumRows = modelNumRows;
 	mh.CellValue = modelCellValue;
 	mh.SetCellValue = modelSetCellValue;
-	m = uiNewTableModel(&mh);
+	m = uiNewTableModel(&mh, NULL);
 
 	memset(&p, 0, sizeof (uiTableParams));
 	p.Model = m;

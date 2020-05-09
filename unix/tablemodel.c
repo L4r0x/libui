@@ -235,13 +235,12 @@ static void uiTableModel_gtk_tree_model_interface_init(GtkTreeModelIface *iface)
 	// don't specify ref_node() or unref_node()
 }
 
-uiTableModel *uiNewTableModel(uiTableModelHandler *mh)
+uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void *tableData)
 {
-	uiTableModel *m;
-
-	m = uiTableModel(g_object_new(uiTableModelType, NULL));
-	m->mh = mh;
-	return m;
+	uiTableModel *model = uiTableModel(g_object_new(uiTableModelType, NULL));
+	model->mh = mh;
+	model->data = tableData;
+	return model;
 }
 
 void uiFreeTableModel(uiTableModel *m)
@@ -282,7 +281,12 @@ void uiTableModelRowDeleted(uiTableModel *m, int oldIndex)
 	gtk_tree_path_free(path);
 }
 
-uiTableModelHandler *uiprivTableModelHandler(uiTableModel *m)
+uiTableModelHandler *uiprivTableModelHandler(uiTableModel *model)
 {
-	return m->mh;
+	return model->mh;
+}
+
+extern void *uiprivTableModelData(uiTableModel *model)
+{
+	return model->data;
 }

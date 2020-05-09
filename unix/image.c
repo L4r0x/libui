@@ -41,8 +41,8 @@ void uiImageAppend(uiImage *i, void *pixels, int pixelWidth, int pixelHeight, in
 	// note that this is native-endian
 	cs = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
 		pixelWidth, pixelHeight);
-	if (cairo_surface_status(cs) != CAIRO_STATUS_SUCCESS)
-		/* TODO */;
+	if (cairo_surface_status(cs) != CAIRO_STATUS_SUCCESS) {}
+		/* TODO */
 	cairo_surface_flush(cs);
 
 	pix = (uint8_t *) pixels;
@@ -121,14 +121,15 @@ writeMatch:
 
 cairo_surface_t *uiprivImageAppropriateSurface(uiImage *i, GtkWidget *w)
 {
-	struct matcher m;
+	struct matcher m = {
+		.best = NULL,
+		.distX = G_MAXINT,
+		.distY = G_MAXINT,
+		.targetX = i->width * gtk_widget_get_scale_factor(w),
+		.targetY = i->height * gtk_widget_get_scale_factor(w),
+		.foundLarger = FALSE,
+	};
 
-	m.best = NULL;
-	m.distX = G_MAXINT;
-	m.distY = G_MAXINT;
-	m.targetX = i->width * gtk_widget_get_scale_factor(w);
-	m.targetY = i->height * gtk_widget_get_scale_factor(w);
-	m.foundLarger = FALSE;
 	g_ptr_array_foreach(i->images, match, &m);
 	return m.best;
 }

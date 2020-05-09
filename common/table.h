@@ -4,8 +4,11 @@
 extern "C" {
 #endif
 
-// tablemodel.c
+// platform specific
 extern uiTableModelHandler *uiprivTableModelHandler(uiTableModel *m);
+extern void *uiprivTableModelData(uiTableModel *m);
+
+// tablemodel.c
 extern int uiprivTableModelNumColumns(uiTableModel *m);
 extern uiTableValueType uiprivTableModelColumnType(uiTableModel *m, int column);
 extern int uiprivTableModelNumRows(uiTableModel *m);

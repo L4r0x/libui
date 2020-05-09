@@ -20,25 +20,6 @@ struct uiTable {
 	guint indeterminateTimer;
 };
 
-// use the same size as GtkFileChooserWidget's treeview
-// TODO refresh when icon theme changes
-// TODO doesn't work when scaled?
-// TODO is this even necessary?
-static void setImageSize(GtkCellRenderer *r)
-{
-	gint size;
-	gint width, height;
-	gint xpad, ypad;
-
-	size = 16;		// fallback used by GtkFileChooserWidget
-	if (gtk_icon_size_lookup(GTK_ICON_SIZE_MENU, &width, &height) != FALSE)
-		size = MAX(width, height);
-	gtk_cell_renderer_get_padding(r, &xpad, &ypad);
-	gtk_cell_renderer_set_fixed_size(r,
-		2 * xpad + size,
-		2 * ypad + size);
-}
-
 static void applyColor(GtkTreeModel *m, GtkTreeIter *iter, int modelColumn, GtkCellRenderer *r, const char *prop, const char *propSet)
 {
 	GValue value = G_VALUE_INIT;
