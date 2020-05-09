@@ -7,6 +7,10 @@ This file assumes that you have included <gtk/gtk.h> and "ui.h" beforehand. It p
 #ifndef __LIBUI_UI_UNIX_H__
 #define __LIBUI_UI_UNIX_H__
 
+#include <gtk/gtk.h>
+
+#include "ui.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

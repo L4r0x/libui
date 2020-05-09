@@ -1,6 +1,8 @@
 // 3 june 2018
 #import "../common/table.h"
 
+#import "uipriv_darwin.h"
+
 // table.m
 // TODO get rid of forward declaration
 @class uiprivTableModel;

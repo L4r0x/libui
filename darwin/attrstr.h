@@ -1,6 +1,8 @@
 // 4 march 2018
 #import "../common/attrstr.h"
 
+#import "uipriv_darwin.h"
+
 // opentype.m
 extern CFArrayRef uiprivOpenTypeFeaturesToCTFeatures(const uiOpenTypeFeatures *otf);
 
