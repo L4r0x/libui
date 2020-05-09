@@ -5,6 +5,7 @@
 #define uiprivNumLVN_GETDISPINFOSkip 3
 struct uiTableModel {
 	uiTableModelHandler *mh;
+	void *data;
 	std::vector<uiTable *> *tables;
 };
 typedef struct uiprivTableColumnParams uiprivTableColumnParams;

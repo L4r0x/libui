@@ -25,6 +25,9 @@ extern size_t uiprivUTF8UTF16Count(const char *s, size_t nElem);
 extern size_t uiprivUTF16RuneCount(const uint16_t *s, size_t nElem);
 extern size_t uiprivUTF16UTF8Count(const uint16_t *s, size_t nElem);
 
+#ifdef __cplusplus
+}
+
 // TODO sync this back to upstream (need copyright clearance first)
 
 // On Windows, wchar_t is equivalent to uint16_t, but C++ requires
@@ -99,6 +102,4 @@ inline size_t uiprivUTF16UTF8Count(const __wchar_t *s, size_t nElem)
 
 #endif
 
-#ifdef __cplusplus
-}
 #endif

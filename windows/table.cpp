@@ -8,12 +8,13 @@
 // - implement accessibility in general (Dynamic Annotations maybe?)
 // - if I didn't handle these already: "drawing focus rects here, subitem navigation and activation with the keyboard"
 
-uiTableModel *uiNewTableModel(uiTableModelHandler *mh)
+uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void *tableData)
 {
 	uiTableModel *m;
 
 	m = uiprivNew(uiTableModel);
 	m->mh = mh;
+	m->data = tableData;
 	m->tables = new std::vector<uiTable *>;
 	return m;
 }
@@ -61,6 +62,11 @@ void uiTableModelRowDeleted(uiTableModel *m, int oldIndex)
 uiTableModelHandler *uiprivTableModelHandler(uiTableModel *m)
 {
 	return m->mh;
+}
+
+void *uiprivTableModelData(uiTableModel *m)
+{
+	return m->data;
 }
 
 // TODO explain all this
