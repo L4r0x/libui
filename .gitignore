@@ -1,3 +1,5 @@
 # config & build
 .vscode/
 build/
+*.obj
+*.pdb

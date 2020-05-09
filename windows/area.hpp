@@ -1,4 +1,7 @@
-// 18 december 2015
+#ifndef __LIBUI_UI_AREA_H__
+#define __LIBUI_UI_AREA_H__
+
+#include "uipriv_windows.hpp"
 
 // TODOs
 // - things look very wrong on initial draw
@@ -43,3 +46,5 @@ extern BOOL areaDoEvents(uiArea *a, UINT uMsg, WPARAM wParam, LPARAM lParam, LRE
 extern void loadAreaSize(uiArea *a, ID2D1RenderTarget *rt, double *width, double *height);
 extern void pixelsToDIP(uiArea *a, double *x, double *y);
 extern void dipToPixels(uiArea *a, double *x, double *y);
+
+#endif

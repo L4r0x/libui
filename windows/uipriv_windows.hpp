@@ -1,4 +1,6 @@
-// 21 april 2016
+#ifndef __LIBUI_UI_UIPRIV_H__
+#define __LIBUI_UI_UIPRIV_H__
+
 #include "winapi.hpp"
 #include "../ui.h"
 #include "../ui_windows.h"
@@ -160,8 +162,19 @@ extern void getSizing(HWND hwnd, uiWindowsSizing *sizing, HFONT font);
 // TODO move into a dedicated file abibugs.cpp when we rewrite the drawing code
 extern D2D1_SIZE_F realGetSize(ID2D1RenderTarget *rt);
 
-// TODO
-#include "_uipriv_migrate.hpp"
+// menu.cpp
+extern HMENU makeMenubar(void);
+extern const uiMenuItem *menuIDToItem(UINT_PTR);
+extern void runMenuEvent(WORD, uiWindow *);
+extern void freeMenubar(HMENU);
+extern void uninitMenus(void);
+
+// draw.cpp
+extern HRESULT initDraw(void);
+extern void uninitDraw(void);
+extern ID2D1HwndRenderTarget *makeHWNDRenderTarget(HWND hwnd);
+extern uiDrawContext *newContext(ID2D1RenderTarget *);
+extern void freeContext(uiDrawContext *);
 
 // draw.cpp
 extern ID2D1DCRenderTarget *makeHDCRenderTarget(HDC dc, RECT *r);
@@ -172,3 +185,5 @@ extern HRESULT uiprivInitImage(void);
 extern void uiprivUninitImage(void);
 extern IWICBitmap *uiprivImageAppropriateForDC(uiImage *i, HDC dc);
 extern HRESULT uiprivWICToGDI(IWICBitmap *b, HDC dc, int width, int height, HBITMAP *hb);
+
+#endif

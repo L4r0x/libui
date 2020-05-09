@@ -1,4 +1,5 @@
-// 30 may 2015
+#ifndef __LIBUI_UI_RESOURCES_H__
+#define __LIBUI_UI_RESOURCES_H__
 
 #define rcTabPageDialog 29000
 #define rcFontDialog 29001
@@ -35,3 +36,5 @@
 #define rcBLabel 1121
 #define rcALabel 1122
 #define rcHexLabel 1123
+
+#endif

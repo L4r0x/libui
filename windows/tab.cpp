@@ -1,8 +1,11 @@
 // 16 may 2015
 #include "uipriv_windows.hpp"
 
-// You don't add controls directly to a tab control on Windows; instead you make them siblings and swap between them on a TCN_SELCHANGING/TCN_SELCHANGE notification pair.
-// In addition, you use dialogs because they can be textured properly; other controls cannot. (Things will look wrong if the tab background in the current theme is fancy if you just use the tab background by itself; see http://stackoverflow.com/questions/30087540/why-are-my-programss-tab-controls-rendering-their-background-in-a-blocky-way-b.)
+// You don't add controls directly to a tab control on Windows;
+// instead you make them siblings and swap between them on a TCN_SELCHANGING/TCN_SELCHANGE notification pair.
+// In addition, you use dialogs because they can be textured properly; other controls cannot.
+// (Things will look wrong if the tab background in the current theme is fancy if you just use the tab background by itself;
+// see http://stackoverflow.com/questions/30087540/why-are-my-programss-tab-controls-rendering-their-background-in-a-blocky-way-b.)
 
 struct uiTab {
 	uiWindowsControl c;
@@ -36,7 +39,6 @@ static void tabPageRect(uiTab *t, RECT *r)
 
 static void tabRelayout(uiTab *t)
 {
-	struct tabPage *page;
 	RECT r;
 
 	// first move the tab control itself
@@ -46,7 +48,7 @@ static void tabRelayout(uiTab *t)
 	// then the current page
 	if (t->pages->size() == 0)
 		return;
-	page = tabPage(t, curpage(t));
+	struct tabPage *page = tabPage(t, curpage(t));
 	tabPageRect(t, &r);
 	uiWindowsEnsureMoveWindowDuringResize(page->hwnd, r.left, r.top, r.right - r.left, r.bottom - r.top);
 }
@@ -85,10 +87,9 @@ static BOOL onWM_NOTIFY(uiControl *c, HWND hwnd, NMHDR *nm, LRESULT *lResult)
 static void uiTabDestroy(uiControl *c)
 {
 	uiTab *t = uiTab(c);
-	uiControl *child;
 
 	for (struct tabPage *&page : *(t->pages)) {
-		child = page->child;
+		uiControl *child = page->child;
 		tabPageDestroy(page);
 		if (child != NULL) {
 			uiControlSetParent(child, NULL);
