@@ -1,4 +1,8 @@
-// 10 june 2018
+#ifndef __LIBUI_UI_TABLE_H__
+#define __LIBUI_UI_TABLE_H__
+
+#include "uipriv_windows.hpp"
+
 #include "../common/table.h"
 
 // table.cpp
@@ -80,3 +84,5 @@ struct uiprivTableMetrics {
 	RECT realTextRect;
 };
 extern HRESULT uiprivTableGetMetrics(uiTable *t, int iItem, int iSubItem, uiprivTableMetrics **mout);
+
+#endif

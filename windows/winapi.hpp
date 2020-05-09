@@ -1,4 +1,6 @@
-// 31 may 2015
+#ifndef __LIBUI_UI_WINAPI_H__
+#define __LIBUI_UI_WINAPI_H__
+
 #define UNICODE
 #define _UNICODE
 #define STRICT
@@ -61,4 +63,6 @@
 #include <sstream>
 #include <functional>
 #include <utility>
+#endif
+
 #endif

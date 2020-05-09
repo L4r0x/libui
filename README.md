@@ -1,8 +1,8 @@
 # libui: a portable GUI library for C
 
-This README is being written.<br>
-[![Build Status, Linux and macOS](https://travis-ci.org/andlabs/libui.svg?branch=master)](https://travis-ci.org/andlabs/libui)<br>
-[![Build Status, Windows](https://ci.appveyor.com/api/projects/status/ouyk78c52mmisa31?svg=true)](https://ci.appveyor.com/project/andlabs/libui)
+This fork from the [libui](https://github.com/andlabs/libui) project focuses on
+bugfixes, stability and removing certain rarely used features to reduce the
+overall complexity.
 
 ## Status
 

@@ -1,4 +1,5 @@
-// 9 june 2015
+#ifndef __LIBUI_UI_COMPILERVER_H__
+#define __LIBUI_UI_COMPILERVER_H__
 
 // Visual Studio (Microsoft's compilers)
 // VS2013 is needed for va_copy().
@@ -40,7 +41,7 @@ here's what I got when I tried to investigate on irc.oftc.net/#mingw-w64:
 [09:49:19]  <m2bot>	andlabs: Sent 17 minutes ago: <lh_mouse> It is quite guaranteed: 'In the Microsoft compiler, it represents a 16-bit wide character used to store Unicode encoded as UTF-16LE, the native character type on Windows operating systems.'
 [09:50:08]  <lh_mouse>	andlabs, If you build for cygwin then `wchar_t` is probably `int`, just like what it is on Linux.
 [09:51:00]  <andlabs>	yes but that's still a compiler-specific reference; I still don't know hwere Microsoft keeps its ABI documentation, and I'm still wondering what you mean by "the ABI != on Windows" with regards to establishing that guarantee
-[09:52:13]  <lh_mouse>	This is already the ABI documentation:   https://docs.microsoft.com/en-us/cpp/cpp/char-wchar-t-char16-t-char32-t    
+[09:52:13]  <lh_mouse>	This is already the ABI documentation:   https://docs.microsoft.com/en-us/cpp/cpp/char-wchar-t-char16-t-char32-t
 [09:52:15]  <m2bot>	Title: char, wchar_t, char16_t, char32_t | Microsoft Docs (at docs.microsoft.com)
 [09:52:19]  <lh_mouse>	It describes C++ types,
 [09:53:09]  <andlabs>	oh, ok
@@ -92,4 +93,6 @@ so I'm not sure what is correct, but I do need to find out
 #include <limits.h>
 #if WCHAR_MAX > 0xFFFF
 #error unexpected: wchar_t larger than 16-bit on a Windows ABI build; contact andlabs with your build setup information
+#endif
+
 #endif

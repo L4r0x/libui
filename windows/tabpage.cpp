@@ -130,19 +130,18 @@ void tabPageDestroy(struct tabPage *tp)
 	// don't destroy the child with the page
 	if (tp->child != NULL)
 		uiWindowsControlSetParentHWND(uiWindowsControl(tp->child), NULL);
-	// don't call EndDialog(); that's for the DialogBox() family of functions instead of CreateDialog()
 	uiWindowsEnsureDestroyWindow(tp->hwnd);
 	uiprivFree(tp);
 }
 
 void tabPageMinimumSize(struct tabPage *tp, int *width, int *height)
 {
-	int mx, my;
-
 	*width = 0;
 	*height = 0;
 	if (tp->child != NULL)
 		uiWindowsControlMinimumSize(uiWindowsControl(tp->child), width, height);
+
+	int mx, my;
 	tabPageMargins(tp, &mx, &my);
 	*width += 2 * mx;
 	*height += 2 * my;

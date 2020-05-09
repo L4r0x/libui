@@ -1,10 +1,7 @@
 // 4 december 2014
 #include "uipriv_windows.hpp"
 
-typedef std::vector<uint8_t> byteArray;
-
-static std::map<uint8_t *, byteArray *> heap;
-static std::map<byteArray *, const char *> types;
+static std::map<void *, const char *> types;
 
 void initAlloc(void)
 {
@@ -13,52 +10,46 @@ void initAlloc(void)
 
 void uninitAlloc(void)
 {
-	std::ostringstream oss;
-	std::string ossstr;		// keep alive, just to be safe
-
-	if (heap.size() == 0)
+	if (types.size() == 0)
 		return;
-	for (const auto &alloc : heap)
-		// note the void * cast; otherwise it'll be treated as a string
-		oss << (void *) (alloc.first) << " " << types[alloc.second] << "\n";
-	ossstr = oss.str();
-	uiprivUserBug("Some data was leaked; either you left a uiControl lying around or there's a bug in libui itself. Leaked data:\n%s", ossstr.c_str());
-}
 
-#define rawBytes(pa) (&((*pa)[0]))
+	std::ostringstream oss;
+	for (const auto &alloc : types) {
+		oss << (void *)(alloc.first) << " " << alloc.second << "\n";
+	}
+
+	std::string ossstr = oss.str();
+	uiprivUserBug("Memory leak detected; either you left a uiControl lying "
+				  "around or there's a bug in libui itself. Leaked data:\n%s",
+		ossstr.c_str());
+}
 
 void *uiprivAlloc(size_t size, const char *type)
 {
-	byteArray *out;
-
-	out = new byteArray(size, 0);
-	heap[rawBytes(out)] = out;
-	types[out] = type;
-	return rawBytes(out);
+	return uiprivRealloc(nullptr, size, type);
 }
 
-void *uiprivRealloc(void *_p, size_t size, const char *type)
+// Reallocates memory returning the new memory address.
+// The memory is initialized with zero.
+//
+// If p is NULL new memory is allocated similar to malloc.
+// If the size is 0 the memory is deallocated similar to free.
+void *uiprivRealloc(void *p, size_t size, const char *type)
 {
-	uint8_t *p = (uint8_t *) _p;
-	byteArray *arr;
-
-	if (p == NULL)
-		return uiprivAlloc(size, type);
-	arr = heap[p];
-	// TODO does this fill in?
-	arr->resize(size, 0);
-	heap.erase(p);
-	heap[rawBytes(arr)] = arr;
-	return rawBytes(arr);
+	if (p != nullptr) {
+		types.erase(p);
+	} else if (size == 0) {
+		uiprivImplBug("attempt to free NULL");
+	}
+	void *out = realloc(p, size);
+	if (out != nullptr) {
+		memset(out, 0, size);
+		types[out] = type;
+	}
+	return out;
 }
 
-void uiprivFree(void *_p)
+void uiprivFree(void *p)
 {
-	uint8_t *p = (uint8_t *) _p;
-
-	if (p == NULL)
-		uiprivImplBug("attempt to uiprivFree(NULL)");
-	types.erase(heap[p]);
-	delete heap[p];
-	heap.erase(p);
+	uiprivRealloc(p, 0, nullptr);
 }

@@ -1,4 +1,8 @@
-// 11 march 2018
+#ifndef __LIBUI_UI_ATTRSTR_H__
+#define __LIBUI_UI_ATTRSTR_H__
+
+#include "uipriv_windows.hpp"
+
 #include "../common/attrstr.h"
 
 // dwrite.cpp
@@ -83,3 +87,5 @@ extern BOOL uiprivShowFontDialog(HWND parent, struct fontDialogParams *params);
 extern void uiprivLoadInitialFontDialogParams(struct fontDialogParams *params);
 extern void uiprivDestroyFontDialogParams(struct fontDialogParams *params);
 extern WCHAR *uiprivFontDialogParamsToString(struct fontDialogParams *params);
+
+#endif
