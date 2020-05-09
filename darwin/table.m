@@ -90,12 +90,13 @@ static void setBackgroundColor(uiprivTableView *t, NSTableRowView *rv, NSInteger
 
 @end
 
-uiTableModel *uiNewTableModel(uiTableModelHandler *mh)
+uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void* tableData)
 {
 	uiTableModel *m;
 
 	m = uiprivNew(uiTableModel);
 	m->mh = mh;
+	m->data = tableData;
 	m->m = [[uiprivTableModel alloc] initWithModel:m];
 	m->tables = [NSMutableArray new];
 	return m;
@@ -155,6 +156,11 @@ void uiTableModelRowDeleted(uiTableModel *m, int oldIndex)
 uiTableModelHandler *uiprivTableModelHandler(uiTableModel *m)
 {
 	return m->mh;
+}
+
+void *uiprivTableModelData(uiTableModel *m)
+{
+	return m->data;
 }
 
 uiDarwinControlAllDefaultsExceptDestroy(uiTable, sv)
