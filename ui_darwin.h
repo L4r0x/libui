@@ -7,6 +7,10 @@ This file assumes that you have imported <Cocoa/Cocoa.h> and "ui.h" beforehand. 
 #ifndef __LIBUI_UI_DARWIN_H__
 #define __LIBUI_UI_DARWIN_H__
 
+#include <Cocoa/Cocoa.h>
+
+#include "ui.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

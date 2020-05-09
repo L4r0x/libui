@@ -1,5 +1,10 @@
 // 19 february 2018
 
+#ifndef __LIBUI_UI_COMMON_ATTRSTR_H__
+#define __LIBUI_UI_COMMON_ATTRSTR_H__
+
+#include "../ui.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,4 +48,6 @@ extern uiprivGraphemes *uiprivNewGraphemes(void *s, size_t len);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

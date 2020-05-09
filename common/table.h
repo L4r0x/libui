@@ -1,5 +1,10 @@
 // 23 june 2018
 
+#ifndef __LIBUI_UI_COMMON_TABLE_H__
+#define __LIBUI_UI_COMMON_TABLE_H__
+
+#include "../ui.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,4 +25,6 @@ extern int uiprivTableModelColorIfProvided(uiTableModel *m, int row, int column,
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

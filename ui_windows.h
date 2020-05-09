@@ -7,6 +7,10 @@ This file assumes that you have included <windows.h> and "ui.h" beforehand. It p
 #ifndef __LIBUI_UI_WINDOWS_H__
 #define __LIBUI_UI_WINDOWS_H__
 
+#include <windows.h>
+
+#include "ui.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
