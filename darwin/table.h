@@ -6,6 +6,7 @@
 @class uiprivTableModel;
 struct uiTableModel {
 	uiTableModelHandler *mh;
+	void *data;
 	uiprivTableModel *m;
 	NSMutableArray *tables;
 };
