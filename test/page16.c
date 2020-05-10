@@ -54,15 +54,6 @@ static uiTableValue *modelCellValue(uiTableModel *model, void *data, int row, in
 	}
 	if (col == 7)
 		return uiNewTableValueInt(checkStates[row]);
-	if (col == 8) {
-		if (row == 0)
-			return uiNewTableValueInt(0);
-		if (row == 13)
-			return uiNewTableValueInt(100);
-		if (row == 14)
-			return uiNewTableValueInt(-1);
-		return uiNewTableValueInt(50);
-	}
 	switch (col) {
 	case 0:
 		sprintf(buf, "Row %d", row);
@@ -148,9 +139,6 @@ uiBox *makePage16(void)
 		7, uiTableModelColumnAlwaysEditable);
 	uiTableAppendButtonColumn(t, "Buttons",
 		6, uiTableModelColumnAlwaysEditable);
-
-	uiTableAppendProgressBarColumn(t, "Progress Bar",
-		8);
 
 	return page16;
 }

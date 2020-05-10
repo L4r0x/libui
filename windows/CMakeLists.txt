@@ -51,7 +51,6 @@ list(APPEND _LIBUI_SOURCES
 	windows/stddialogs.cpp
 	windows/tab.cpp
 	windows/table.cpp
-	windows/tabledispinfo.cpp
 	windows/tabledraw.cpp
 	windows/tableediting.cpp
 	windows/tablemetrics.cpp
