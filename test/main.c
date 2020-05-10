@@ -121,40 +121,13 @@ int main(int argc, char *argv[])
 	uiTabAppend(mainTab, "Page 5", uiControl(page5));
 
 	innerTab = newTab();
-	uiTabAppend(outerTab, "Pages 6-10", uiControl(innerTab));
-
-	page6 = makePage6();
-	uiTabAppend(innerTab, "Page 6", uiControl(page6));
-
-	page7 = makePage7();
-	uiTabAppend(innerTab, "Page 7", uiControl(page7));
-
-/*	page8 = makePage8();
-	uiTabAppend(innerTab, "Page 8", uiControl(page8));
-
-	page9 = makePage9();
-	uiTabAppend(innerTab, "Page 9", uiControl(page9));
-
-	page10 = makePage10();
-	uiTabAppend(innerTab, "Page 10", uiControl(page10));
-*/
-	innerTab = newTab();
 	uiTabAppend(outerTab, "Pages 11-15", uiControl(innerTab));
-
-//	page11 = makePage11();
-//	uiTabAppend(innerTab, "Page 11", uiControl(page11));
 
 	page12 = makePage12();
 	uiTabAppend(innerTab, "Page 12", uiControl(page12));
 
-	page13 = makePage13();
-	uiTabAppend(innerTab, "Page 13", uiControl(page13));
-
 	page14 = makePage14();
 	uiTabAppend(innerTab, "Page 14", uiControl(page14));
-
-	page15 = makePage15(w);
-	uiTabAppend(innerTab, "Page 15", uiControl(page15));
 
 	innerTab = newTab();
 	uiTabAppend(outerTab, "Pages 16-?", uiControl(innerTab));

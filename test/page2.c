@@ -52,7 +52,7 @@ static void openAnotherWindow(uiButton *bb, void *data)
 		uiBoxSetPadded(b, 1);
 		uiWindowSetChild(w, uiControl(b));
 	} else
-		uiWindowSetChild(w, uiControl(makePage6()));
+		uiWindowSetChild(w, uiControl(makePage5(w)));
 	uiWindowSetMargined(w, 1);
 	uiControlShow(uiControl(w));
 }
