@@ -1,12 +1,3 @@
-// 6 april 2015
-
-// TODO add a uiVerifyControlType() function that can be used by control implementations to verify controls
-
-// TODOs
-// - make getters that return whether something exists accept a NULL pointer to discard the value (and thus only return that the thing exists?)
-// - const-correct everything
-// - normalize documentation between typedefs and structs
-
 #ifndef __LIBUI_UI_H__
 #define __LIBUI_UI_H__
 
@@ -29,23 +20,10 @@ extern "C" {
 #define _UI_EXTERN extern
 #endif
 
-// C++ is really really really really really really dumb about enums, so screw that and just make them anonymous
-// This has the advantage of being ABI-able should we ever need an ABI...
+// This has the advantage of being ABI-able
 #define _UI_ENUM(s)         \
 	typedef unsigned int s; \
 	enum
-
-// This constant is provided because M_PI is nonstandard.
-// This comes from Go's math.Pi, which in turn comes from http://oeis.org/A000796.
-#define uiPi 3.14159265358979323846264338327950288419716939937510582097494459
-
-// TODO uiBool?
-
-// uiForEach represents the return value from one of libui's various ForEach functions.
-_UI_ENUM(uiForEach){
-	uiForEachContinue,
-	uiForEachStop,
-};
 
 typedef struct uiInitOptions uiInitOptions;
 
@@ -119,164 +97,11 @@ _UI_EXTERN int uiControlEnabledToUser(uiControl *);
 
 _UI_EXTERN void uiUserBugCannotSetParentOnToplevel(const char *type);
 
+// -----------------------------------------------------------------------------
+// window
+// -----------------------------------------------------------------------------
+
 typedef struct uiWindow uiWindow;
-#define uiWindow(this) ((uiWindow *)(this))
-_UI_EXTERN char *uiWindowTitle(uiWindow *w);
-_UI_EXTERN void uiWindowSetTitle(uiWindow *w, const char *title);
-_UI_EXTERN void uiWindowContentSize(uiWindow *w, int *width, int *height);
-_UI_EXTERN void uiWindowSetContentSize(uiWindow *w, int width, int height);
-_UI_EXTERN int uiWindowFullscreen(uiWindow *w);
-_UI_EXTERN void uiWindowSetFullscreen(uiWindow *w, int fullscreen);
-_UI_EXTERN void uiWindowOnContentSizeChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data);
-_UI_EXTERN void uiWindowOnClosing(uiWindow *w, int (*f)(uiWindow *w, void *data), void *data);
-_UI_EXTERN int uiWindowBorderless(uiWindow *w);
-_UI_EXTERN void uiWindowSetBorderless(uiWindow *w, int borderless);
-_UI_EXTERN void uiWindowSetChild(uiWindow *w, uiControl *child);
-_UI_EXTERN int uiWindowMargined(uiWindow *w);
-_UI_EXTERN void uiWindowSetMargined(uiWindow *w, int margined);
-_UI_EXTERN uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar);
-
-typedef struct uiButton uiButton;
-#define uiButton(this) ((uiButton *)(this))
-_UI_EXTERN char *uiButtonText(uiButton *b);
-_UI_EXTERN void uiButtonSetText(uiButton *b, const char *text);
-_UI_EXTERN void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *b, void *data), void *data);
-_UI_EXTERN uiButton *uiNewButton(const char *text);
-
-typedef struct uiBox uiBox;
-#define uiBox(this) ((uiBox *)(this))
-_UI_EXTERN void uiBoxAppend(uiBox *b, uiControl *child, int stretchy);
-_UI_EXTERN void uiBoxDelete(uiBox *b, int index);
-_UI_EXTERN int uiBoxPadded(uiBox *b);
-_UI_EXTERN void uiBoxSetPadded(uiBox *b, int padded);
-_UI_EXTERN uiBox *uiNewHorizontalBox(void);
-_UI_EXTERN uiBox *uiNewVerticalBox(void);
-
-typedef struct uiCheckbox uiCheckbox;
-#define uiCheckbox(this) ((uiCheckbox *)(this))
-_UI_EXTERN char *uiCheckboxText(uiCheckbox *c);
-_UI_EXTERN void uiCheckboxSetText(uiCheckbox *c, const char *text);
-_UI_EXTERN void uiCheckboxOnToggled(uiCheckbox *c, void (*f)(uiCheckbox *c, void *data), void *data);
-_UI_EXTERN int uiCheckboxChecked(uiCheckbox *c);
-_UI_EXTERN void uiCheckboxSetChecked(uiCheckbox *c, int checked);
-_UI_EXTERN uiCheckbox *uiNewCheckbox(const char *text);
-
-typedef struct uiEntry uiEntry;
-#define uiEntry(this) ((uiEntry *)(this))
-_UI_EXTERN char *uiEntryText(uiEntry *e);
-_UI_EXTERN void uiEntrySetText(uiEntry *e, const char *text);
-_UI_EXTERN void uiEntryOnChanged(uiEntry *e, void (*f)(uiEntry *e, void *data), void *data);
-_UI_EXTERN int uiEntryReadOnly(uiEntry *e);
-_UI_EXTERN void uiEntrySetReadOnly(uiEntry *e, int readonly);
-_UI_EXTERN uiEntry *uiNewEntry(void);
-_UI_EXTERN uiEntry *uiNewPasswordEntry(void);
-_UI_EXTERN uiEntry *uiNewSearchEntry(void);
-
-typedef struct uiLabel uiLabel;
-#define uiLabel(this) ((uiLabel *)(this))
-_UI_EXTERN char *uiLabelText(uiLabel *l);
-_UI_EXTERN void uiLabelSetText(uiLabel *l, const char *text);
-_UI_EXTERN uiLabel *uiNewLabel(const char *text);
-
-typedef struct uiTab uiTab;
-#define uiTab(this) ((uiTab *)(this))
-_UI_EXTERN void uiTabAppend(uiTab *t, const char *name, uiControl *c);
-_UI_EXTERN void uiTabInsertAt(uiTab *t, const char *name, int before, uiControl *c);
-_UI_EXTERN void uiTabDelete(uiTab *t, int index);
-_UI_EXTERN int uiTabNumPages(uiTab *t);
-_UI_EXTERN int uiTabMargined(uiTab *t, int page);
-_UI_EXTERN void uiTabSetMargined(uiTab *t, int page, int margined);
-_UI_EXTERN uiTab *uiNewTab(void);
-
-typedef struct uiGroup uiGroup;
-#define uiGroup(this) ((uiGroup *)(this))
-_UI_EXTERN char *uiGroupTitle(uiGroup *g);
-_UI_EXTERN void uiGroupSetTitle(uiGroup *g, const char *title);
-_UI_EXTERN void uiGroupSetChild(uiGroup *g, uiControl *c);
-_UI_EXTERN int uiGroupMargined(uiGroup *g);
-_UI_EXTERN void uiGroupSetMargined(uiGroup *g, int margined);
-_UI_EXTERN uiGroup *uiNewGroup(const char *title);
-
-// spinbox/slider rules:
-// setting value outside of range will automatically clamp
-// initial value is minimum
-// complaint if min >= max?
-
-typedef struct uiSpinbox uiSpinbox;
-#define uiSpinbox(this) ((uiSpinbox *)(this))
-_UI_EXTERN int uiSpinboxValue(uiSpinbox *s);
-_UI_EXTERN void uiSpinboxSetValue(uiSpinbox *s, int value);
-_UI_EXTERN void uiSpinboxOnChanged(uiSpinbox *s, void (*f)(uiSpinbox *s, void *data), void *data);
-_UI_EXTERN uiSpinbox *uiNewSpinbox(int min, int max);
-
-typedef struct uiSlider uiSlider;
-#define uiSlider(this) ((uiSlider *)(this))
-_UI_EXTERN int uiSliderValue(uiSlider *s);
-_UI_EXTERN void uiSliderSetValue(uiSlider *s, int value);
-_UI_EXTERN void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *s, void *data), void *data);
-_UI_EXTERN uiSlider *uiNewSlider(int min, int max);
-
-typedef struct uiProgressBar uiProgressBar;
-#define uiProgressBar(this) ((uiProgressBar *)(this))
-_UI_EXTERN int uiProgressBarValue(uiProgressBar *p);
-_UI_EXTERN void uiProgressBarSetValue(uiProgressBar *p, int n);
-_UI_EXTERN uiProgressBar *uiNewProgressBar(void);
-
-typedef struct uiSeparator uiSeparator;
-#define uiSeparator(this) ((uiSeparator *)(this))
-_UI_EXTERN uiSeparator *uiNewHorizontalSeparator(void);
-_UI_EXTERN uiSeparator *uiNewVerticalSeparator(void);
-
-typedef struct uiCombobox uiCombobox;
-#define uiCombobox(this) ((uiCombobox *)(this))
-_UI_EXTERN void uiComboboxAppend(uiCombobox *c, const char *text);
-_UI_EXTERN int uiComboboxSelected(uiCombobox *c);
-_UI_EXTERN void uiComboboxSetSelected(uiCombobox *c, int n);
-_UI_EXTERN void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), void *data);
-_UI_EXTERN uiCombobox *uiNewCombobox(void);
-
-typedef struct uiEditableCombobox uiEditableCombobox;
-#define uiEditableCombobox(this) ((uiEditableCombobox *)(this))
-_UI_EXTERN void uiEditableComboboxAppend(uiEditableCombobox *c, const char *text);
-_UI_EXTERN char *uiEditableComboboxText(uiEditableCombobox *c);
-_UI_EXTERN void uiEditableComboboxSetText(uiEditableCombobox *c, const char *text);
-// TODO what do we call a function that sets the currently selected item and fills the text field with it? editable comboboxes have no consistent concept of selected item
-_UI_EXTERN void uiEditableComboboxOnChanged(uiEditableCombobox *c, void (*f)(uiEditableCombobox *c, void *data), void *data);
-_UI_EXTERN uiEditableCombobox *uiNewEditableCombobox(void);
-
-typedef struct uiRadioButtons uiRadioButtons;
-#define uiRadioButtons(this) ((uiRadioButtons *)(this))
-_UI_EXTERN void uiRadioButtonsAppend(uiRadioButtons *r, const char *text);
-_UI_EXTERN int uiRadioButtonsSelected(uiRadioButtons *r);
-_UI_EXTERN void uiRadioButtonsSetSelected(uiRadioButtons *r, int n);
-_UI_EXTERN void uiRadioButtonsOnSelected(uiRadioButtons *r, void (*f)(uiRadioButtons *, void *), void *data);
-_UI_EXTERN uiRadioButtons *uiNewRadioButtons(void);
-
-struct tm;
-typedef struct uiDateTimePicker uiDateTimePicker;
-#define uiDateTimePicker(this) ((uiDateTimePicker *)(this))
-// TODO document that tm_wday and tm_yday are undefined, and tm_isdst should be -1
-// TODO document that for both sides
-// TODO document time zone conversions or lack thereof
-// TODO for Time: define what values are returned when a part is missing
-_UI_EXTERN void uiDateTimePickerTime(uiDateTimePicker *d, struct tm *time);
-_UI_EXTERN void uiDateTimePickerSetTime(uiDateTimePicker *d, const struct tm *time);
-_UI_EXTERN void uiDateTimePickerOnChanged(uiDateTimePicker *d, void (*f)(uiDateTimePicker *, void *), void *data);
-_UI_EXTERN uiDateTimePicker *uiNewDateTimePicker(void);
-_UI_EXTERN uiDateTimePicker *uiNewDatePicker(void);
-_UI_EXTERN uiDateTimePicker *uiNewTimePicker(void);
-
-// TODO provide a facility for entering tab stops?
-typedef struct uiMultilineEntry uiMultilineEntry;
-#define uiMultilineEntry(this) ((uiMultilineEntry *)(this))
-_UI_EXTERN char *uiMultilineEntryText(uiMultilineEntry *e);
-_UI_EXTERN void uiMultilineEntrySetText(uiMultilineEntry *e, const char *text);
-_UI_EXTERN void uiMultilineEntryAppend(uiMultilineEntry *e, const char *text);
-_UI_EXTERN void uiMultilineEntryOnChanged(uiMultilineEntry *e, void (*f)(uiMultilineEntry *e, void *data), void *data);
-_UI_EXTERN int uiMultilineEntryReadOnly(uiMultilineEntry *e);
-_UI_EXTERN void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly);
-_UI_EXTERN uiMultilineEntry *uiNewMultilineEntry(void);
-_UI_EXTERN uiMultilineEntry *uiNewNonWrappingMultilineEntry(void);
 
 typedef struct uiMenuItem uiMenuItem;
 #define uiMenuItem(this) ((uiMenuItem *)(this))
@@ -296,17 +121,57 @@ _UI_EXTERN uiMenuItem *uiMenuAppendAboutItem(uiMenu *m);
 _UI_EXTERN void uiMenuAppendSeparator(uiMenu *m);
 _UI_EXTERN uiMenu *uiNewMenu(const char *name);
 
+#define uiWindow(this) ((uiWindow *)(this))
+_UI_EXTERN char *uiWindowTitle(uiWindow *w);
+_UI_EXTERN void uiWindowSetTitle(uiWindow *w, const char *title);
+_UI_EXTERN void uiWindowContentSize(uiWindow *w, int *width, int *height);
+_UI_EXTERN void uiWindowSetContentSize(uiWindow *w, int width, int height);
+_UI_EXTERN int uiWindowFullscreen(uiWindow *w);
+_UI_EXTERN void uiWindowSetFullscreen(uiWindow *w, int fullscreen);
+_UI_EXTERN void uiWindowOnContentSizeChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data);
+_UI_EXTERN void uiWindowOnClosing(uiWindow *w, int (*f)(uiWindow *w, void *data), void *data);
+_UI_EXTERN int uiWindowBorderless(uiWindow *w);
+_UI_EXTERN void uiWindowSetBorderless(uiWindow *w, int borderless);
+_UI_EXTERN void uiWindowSetChild(uiWindow *w, uiControl *child);
+_UI_EXTERN int uiWindowMargined(uiWindow *w);
+_UI_EXTERN void uiWindowSetMargined(uiWindow *w, int margined);
 _UI_EXTERN char *uiOpenFile(uiWindow *parent);
 _UI_EXTERN char *uiSaveFile(uiWindow *parent);
 _UI_EXTERN void uiMsgBox(uiWindow *parent, const char *title, const char *description);
 _UI_EXTERN void uiMsgBoxError(uiWindow *parent, const char *title, const char *description);
+_UI_EXTERN uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar);
 
-typedef struct uiColorButton uiColorButton;
-#define uiColorButton(this) ((uiColorButton *)(this))
-_UI_EXTERN void uiColorButtonColor(uiColorButton *b, double *r, double *g, double *bl, double *a);
-_UI_EXTERN void uiColorButtonSetColor(uiColorButton *b, double r, double g, double bl, double a);
-_UI_EXTERN void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *), void *data);
-_UI_EXTERN uiColorButton *uiNewColorButton(void);
+// -----------------------------------------------------------------------------
+// container (controls with on or more children)
+// -----------------------------------------------------------------------------
+
+typedef struct uiBox uiBox;
+#define uiBox(this) ((uiBox *)(this))
+_UI_EXTERN void uiBoxAppend(uiBox *b, uiControl *child, int stretchy);
+_UI_EXTERN void uiBoxDelete(uiBox *b, int index);
+_UI_EXTERN int uiBoxPadded(uiBox *b);
+_UI_EXTERN void uiBoxSetPadded(uiBox *b, int padded);
+_UI_EXTERN uiBox *uiNewHorizontalBox(void);
+_UI_EXTERN uiBox *uiNewVerticalBox(void);
+
+typedef struct uiTab uiTab;
+#define uiTab(this) ((uiTab *)(this))
+_UI_EXTERN void uiTabAppend(uiTab *t, const char *name, uiControl *c);
+_UI_EXTERN void uiTabInsertAt(uiTab *t, const char *name, int before, uiControl *c);
+_UI_EXTERN void uiTabDelete(uiTab *t, int index);
+_UI_EXTERN int uiTabNumPages(uiTab *t);
+_UI_EXTERN int uiTabMargined(uiTab *t, int page);
+_UI_EXTERN void uiTabSetMargined(uiTab *t, int page, int margined);
+_UI_EXTERN uiTab *uiNewTab(void);
+
+typedef struct uiGroup uiGroup;
+#define uiGroup(this) ((uiGroup *)(this))
+_UI_EXTERN char *uiGroupTitle(uiGroup *g);
+_UI_EXTERN void uiGroupSetTitle(uiGroup *g, const char *title);
+_UI_EXTERN void uiGroupSetChild(uiGroup *g, uiControl *c);
+_UI_EXTERN int uiGroupMargined(uiGroup *g);
+_UI_EXTERN void uiGroupSetMargined(uiGroup *g, int margined);
+_UI_EXTERN uiGroup *uiNewGroup(const char *title);
 
 _UI_ENUM(uiAlign){
 	uiAlignFill,
@@ -329,6 +194,142 @@ _UI_EXTERN void uiGridInsertAt(uiGrid *g, uiControl *c, uiControl *existing, uiA
 _UI_EXTERN int uiGridPadded(uiGrid *g);
 _UI_EXTERN void uiGridSetPadded(uiGrid *g, int padded);
 _UI_EXTERN uiGrid *uiNewGrid(void);
+
+// -----------------------------------------------------------------------------
+// display (static controls without user interaction)
+// -----------------------------------------------------------------------------
+
+typedef struct uiLabel uiLabel;
+#define uiLabel(this) ((uiLabel *)(this))
+_UI_EXTERN char *uiLabelText(uiLabel *l);
+_UI_EXTERN void uiLabelSetText(uiLabel *l, const char *text);
+_UI_EXTERN uiLabel *uiNewLabel(const char *text);
+
+typedef struct uiProgressBar uiProgressBar;
+#define uiProgressBar(this) ((uiProgressBar *)(this))
+_UI_EXTERN int uiProgressBarValue(uiProgressBar *p);
+_UI_EXTERN void uiProgressBarSetValue(uiProgressBar *p, int n);
+_UI_EXTERN uiProgressBar *uiNewProgressBar(void);
+
+typedef struct uiSeparator uiSeparator;
+#define uiSeparator(this) ((uiSeparator *)(this))
+_UI_EXTERN uiSeparator *uiNewHorizontalSeparator(void);
+_UI_EXTERN uiSeparator *uiNewVerticalSeparator(void);
+
+// -----------------------------------------------------------------------------
+// buttons (controls with a click action)
+// -----------------------------------------------------------------------------
+
+typedef struct uiButton uiButton;
+#define uiButton(this) ((uiButton *)(this))
+_UI_EXTERN char *uiButtonText(uiButton *b);
+_UI_EXTERN void uiButtonSetText(uiButton *b, const char *text);
+_UI_EXTERN void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *b, void *data), void *data);
+_UI_EXTERN uiButton *uiNewButton(const char *text);
+
+typedef struct uiCheckbox uiCheckbox;
+#define uiCheckbox(this) ((uiCheckbox *)(this))
+_UI_EXTERN char *uiCheckboxText(uiCheckbox *c);
+_UI_EXTERN void uiCheckboxSetText(uiCheckbox *c, const char *text);
+_UI_EXTERN void uiCheckboxOnToggled(uiCheckbox *c, void (*f)(uiCheckbox *c, void *data), void *data);
+_UI_EXTERN int uiCheckboxChecked(uiCheckbox *c);
+_UI_EXTERN void uiCheckboxSetChecked(uiCheckbox *c, int checked);
+_UI_EXTERN uiCheckbox *uiNewCheckbox(const char *text);
+
+typedef struct uiRadioButtons uiRadioButtons;
+#define uiRadioButtons(this) ((uiRadioButtons *)(this))
+_UI_EXTERN void uiRadioButtonsAppend(uiRadioButtons *r, const char *text);
+_UI_EXTERN int uiRadioButtonsSelected(uiRadioButtons *r);
+_UI_EXTERN void uiRadioButtonsSetSelected(uiRadioButtons *r, int n);
+_UI_EXTERN void uiRadioButtonsOnSelected(uiRadioButtons *r, void (*f)(uiRadioButtons *, void *), void *data);
+_UI_EXTERN uiRadioButtons *uiNewRadioButtons(void);
+
+typedef struct uiColorButton uiColorButton;
+#define uiColorButton(this) ((uiColorButton *)(this))
+_UI_EXTERN void uiColorButtonColor(uiColorButton *b, double *r, double *g, double *bl, double *a);
+_UI_EXTERN void uiColorButtonSetColor(uiColorButton *b, double r, double g, double bl, double a);
+_UI_EXTERN void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *), void *data);
+_UI_EXTERN uiColorButton *uiNewColorButton(void);
+
+// -----------------------------------------------------------------------------
+// input (more complex user input controls)
+// -----------------------------------------------------------------------------
+
+typedef struct uiEntry uiEntry;
+#define uiEntry(this) ((uiEntry *)(this))
+_UI_EXTERN char *uiEntryText(uiEntry *e);
+_UI_EXTERN void uiEntrySetText(uiEntry *e, const char *text);
+_UI_EXTERN void uiEntryOnChanged(uiEntry *e, void (*f)(uiEntry *e, void *data), void *data);
+_UI_EXTERN int uiEntryReadOnly(uiEntry *e);
+_UI_EXTERN void uiEntrySetReadOnly(uiEntry *e, int readonly);
+_UI_EXTERN uiEntry *uiNewEntry(void);
+_UI_EXTERN uiEntry *uiNewPasswordEntry(void);
+_UI_EXTERN uiEntry *uiNewSearchEntry(void);
+
+// TODO provide a facility for entering tab stops?
+typedef struct uiMultilineEntry uiMultilineEntry;
+#define uiMultilineEntry(this) ((uiMultilineEntry *)(this))
+_UI_EXTERN char *uiMultilineEntryText(uiMultilineEntry *e);
+_UI_EXTERN void uiMultilineEntrySetText(uiMultilineEntry *e, const char *text);
+_UI_EXTERN void uiMultilineEntryAppend(uiMultilineEntry *e, const char *text);
+_UI_EXTERN void uiMultilineEntryOnChanged(uiMultilineEntry *e, void (*f)(uiMultilineEntry *e, void *data), void *data);
+_UI_EXTERN int uiMultilineEntryReadOnly(uiMultilineEntry *e);
+_UI_EXTERN void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly);
+_UI_EXTERN uiMultilineEntry *uiNewMultilineEntry(void);
+_UI_EXTERN uiMultilineEntry *uiNewNonWrappingMultilineEntry(void);
+
+// spinbox/slider rules:
+// setting value outside of range will automatically clamp
+// initial value is minimum
+// complaint if min >= max?
+
+typedef struct uiSpinbox uiSpinbox;
+#define uiSpinbox(this) ((uiSpinbox *)(this))
+_UI_EXTERN int uiSpinboxValue(uiSpinbox *s);
+_UI_EXTERN void uiSpinboxSetValue(uiSpinbox *s, int value);
+_UI_EXTERN void uiSpinboxOnChanged(uiSpinbox *s, void (*f)(uiSpinbox *s, void *data), void *data);
+_UI_EXTERN uiSpinbox *uiNewSpinbox(int min, int max);
+
+typedef struct uiSlider uiSlider;
+#define uiSlider(this) ((uiSlider *)(this))
+_UI_EXTERN int uiSliderValue(uiSlider *s);
+_UI_EXTERN void uiSliderSetValue(uiSlider *s, int value);
+_UI_EXTERN void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *s, void *data), void *data);
+_UI_EXTERN uiSlider *uiNewSlider(int min, int max);
+
+typedef struct uiCombobox uiCombobox;
+#define uiCombobox(this) ((uiCombobox *)(this))
+_UI_EXTERN void uiComboboxAppend(uiCombobox *c, const char *text);
+_UI_EXTERN int uiComboboxSelected(uiCombobox *c);
+_UI_EXTERN void uiComboboxSetSelected(uiCombobox *c, int n);
+_UI_EXTERN void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), void *data);
+_UI_EXTERN uiCombobox *uiNewCombobox(void);
+
+typedef struct uiEditableCombobox uiEditableCombobox;
+#define uiEditableCombobox(this) ((uiEditableCombobox *)(this))
+_UI_EXTERN void uiEditableComboboxAppend(uiEditableCombobox *c, const char *text);
+_UI_EXTERN char *uiEditableComboboxText(uiEditableCombobox *c);
+_UI_EXTERN void uiEditableComboboxSetText(uiEditableCombobox *c, const char *text);
+_UI_EXTERN void uiEditableComboboxOnChanged(uiEditableCombobox *c, void (*f)(uiEditableCombobox *c, void *data), void *data);
+_UI_EXTERN uiEditableCombobox *uiNewEditableCombobox(void);
+
+struct tm;
+typedef struct uiDateTimePicker uiDateTimePicker;
+#define uiDateTimePicker(this) ((uiDateTimePicker *)(this))
+// TODO document that tm_wday and tm_yday are undefined, and tm_isdst should be -1
+// TODO document that for both sides
+// TODO document time zone conversions or lack thereof
+// TODO for Time: define what values are returned when a part is missing
+_UI_EXTERN void uiDateTimePickerTime(uiDateTimePicker *d, struct tm *time);
+_UI_EXTERN void uiDateTimePickerSetTime(uiDateTimePicker *d, const struct tm *time);
+_UI_EXTERN void uiDateTimePickerOnChanged(uiDateTimePicker *d, void (*f)(uiDateTimePicker *, void *), void *data);
+_UI_EXTERN uiDateTimePicker *uiNewDateTimePicker(void);
+_UI_EXTERN uiDateTimePicker *uiNewDatePicker(void);
+_UI_EXTERN uiDateTimePicker *uiNewTimePicker(void);
+
+// -----------------------------------------------------------------------------
+// table
+// -----------------------------------------------------------------------------
 
 // uiImage stores an image for display on screen.
 //
@@ -469,11 +470,7 @@ _UI_EXTERN void uiTableValueColor(const uiTableValue *v, double *r, double *g, d
 // to give certain rows of a uiTable a different background color.
 // Row numbers DO match with uiTable row numbers.
 //
-// Once created, the number and data types of columns of a
-// uiTableModel cannot change.
-//
-// Row and column numbers start at 0. A uiTableModel can be
-// associated with more than one uiTable at a time.
+// A uiTableModel can be associated with more than one uiTable at a time.
 typedef struct uiTableModel uiTableModel;
 
 // uiTableModelHandler defines the methods that uiTableModel
@@ -481,13 +478,11 @@ typedef struct uiTableModel uiTableModel;
 // methods cannot change.
 typedef struct uiTableModelHandler uiTableModelHandler;
 
-// TODO validate ranges; validate types on each getter/setter call (? table columns only?)
 struct uiTableModelHandler {
 	// NumColumns returns the number of model columns in the
 	// uiTableModel. This value must remain constant through the
 	// lifetime of the uiTableModel. This method is not guaranteed
 	// to be called depending on the system.
-	// TODO strongly check column numbers and types on all platforms so these clauses can go away
 	int (*NumColumns)(uiTableModel *model, void *tableData);
 	// ColumnType returns the value type of the data stored in
 	// the given model column of the uiTableModel. The returned
