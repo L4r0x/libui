@@ -19,6 +19,10 @@
 #define uiprivGTKXPadding 12
 #define uiprivGTKYPadding 6
 
+// This constant is provided because M_PI is nonstandard.
+// This comes from Go's math.Pi, which in turn comes from http://oeis.org/A000796.
+#define uiPi 3.14159265358979323846264338327950288419716939937510582097494459
+
 // menu.c
 extern GtkWidget *uiprivMakeMenubar(uiWindow *);
 extern void uiprivFreeMenubar(GtkWidget *);
