@@ -1456,14 +1456,6 @@ _UI_EXTERN void uiTableAppendCheckboxTextColumn(uiTable *t,
 	int textEditableModelColumn,
 	uiTableTextColumnOptionalParams *textParams);
 
-// uiTableAppendProgressBarColumn() appends a column to t
-// that displays a progress bar. These columns work like
-// uiProgressBar: a cell value of 0..100 displays that percentage, and
-// a cell value of -1 displays an indeterminate progress bar.
-_UI_EXTERN void uiTableAppendProgressBarColumn(uiTable *t,
-	const char *name,
-	int progressModelColumn);
-
 // uiTableAppendButtonColumn() appends a column to t
 // that shows a button that the user can click on. When the user
 // does click on the button, SetCellValue() is called with a NULL

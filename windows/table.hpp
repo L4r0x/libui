@@ -33,7 +33,6 @@ struct uiTable {
 	uiTableModel *model;
 	HWND hwnd;
 	std::vector<uiprivTableColumnParams *> *columns;
-	WPARAM nColumns;
 	int backgroundColumn;
 	// TODO make sure replacing images while selected in the listview is even allowed
 	HIMAGELIST imagelist;
@@ -46,10 +45,6 @@ struct uiTable {
 	int editedItem;
 	int editedSubitem;
 };
-extern int uiprivTableProgress(uiTable *t, int item, int subitem, int modelColumn, LONG *pos);
-
-// tabledispinfo.cpp
-extern HRESULT uiprivTableHandleLVN_GETDISPINFO(uiTable *t, NMLVDISPINFOW *nm, LRESULT *lResult);
 
 // tabledraw.cpp
 extern HRESULT uiprivTableHandleNM_CUSTOMDRAW(uiTable *t, NMLVCUSTOMDRAW *nm, LRESULT *lResult);
