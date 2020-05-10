@@ -5,8 +5,6 @@ pkg_check_modules(GTK REQUIRED gtk+-3.0)
 
 list(APPEND _LIBUI_SOURCES
 	unix/alloc.c
-	unix/area.c
-	unix/attrstr.c
 	unix/box.c
 	unix/button.c
 	unix/cellrendererbutton.c
@@ -17,17 +15,9 @@ list(APPEND _LIBUI_SOURCES
 	unix/control.c
 	unix/datetimepicker.c
 	unix/debug.c
-	unix/draw.c
-	unix/drawmatrix.c
-	unix/drawpath.c
-	unix/drawtext.c
 	unix/editablecombo.c
 	unix/entry.c
-	unix/fontbutton.c
-	unix/fontmatch.c
-	unix/form.c
 	unix/future.c
-	unix/graphemes.c
 	unix/grid.c
 	unix/group.c
 	unix/image.c
@@ -35,7 +25,6 @@ list(APPEND _LIBUI_SOURCES
 	unix/main.c
 	unix/menu.c
 	unix/multilineentry.c
-	unix/opentype.c
 	unix/progressbar.c
 	unix/radiobuttons.c
 	unix/separator.c

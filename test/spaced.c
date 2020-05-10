@@ -31,7 +31,6 @@ enum types {
 	box,
 	tab,
 	group,
-	form,
 	grid,
 };
 
@@ -57,9 +56,6 @@ void setSpaced(int spaced)
 			break;
 		case group:
 			uiGroupSetMargined(uiGroup(p), spaced);
-			break;
-		case form:
-			uiFormSetPadded(uiForm(p), spaced);
 			break;
 		case grid:
 			uiGridSetPadded(uiGrid(p), spaced);
@@ -156,15 +152,6 @@ uiGroup *newGroup(const char *text)
 	g = uiNewGroup(text);
 	append(g, group);
 	return g;
-}
-
-uiForm *newForm(void)
-{
-	uiForm *f;
-
-	f = uiNewForm();
-	append(f, form);
-	return f;
 }
 
 uiGrid *newGrid(void)
