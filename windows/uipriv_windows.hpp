@@ -117,17 +117,13 @@ extern void paintContainerBackground(HWND hwnd, HDC dc, RECT *paintRect);
 extern BOOL handleParentMessages(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *lResult);
 
 // d2dscratch.cpp
+extern HRESULT initDraw(void);
+extern void uninitDraw(void);
 extern ATOM registerD2DScratchClass(HICON hDefaultIcon, HCURSOR hDefaultCursor);
 extern void unregisterD2DScratchClass(void);
 extern HWND newD2DScratch(HWND parent, RECT *rect, HMENU controlID, SUBCLASSPROC subclass, DWORD_PTR subclassData);
-
-// area.cpp
-#define areaClass L"libui_uiAreaClass"
-extern ATOM registerAreaClass(HICON, HCURSOR);
-extern void unregisterArea(void);
-
-// areaevents.cpp
-extern BOOL areaFilter(MSG *);
+extern ID2D1HwndRenderTarget *makeHWNDRenderTarget(HWND hwnd);
+extern ID2D1DCRenderTarget *makeHDCRenderTarget(HDC dc, RECT *r);
 
 // window.cpp
 extern ATOM registerWindowClass(HICON, HCURSOR);
@@ -172,16 +168,6 @@ extern const uiMenuItem *menuIDToItem(UINT_PTR);
 extern void runMenuEvent(WORD, uiWindow *);
 extern void freeMenubar(HMENU);
 extern void uninitMenus(void);
-
-// draw.cpp
-extern HRESULT initDraw(void);
-extern void uninitDraw(void);
-extern ID2D1HwndRenderTarget *makeHWNDRenderTarget(HWND hwnd);
-extern uiDrawContext *newContext(ID2D1RenderTarget *);
-extern void freeContext(uiDrawContext *);
-
-// draw.cpp
-extern ID2D1DCRenderTarget *makeHDCRenderTarget(HDC dc, RECT *r);
 
 // image.cpp
 extern IWICImagingFactory *uiprivWICFactory;

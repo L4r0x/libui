@@ -22,7 +22,6 @@ static uiControl *makeBasicControlsPage(void)
 	uiBox *vbox;
 	uiBox *hbox;
 	uiGroup *group;
-	uiForm *entryForm;
 
 	vbox = uiNewVerticalBox();
 	uiBoxSetPadded(vbox, 1);
@@ -50,28 +49,27 @@ static uiControl *makeBasicControlsPage(void)
 	uiGroupSetMargined(group, 1);
 	uiBoxAppend(vbox, uiControl(group), 1);
 
-	entryForm = uiNewForm();
-	uiFormSetPadded(entryForm, 1);
-	uiGroupSetChild(group, uiControl(entryForm));
+	uiBox *entryBox = uiNewVerticalBox();
+	uiGroupSetChild(group, uiControl(entryBox));
 
-	uiFormAppend(entryForm,
-		"Entry",
+	uiBoxAppend(entryBox, uiControl(uiNewLabel("Entry")), 0);
+	uiBoxAppend(entryBox,
 		uiControl(uiNewEntry()),
 		0);
-	uiFormAppend(entryForm,
-		"Password Entry",
+	uiBoxAppend(entryBox, uiControl(uiNewLabel("Password Entry")), 0);
+	uiBoxAppend(entryBox,
 		uiControl(uiNewPasswordEntry()),
 		0);
-	uiFormAppend(entryForm,
-		"Search Entry",
+	uiBoxAppend(entryBox, uiControl(uiNewLabel("Search Entry")), 0);
+	uiBoxAppend(entryBox,
 		uiControl(uiNewSearchEntry()),
 		0);
-	uiFormAppend(entryForm,
-		"Multiline Entry",
+	uiBoxAppend(entryBox, uiControl(uiNewLabel("Multiline Entry")), 0);
+	uiBoxAppend(entryBox,
 		uiControl(uiNewMultilineEntry()),
 		1);
-	uiFormAppend(entryForm,
-		"Multiline Entry No Wrap",
+	uiBoxAppend(entryBox, uiControl(uiNewLabel("Multiline Entry No Wrap")), 0);
+	uiBoxAppend(entryBox,
 		uiControl(uiNewNonWrappingMultilineEntry()),
 		1);
 
@@ -229,9 +227,6 @@ static uiControl *makeDataChoosersPage(void)
 		uiControl(uiNewDateTimePicker()),
 		0);
 
-	uiBoxAppend(vbox,
-		uiControl(uiNewFontButton()),
-		0);
 	uiBoxAppend(vbox,
 		uiControl(uiNewColorButton()),
 		0);

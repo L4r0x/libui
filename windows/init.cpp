@@ -1,6 +1,5 @@
 // 6 april 2015
 #include "uipriv_windows.hpp"
-#include "attrstr.hpp"
 
 HINSTANCE hInstance;
 int nCmdShow;
@@ -118,13 +117,6 @@ const char *uiInit(uiInitOptions *o)
 	if (hr != S_OK)
 		return ieHRESULT("initializing Direct2D", hr);
 
-	hr = uiprivInitDrawText();
-	if (hr != S_OK)
-		return ieHRESULT("initializing DirectWrite", hr);
-
-	if (registerAreaClass(hDefaultIcon, hDefaultCursor) == 0)
-		return ieLastErr("registering uiArea window class");
-
 	if (registerMessageFilter() == 0)
 		return ieLastErr("registering libui message filter");
 
@@ -145,8 +137,6 @@ void uiUninit(void)
 	uninitMenus();
 	unregisterD2DScratchClass();
 	unregisterMessageFilter();
-	unregisterArea();
-	uiprivUninitDrawText();
 	uninitDraw();
 	CoUninitialize();
 	if (DeleteObject(hollowBrush) == 0)

@@ -10,9 +10,6 @@ static LRESULT CALLBACK filterProc(int code, WPARAM wParam, LPARAM lParam)
 	if (code < 0)
 		goto callNext;
 
-	if (areaFilter(msg))		// don't continue to our IsDialogMessage() hack if the area handled it
-		goto discard;
-
 	// TODO IsDialogMessage() hack here
 
 	// otherwise keep going
