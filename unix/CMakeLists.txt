@@ -7,7 +7,6 @@ list(APPEND _LIBUI_SOURCES
 	unix/alloc.c
 	unix/box.c
 	unix/button.c
-	unix/cellrendererbutton.c
 	unix/checkbox.c
 	unix/child.c
 	unix/colorbutton.c
@@ -33,6 +32,7 @@ list(APPEND _LIBUI_SOURCES
 	unix/stddialogs.c
 	unix/tab.c
 	unix/table.c
+	unix/tablebutton.c
 	unix/tablemodel.c
 	unix/text.c
 	unix/util.c

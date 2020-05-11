@@ -124,11 +124,11 @@ static void cellRendererButtonSize(cellRendererButton *c, GtkWidget *widget, Pan
 		xalign = 1.0 - xalign;
 	if (xoff != NULL) {
 		*xoff = cell_area->width - (rect.width + (2 * xpad));
-		*xoff = (gint) ((gfloat) (*xoff) * xalign);
+		*xoff = (gint)((gfloat)(*xoff) * xalign);
 	}
 	if (yoff != NULL) {
 		*yoff = cell_area->height - (rect.height + (2 * ypad));
-		*yoff = (gint) ((gfloat) (*yoff) * yalign);
+		*yoff = (gint)((gfloat)(*yoff) * yalign);
 		if (*yoff < 0)
 			*yoff = 0;
 	}
@@ -265,7 +265,7 @@ static gboolean cellRendererButton_activate(GtkCellRenderer *r, GdkEvent *e, Gtk
 	return TRUE;
 }
 
-static GParamSpec *props[2] = { NULL, NULL };
+static GParamSpec *props[2] = {NULL, NULL};
 
 static void cellRendererButton_set_property(GObject *object, guint prop, const GValue *value, GParamSpec *pspec)
 {
@@ -283,30 +283,32 @@ static void cellRendererButton_set_property(GObject *object, guint prop, const G
 
 static void cellRendererButton_get_property(GObject *object, guint prop, GValue *value, GParamSpec *pspec)
 {
-	cellRendererButton *c = cellRendererButton(object);
-
+	cellRendererButton *button = cellRendererButton(object);
 	if (prop != 1) {
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(c, prop, pspec);
-		return;
+		g_value_set_string(value, button->text);
+	} else {
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(button, prop, pspec);
 	}
-	g_value_set_string(value, c->text);
 }
 
 static void cellRendererButton_class_init(cellRendererButtonClass *class)
 {
-	G_OBJECT_CLASS(class)->dispose = cellRendererButton_dispose;
-	G_OBJECT_CLASS(class)->finalize = cellRendererButton_finalize;
-	G_OBJECT_CLASS(class)->set_property = cellRendererButton_set_property;
-	G_OBJECT_CLASS(class)->get_property = cellRendererButton_get_property;
-	GTK_CELL_RENDERER_CLASS(class)->get_request_mode = cellRendererButton_get_request_mode;
-	GTK_CELL_RENDERER_CLASS(class)->get_preferred_width = cellRendererButton_get_preferred_width;
-	GTK_CELL_RENDERER_CLASS(class)->get_preferred_height_for_width = cellRendererButton_get_preferred_height_for_width;
-	GTK_CELL_RENDERER_CLASS(class)->get_preferred_height = cellRendererButton_get_preferred_height;
+	GObjectClass *object_class = G_OBJECT_CLASS(class);
+	object_class->dispose = cellRendererButton_dispose;
+	object_class->finalize = cellRendererButton_finalize;
+	object_class->set_property = cellRendererButton_set_property;
+	object_class->get_property = cellRendererButton_get_property;
+
+	GtkCellRendererClass *renderer_class = GTK_CELL_RENDERER_CLASS(class);
+	renderer_class->get_request_mode = cellRendererButton_get_request_mode;
+	renderer_class->get_preferred_width = cellRendererButton_get_preferred_width;
+	renderer_class->get_preferred_height_for_width = cellRendererButton_get_preferred_height_for_width;
+	renderer_class->get_preferred_height = cellRendererButton_get_preferred_height;
 	// don't provide a get_preferred_width_for_height()
-	GTK_CELL_RENDERER_CLASS(class)->get_aligned_area = cellRendererButton_get_aligned_area;
+	renderer_class->get_aligned_area = cellRendererButton_get_aligned_area;
 	// don't provide a get_size()
-	GTK_CELL_RENDERER_CLASS(class)->render = cellRendererButton_render;
-	GTK_CELL_RENDERER_CLASS(class)->activate = cellRendererButton_activate;
+	renderer_class->render = cellRendererButton_render;
+	renderer_class->activate = cellRendererButton_activate;
 	// don't provide a start_editing()
 
 	props[1] = g_param_spec_string("text",
@@ -314,7 +316,7 @@ static void cellRendererButton_class_init(cellRendererButtonClass *class)
 		"Button text",
 		"",
 		G_PARAM_READWRITE | G_PARAM_CONSTRUCT | G_PARAM_STATIC_STRINGS);
-	g_object_class_install_properties(G_OBJECT_CLASS(class), 2, props);
+	g_object_class_install_properties(object_class, 2, props);
 
 	clickedSignal = g_signal_new("clicked",
 		G_TYPE_FROM_CLASS(class),

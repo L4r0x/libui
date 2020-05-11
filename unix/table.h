@@ -1,5 +1,9 @@
-// 4 june 2018
+#ifndef __LIBUI_TABLE_H__
+#define __LIBUI_TABLE_H__
+
 #include "../common/table.h"
+
+#include "uipriv_unix.h"
 
 // tablemodel.c
 #define uiTableModelType (uiTableModel_get_type())
@@ -18,3 +22,5 @@ struct uiTableModelClass {
 	GObjectClass parent_class;
 };
 extern GType uiTableModel_get_type(void);
+
+#endif
