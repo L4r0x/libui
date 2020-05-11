@@ -2,12 +2,6 @@
 
 list(APPEND _LIBUI_SOURCES
 	windows/alloc.cpp
-	windows/area.cpp
-	windows/areadraw.cpp
-	windows/areaevents.cpp
-	windows/areascroll.cpp
-	windows/areautil.cpp
-	windows/attrstr.cpp
 	windows/box.cpp
 	windows/button.cpp
 	windows/checkbox.cpp
@@ -19,19 +13,9 @@ list(APPEND _LIBUI_SOURCES
 	windows/d2dscratch.cpp
 	windows/datetimepicker.cpp
 	windows/debug.cpp
-	windows/draw.cpp
-	windows/drawmatrix.cpp
-	windows/drawpath.cpp
-	windows/drawtext.cpp
-	windows/dwrite.cpp
 	windows/editablecombo.cpp
 	windows/entry.cpp
 	windows/events.cpp
-	windows/fontbutton.cpp
-	windows/fontdialog.cpp
-	windows/fontmatch.cpp
-	windows/form.cpp
-	windows/graphemes.cpp
 	windows/grid.cpp
 	windows/group.cpp
 	windows/image.cpp
@@ -40,7 +24,6 @@ list(APPEND _LIBUI_SOURCES
 	windows/main.cpp
 	windows/menu.cpp
 	windows/multilineentry.cpp
-	windows/opentype.cpp
 	windows/parent.cpp
 	windows/progressbar.cpp
 	windows/radiobuttons.cpp

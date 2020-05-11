@@ -14,6 +14,26 @@
 
 // TODO allow resize
 
+ID2D1Factory *d2dfactory = NULL;
+
+HRESULT initDraw(void)
+{
+	D2D1_FACTORY_OPTIONS opts;
+
+	ZeroMemory(&opts, sizeof(D2D1_FACTORY_OPTIONS));
+	// TODO make this an option
+	opts.debugLevel = D2D1_DEBUG_LEVEL_NONE;
+	return D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,
+		IID_ID2D1Factory,
+		&opts,
+		(void **)(&d2dfactory));
+}
+
+void uninitDraw(void)
+{
+	d2dfactory->Release();
+}
+
 #define d2dScratchClass L"libui_d2dScratchClass"
 
 // TODO clip rect
@@ -163,4 +183,73 @@ HWND newD2DScratch(HWND parent, RECT *rect, HMENU controlID, SUBCLASSPROC subcla
 	if (SetWindowSubclass(hwnd, subclass, 0, subclassData) == FALSE)
 		logLastError(L"error subclassing D2D scratch window");
 	return hwnd;
+}
+
+ID2D1HwndRenderTarget *makeHWNDRenderTarget(HWND hwnd)
+{
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	D2D1_HWND_RENDER_TARGET_PROPERTIES hprops;
+	HDC dc;
+	RECT r;
+	ID2D1HwndRenderTarget *rt;
+	HRESULT hr;
+
+	// we need a DC for the DPI
+	// we *could* just use the screen DPI but why when we have a window handle and its DC has a DPI
+	dc = GetDC(hwnd);
+	if (dc == NULL)
+		logLastError(L"error getting DC to find DPI");
+
+	ZeroMemory(&props, sizeof(D2D1_RENDER_TARGET_PROPERTIES));
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat.format = DXGI_FORMAT_UNKNOWN;
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_UNKNOWN;
+	props.dpiX = GetDeviceCaps(dc, LOGPIXELSX);
+	props.dpiY = GetDeviceCaps(dc, LOGPIXELSY);
+	props.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	if (ReleaseDC(hwnd, dc) == 0)
+		logLastError(L"error releasing DC for finding DPI");
+
+	uiWindowsEnsureGetClientRect(hwnd, &r);
+
+	ZeroMemory(&hprops, sizeof(D2D1_HWND_RENDER_TARGET_PROPERTIES));
+	hprops.hwnd = hwnd;
+	hprops.pixelSize.width = r.right - r.left;
+	hprops.pixelSize.height = r.bottom - r.top;
+	// according to Rick Brewster, some drivers will misbehave if we don't specify this (see http://stackoverflow.com/a/33222983/3408572)
+	hprops.presentOptions = D2D1_PRESENT_OPTIONS_RETAIN_CONTENTS;
+
+	hr = d2dfactory->CreateHwndRenderTarget(
+		&props,
+		&hprops,
+		&rt);
+	if (hr != S_OK)
+		logHRESULT(L"error creating HWND render target", hr);
+	return rt;
+}
+
+ID2D1DCRenderTarget *makeHDCRenderTarget(HDC dc, RECT *r)
+{
+	D2D1_RENDER_TARGET_PROPERTIES props;
+	ID2D1DCRenderTarget *rt;
+	HRESULT hr;
+
+	ZeroMemory(&props, sizeof(D2D1_RENDER_TARGET_PROPERTIES));
+	props.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+	props.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	props.pixelFormat.alphaMode = D2D1_ALPHA_MODE_PREMULTIPLIED;
+	props.dpiX = GetDeviceCaps(dc, LOGPIXELSX);
+	props.dpiY = GetDeviceCaps(dc, LOGPIXELSY);
+	props.usage = D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE;
+	props.minLevel = D2D1_FEATURE_LEVEL_DEFAULT;
+
+	hr = d2dfactory->CreateDCRenderTarget(&props, &rt);
+	if (hr != S_OK)
+		logHRESULT(L"error creating DC render target", hr);
+	hr = rt->BindDC(dc, r);
+	if (hr != S_OK)
+		logHRESULT(L"error binding DC to DC render target", hr);
+	return rt;
 }

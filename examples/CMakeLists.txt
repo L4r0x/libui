@@ -18,11 +18,6 @@ _add_example(controlgallery
 	${_EXAMPLE_RESOURCES_RC}
 )
 
-_add_example(histogram
-	histogram/main.c
-	${_EXAMPLE_RESOURCES_RC}
-)
-
 _add_example(cpp-multithread
 	cpp-multithread/main.cpp
 	${_EXAMPLE_RESOURCES_RC}
@@ -37,11 +32,6 @@ if(APPLE)
 	target_link_libraries(cpp-multithread --stdlib=libc++)
 endif()
 
-_add_example(drawtext
-	drawtext/main.c
-	${_EXAMPLE_RESOURCES_RC}
-)
-
 _add_example(timer
         timer/main.c
         ${_EXAMPLE_RESOURCES_RC}
@@ -55,8 +45,6 @@ _add_example(datetime
 add_custom_target(examples
 	DEPENDS
 		controlgallery
-		histogram
 		cpp-multithread
-		drawtext
 		timer
 		datetime)
