@@ -27,6 +27,17 @@
 // This comes from Go's math.Pi, which in turn comes from http://oeis.org/A000796.
 #define uiPi 3.14159265358979323846264338327950288419716939937510582097494459
 
+_UI_ENUM(uiWindowResizeEdge){
+	uiWindowResizeEdgeLeft,
+	uiWindowResizeEdgeTop,
+	uiWindowResizeEdgeRight,
+	uiWindowResizeEdgeBottom,
+	uiWindowResizeEdgeTopLeft,
+	uiWindowResizeEdgeTopRight,
+	uiWindowResizeEdgeBottomLeft,
+	uiWindowResizeEdgeBottomRight,
+};
+
 // map.m
 typedef struct uiprivMap uiprivMap;
 extern uiprivMap *uiprivNewMap(void);
@@ -108,22 +119,6 @@ extern void uiprivSingleChildConstraintsEstablish(uiprivSingleChildConstraints *
 extern void uiprivSingleChildConstraintsRemove(uiprivSingleChildConstraints *c, NSView *cv);
 extern void uiprivSingleChildConstraintsSetMargined(uiprivSingleChildConstraints *c, int margined);
 
-// area.m
-extern int uiprivSendAreaEvents(NSEvent *);
-
-// areaevents.m
-extern BOOL uiprivFromKeycode(unsigned short keycode, uiAreaKeyEvent *ke);
-extern BOOL uiprivKeycodeModifier(unsigned short keycode, uiModifiers *mod);
-
-// draw.m
-extern uiDrawContext *uiprivDrawNewContext(CGContextRef, CGFloat);
-extern void uiprivDrawFreeContext(uiDrawContext *);
-
-// fontbutton.m
-extern BOOL uiprivFontButtonInhibitSendAction(SEL sel, id from, id to);
-extern BOOL uiprivFontButtonOverrideTargetForAction(SEL sel, id from, id to, id *override);
-extern void uiprivSetupFontPanel(void);
-
 // colorbutton.m
 extern BOOL uiprivColorButtonInhibitSendAction(SEL sel, id from, id to);
 
@@ -160,8 +155,3 @@ extern CFStringRef *uiprivFUTURE_kCTBackgroundColorAttributeName;
 extern void uiprivLoadFutures(void);
 extern void uiprivFUTURE_NSLayoutConstraint_setIdentifier(NSLayoutConstraint *constraint, NSString *identifier);
 extern BOOL uiprivFUTURE_NSWindow_performWindowDragWithEvent(NSWindow *w, NSEvent *initialEvent);
-
-// undocumented.m
-extern CFStringRef uiprivUNDOC_kCTFontPreferredSubFamilyNameKey;
-extern CFStringRef uiprivUNDOC_kCTFontPreferredFamilyNameKey;
-extern void uiprivLoadUndocumented(void);
