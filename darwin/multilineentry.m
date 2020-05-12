@@ -32,14 +32,10 @@ struct uiMultilineEntry {
 
 - (NSSize)intrinsicContentSize
 {
-	NSTextContainer *textContainer;
-	NSLayoutManager *layoutManager;
-	NSRect rect;
-
-	textContainer = [self textContainer];
-	layoutManager = [self layoutManager];
+	NSTextContainer *textContainer = [self textContainer];
+	NSLayoutManager *layoutManager = [self layoutManager];
 	[layoutManager ensureLayoutForTextContainer:textContainer];
-	rect = [layoutManager usedRectForTextContainer:textContainer];
+	NSRect rect = [layoutManager usedRectForTextContainer:textContainer];
 	return rect.size;
 }
 
@@ -78,7 +74,7 @@ char *uiMultilineEntryText(uiMultilineEntry *e)
 void uiMultilineEntrySetText(uiMultilineEntry *e, const char *text)
 {
 	[[e->tv textStorage] replaceCharactersInRange:NSMakeRange(0, [[e->tv string] length])
-		withString:uiprivToNSString(text)];
+									   withString:uiprivToNSString(text)];
 	// must be called explicitly according to the documentation of shouldChangeTextInRange:replacementString:
 	e->changing = YES;
 	[e->tv didChangeText];
@@ -89,7 +85,7 @@ void uiMultilineEntrySetText(uiMultilineEntry *e, const char *text)
 void uiMultilineEntryAppend(uiMultilineEntry *e, const char *text)
 {
 	[[e->tv textStorage] replaceCharactersInRange:NSMakeRange([[e->tv string] length], 0)
-		withString:uiprivToNSString(text)];
+									   withString:uiprivToNSString(text)];
 	e->changing = YES;
 	[e->tv didChangeText];
 	e->changing = NO;
@@ -108,126 +104,94 @@ int uiMultilineEntryReadOnly(uiMultilineEntry *e)
 
 void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 {
-	BOOL editable;
-
-	editable = YES;
-	if (readonly)
-		editable = NO;
+	BOOL editable = !readonly;
 	[e->tv setEditable:editable];
 }
 
-static uiMultilineEntry *finishMultilineEntry(BOOL hscroll)
+static uiMultilineEntry *uiprivNewMultilineEntry(BOOL hscroll)
 {
-	uiMultilineEntry *e;
-	NSFont *font;
-	uiprivScrollViewCreateParams p;
+	uiMultilineEntry *entry;
+	uiDarwinNewControl(uiMultilineEntry, entry);
 
-	uiDarwinNewControl(uiMultilineEntry, e);
-
-	e->tv = [[intrinsicSizeTextView alloc] initWithFrame:NSZeroRect e:e];
-
-	// verified against Interface Builder for a sufficiently customized text view
+	entry->tv = [[intrinsicSizeTextView alloc] initWithFrame:NSZeroRect e:entry];
 
 	// NSText properties:
 	// this is what Interface Builder sets the background color to
-	[e->tv setBackgroundColor:[NSColor colorWithCalibratedWhite:1.0 alpha:1.0]];
-	[e->tv setDrawsBackground:YES];
-	[e->tv setEditable:YES];
-	[e->tv setSelectable:YES];
-	[e->tv setFieldEditor:NO];
-	[e->tv setRichText:NO];
-	[e->tv setImportsGraphics:NO];
-	[e->tv setUsesFontPanel:NO];
-	[e->tv setRulerVisible:NO];
-	// we'll handle font last
-	// while setAlignment: has been around since 10.0, the named constant "NSTextAlignmentNatural" seems to have only been introduced in 10.11
-#define ourNSTextAlignmentNatural 4
-	[e->tv setAlignment:ourNSTextAlignmentNatural];
-	// textColor is set to nil, just keep the dfault
-	[e->tv setBaseWritingDirection:NSWritingDirectionNatural];
-	[e->tv setHorizontallyResizable:NO];
-	[e->tv setVerticallyResizable:YES];
+	[entry->tv setEditable:YES];
+	[entry->tv setSelectable:YES];
+	[entry->tv setFieldEditor:NO];
+	[entry->tv setRichText:NO];
+	[entry->tv setImportsGraphics:NO];
+	[entry->tv setUsesFontPanel:NO];
+	[entry->tv setRulerVisible:NO];
+	[entry->tv setHorizontallyResizable:NO];
+	[entry->tv setVerticallyResizable:YES];
 
 	// NSTextView properties:
-	[e->tv setAllowsDocumentBackgroundColorChange:NO];
-	[e->tv setAllowsUndo:YES];
-	// default paragraph style is nil; keep default
-	[e->tv setAllowsImageEditing:NO];
-	[e->tv setAutomaticQuoteSubstitutionEnabled:NO];
-	[e->tv setAutomaticLinkDetectionEnabled:NO];
-	[e->tv setDisplaysLinkToolTips:YES];
-	[e->tv setUsesRuler:NO];
-	[e->tv setUsesInspectorBar:NO];
-	[e->tv setSelectionGranularity:NSSelectByCharacter];
-	// there is a dedicated named insertion point color but oh well
-	[e->tv setInsertionPointColor:[NSColor controlTextColor]];
-	// typing attributes is nil; keep default (we change it below for fonts though)
-	[e->tv setSmartInsertDeleteEnabled:NO];
-	[e->tv setContinuousSpellCheckingEnabled:NO];
-	[e->tv setGrammarCheckingEnabled:NO];
-	[e->tv setUsesFindPanel:YES];
-	[e->tv setEnabledTextCheckingTypes:0];
-	[e->tv setAutomaticDashSubstitutionEnabled:NO];
-	[e->tv setAutomaticDataDetectionEnabled:NO];
-	[e->tv setAutomaticSpellingCorrectionEnabled:NO];
-	[e->tv setAutomaticTextReplacementEnabled:NO];
-	[e->tv setUsesFindBar:NO];
-	[e->tv setIncrementalSearchingEnabled:NO];
+	[entry->tv setAllowsUndo:YES];
+	[entry->tv setAllowsImageEditing:NO];
+	[entry->tv setDisplaysLinkToolTips:YES];
+	[entry->tv setUsesRuler:NO];
+	[entry->tv setUsesInspectorBar:NO];
+	[entry->tv setSelectionGranularity:NSSelectByCharacter];
+	[entry->tv setContinuousSpellCheckingEnabled:NO];
+	[entry->tv setGrammarCheckingEnabled:NO];
+	[entry->tv setUsesFindPanel:YES];
+	[entry->tv setAutomaticDataDetectionEnabled:NO];
+	[entry->tv setUsesFindBar:NO];
+	[entry->tv setIncrementalSearchingEnabled:NO];
+
+	// disable auto correction
+	// LONGTERM do we really want to do this? make it an option?
+	[entry->tv setEnabledTextCheckingTypes:0];
+	[entry->tv setAutomaticDashSubstitutionEnabled:NO];
+	[entry->tv setAutomaticSpellingCorrectionEnabled:NO];
+	[entry->tv setAutomaticTextReplacementEnabled:NO];
+	[entry->tv setAutomaticQuoteSubstitutionEnabled:NO];
+	[entry->tv setSmartInsertDeleteEnabled:NO];
 
 	// NSTextContainer properties:
-	[[e->tv textContainer] setWidthTracksTextView:YES];
-	[[e->tv textContainer] setHeightTracksTextView:NO];
+	[[entry->tv textContainer] setWidthTracksTextView:YES];
+	[[entry->tv textContainer] setHeightTracksTextView:NO];
 
 	// NSLayoutManager properties:
-	[[e->tv layoutManager] setAllowsNonContiguousLayout:YES];
-
-	// now just to be safe; this will do some of the above but whatever
-	uiprivDisableAutocorrect(e->tv);
+	[[entry->tv layoutManager] setAllowsNonContiguousLayout:YES];
 
 	// see https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/TextUILayer/Tasks/TextInScrollView.html
 	// notice we don't use the Auto Layout code; see scrollview.m for more details
-	[e->tv setMaxSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
-	[e->tv setVerticallyResizable:YES];
-	[e->tv setHorizontallyResizable:hscroll];
+	[entry->tv setMaxSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
+	[entry->tv setVerticallyResizable:YES];
+	[entry->tv setHorizontallyResizable:hscroll];
 	if (hscroll) {
-		[e->tv setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
-		[[e->tv textContainer] setWidthTracksTextView:NO];
+		[entry->tv setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+		[[entry->tv textContainer] setWidthTracksTextView:NO];
 	} else {
-		[e->tv setAutoresizingMask:NSViewWidthSizable];
-		[[e->tv textContainer] setWidthTracksTextView:YES];
+		[entry->tv setAutoresizingMask:NSViewWidthSizable];
+		[[entry->tv textContainer] setWidthTracksTextView:YES];
 	}
-	[[e->tv textContainer] setContainerSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
+	[[entry->tv textContainer] setContainerSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
 
-	// don't use uiDarwinSetControlFont() directly; we have to do a little extra work to set the font
-	font = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSRegularControlSize]];
-	[e->tv setTypingAttributes:[NSDictionary
-		dictionaryWithObject:font
-		forKey:NSFontAttributeName]];
-	// e->tv font from Interface Builder is nil, but setFont:nil throws an exception
-	// let's just set it to the standard control font anyway, just to be safe
-	[e->tv setFont:font];
+	uiprivScrollViewCreateParams params = {
+		.DocumentView = entry->tv,
+		.BackgroundColor = nil,
+		.DrawsBackground = YES,
+		.Bordered = YES,
+		.HScroll = hscroll,
+		.VScroll = YES,
+	};
+	entry->sv = uiprivMkScrollView(&params, &(entry->d));
 
-	memset(&p, 0, sizeof (uiprivScrollViewCreateParams));
-	p.DocumentView = e->tv;
-	// this is what Interface Builder sets it to
-	p.BackgroundColor = [NSColor colorWithCalibratedWhite:1.0 alpha:1.0];
-	p.DrawsBackground = YES;
-	p.Bordered = YES;
-	p.HScroll = hscroll;
-	p.VScroll = YES;
-	e->sv = uiprivMkScrollView(&p, &(e->d));
+	uiMultilineEntryOnChanged(entry, defaultOnChanged, NULL);
 
-	uiMultilineEntryOnChanged(e, defaultOnChanged, NULL);
-
-	return e;
+	return entry;
 }
 
 uiMultilineEntry *uiNewMultilineEntry(void)
 {
-	return finishMultilineEntry(NO);
+	return uiprivNewMultilineEntry(NO);
 }
 
 uiMultilineEntry *uiNewNonWrappingMultilineEntry(void)
 {
-	return finishMultilineEntry(YES);
+	return uiprivNewMultilineEntry(YES);
 }

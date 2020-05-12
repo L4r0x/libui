@@ -33,7 +33,6 @@ list(APPEND _LIBUI_SOURCES
 	darwin/table.m
 	darwin/tablecolumn.m
 	darwin/text.m
- 	darwin/util.m
 	darwin/window.m
 	darwin/winmoveresize.m
 )
