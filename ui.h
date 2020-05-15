@@ -516,7 +516,7 @@ struct uiTableModelHandler {
 // uiNewTableModel() creates a new uiTableModel with the given
 // handler methods.
 // The tableData user pointer is passed directly to the handler methods.
-_UI_EXTERN uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void *tableData);
+_UI_EXTERN uiTableModel *uiNewTableModel(uiTableModelHandler mh, void *tableData);
 
 // @role uiTableModel destructor
 // uiFreeTableModel() frees the given table model. It is an error to
