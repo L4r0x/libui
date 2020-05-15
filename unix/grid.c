@@ -1,53 +1,27 @@
-// 9 june 2016
 #include "uipriv_unix.h"
-
-struct gridChild {
-	uiControl *c;
-	GtkWidget *label;
-	gboolean oldhexpand;
-	GtkAlign oldhalign;
-	gboolean oldvexpand;
-	GtkAlign oldvalign;
-};
 
 struct uiGrid {
 	uiUnixControl c;
 	GtkWidget *widget;
-	GtkContainer *container;
-	GtkGrid *grid;
-	GArray *children;
-	int padded;
+	GPtrArray *children;
 };
 
 uiUnixControlAllDefaultsExceptDestroy(uiGrid)
 
-#define ctrl(g, i) &g_array_index(g->children, struct gridChild, i)
-
-static void uiGridDestroy(uiControl *c)
+static void uiGridDestroy(uiControl *control)
 {
-	uiGrid *g = uiGrid(c);
-	struct gridChild *gc;
-	guint i;
-
-	// free all controls
-	for (i = 0; i < g->children->len; i++) {
-		gc = ctrl(g, i);
-		uiControlSetParent(gc->c, NULL);
-		uiUnixControlSetContainer(uiUnixControl(gc->c), g->container, TRUE);
-		uiControlDestroy(gc->c);
+	uiGrid *grid = uiGrid(control);
+	// free children
+	for (guint i = 0; i < grid->children->len; i++) {
+		uiControl *child = g_ptr_array_index(grid->children, i);
+		uiControlSetParent(child, NULL);
+		uiControlDestroy(child);
 	}
-	g_array_free(g->children, TRUE);
+	g_ptr_array_free(grid->children, TRUE);
 	// and then ourselves
-	g_object_unref(g->widget);
-	uiFreeControl(uiControl(g));
+	g_object_unref(grid->widget);
+	uiFreeControl(uiControl(grid));
 }
-
-#define TODO_MASSIVE_HACK(c) \
-	if (!uiUnixControl(c)->addedBefore) { \
-		g_object_ref_sink(GTK_WIDGET(uiControlHandle(uiControl(c)))); \
-		gtk_widget_show(GTK_WIDGET(uiControlHandle(uiControl(c)))); \
-		uiUnixControl(c)->addedBefore = TRUE; \
-	}
 
 static const GtkAlign gtkAligns[] = {
 	[uiAlignFill] = GTK_ALIGN_FILL,
@@ -63,79 +37,67 @@ static const GtkPositionType gtkPositions[] = {
 	[uiAtBottom] = GTK_POS_BOTTOM,
 };
 
-static GtkWidget *prepare(struct gridChild *gc, uiControl *c, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
+static GtkWidget *prepare(uiControl *child, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
 {
-	GtkWidget *widget;
-
-	gc->c = c;
-	widget = GTK_WIDGET(uiControlHandle(gc->c));
-	gc->oldhexpand = gtk_widget_get_hexpand(widget);
-	gc->oldhalign = gtk_widget_get_halign(widget);
-	gc->oldvexpand = gtk_widget_get_vexpand(widget);
-	gc->oldvalign = gtk_widget_get_valign(widget);
+	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
 	gtk_widget_set_hexpand(widget, hexpand != 0);
 	gtk_widget_set_halign(widget, gtkAligns[halign]);
 	gtk_widget_set_vexpand(widget, vexpand != 0);
 	gtk_widget_set_valign(widget, gtkAligns[valign]);
+
+	if (!uiUnixControl(child)->explicitlyHidden)
+		gtk_widget_show(widget);
 	return widget;
 }
 
-void uiGridAppend(uiGrid *g, uiControl *c, int left, int top, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
+void uiGridAppend(uiGrid *grid, uiControl *child, int left, int top, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
 {
-	struct gridChild gc;
-	GtkWidget *widget;
+	GtkWidget *widget = prepare(child, hexpand, halign, vexpand, valign);
 
-	widget = prepare(&gc, c, hexpand, halign, vexpand, valign);
-	uiControlSetParent(gc.c, uiControl(g));
-	TODO_MASSIVE_HACK(uiUnixControl(gc.c));
-	gtk_grid_attach(g->grid, widget,
+	g_object_ref(widget); //  Add reference as we destroy it manually.
+	gtk_grid_attach(GTK_GRID(grid->widget), widget,
 		left, top,
 		xspan, yspan);
-	g_array_append_val(g->children, gc);
+
+	g_ptr_array_add(grid->children, child);
+	uiControlSetParent(child, uiControl(grid));
 }
 
-void uiGridInsertAt(uiGrid *g, uiControl *c, uiControl *existing, uiAt at, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
+void uiGridInsertAt(uiGrid *grid, uiControl *child, uiControl *existing, uiAt at, int xspan, int yspan, int hexpand, uiAlign halign, int vexpand, uiAlign valign)
 {
-	struct gridChild gc;
-	GtkWidget *widget;
+	GtkWidget *widget = prepare(child, hexpand, halign, vexpand, valign);
 
-	widget = prepare(&gc, c, hexpand, halign, vexpand, valign);
-	uiControlSetParent(gc.c, uiControl(g));
-	TODO_MASSIVE_HACK(uiUnixControl(gc.c));
-	gtk_grid_attach_next_to(g->grid, widget,
+	g_object_ref(widget); //  Add reference as we destroy it manually.
+	gtk_grid_attach_next_to(GTK_GRID(grid->widget), widget,
 		GTK_WIDGET(uiControlHandle(existing)), gtkPositions[at],
 		xspan, yspan);
-	g_array_append_val(g->children, gc);
+
+	g_ptr_array_add(grid->children, child);
+	uiControlSetParent(child, uiControl(grid));
 }
 
-int uiGridPadded(uiGrid *g)
+int uiGridPadded(uiGrid *grid)
 {
-	return g->padded;
+	return gtk_grid_get_row_spacing(GTK_GRID(grid->widget)) > 0;
 }
 
-void uiGridSetPadded(uiGrid *g, int padded)
+void uiGridSetPadded(uiGrid *grid, int padded)
 {
-	g->padded = padded;
-	if (g->padded) {
-		gtk_grid_set_row_spacing(g->grid, uiprivGTKYPadding);
-		gtk_grid_set_column_spacing(g->grid, uiprivGTKXPadding);
+	if (padded) {
+		gtk_grid_set_row_spacing(GTK_GRID(grid->widget), uiprivGTKYPadding);
+		gtk_grid_set_column_spacing(GTK_GRID(grid->widget), uiprivGTKXPadding);
 	} else {
-		gtk_grid_set_row_spacing(g->grid, 0);
-		gtk_grid_set_column_spacing(g->grid, 0);
+		gtk_grid_set_row_spacing(GTK_GRID(grid->widget), 0);
+		gtk_grid_set_column_spacing(GTK_GRID(grid->widget), 0);
 	}
 }
 
 uiGrid *uiNewGrid(void)
 {
-	uiGrid *g;
+	uiGrid *grid;
+	uiUnixNewControl(uiGrid, grid);
+	grid->widget = gtk_grid_new();
+	grid->children = g_ptr_array_new();
 
-	uiUnixNewControl(uiGrid, g);
-
-	g->widget = gtk_grid_new();
-	g->container = GTK_CONTAINER(g->widget);
-	g->grid = GTK_GRID(g->widget);
-
-	g->children = g_array_new(FALSE, TRUE, sizeof (struct gridChild));
-
-	return g;
+	return grid;
 }

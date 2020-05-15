@@ -1,4 +1,3 @@
-// 7 april 2015
 #include "uipriv_unix.h"
 
 struct uiBox {
@@ -15,10 +14,9 @@ uiUnixControlAllDefaultsExceptDestroy(uiBox)
 static void uiBoxDestroy(uiControl *control)
 {
 	uiBox *box = uiBox(control);
-
-	// kill the size group
+	// free size group
 	g_object_unref(box->stretchygroup);
-	// free all controls
+	// free children
 	for (guint i = 0; i < box->children->len; i++) {
 		uiControl *child = g_ptr_array_index(box->children, i);
 		uiControlSetParent(child, NULL);
@@ -33,12 +31,23 @@ static void uiBoxDestroy(uiControl *control)
 void uiBoxAppend(uiBox *box, uiControl *child, int stretchy)
 {
 	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
-	gtk_widget_show(widget);
+	if (!uiUnixControl(child)->explicitlyHidden)
+		gtk_widget_show(widget);
+	gtk_widget_set_hexpand(widget, FALSE);
+	gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+	gtk_widget_set_vexpand(widget, FALSE);
+	gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
+
 	g_object_ref(widget); // Add reference as we destroy it manually.
-	gtk_box_pack_start(GTK_BOX(box->widget), widget, stretchy, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box->widget), widget, FALSE, TRUE, 0);
 
 	if (stretchy) {
 		gtk_size_group_add_widget(box->stretchygroup, widget);
+		if (box->vertical) {
+			gtk_widget_set_vexpand(widget, TRUE);
+		} else {
+			gtk_widget_set_hexpand(widget, TRUE);
+		}
 	}
 
 	uiControlSetParent(child, uiControl(box));

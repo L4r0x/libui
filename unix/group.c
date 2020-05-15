@@ -1,4 +1,3 @@
-// 11 june 2015
 #include "uipriv_unix.h"
 
 struct uiGroup {
@@ -13,12 +12,12 @@ uiUnixControlAllDefaultsExceptDestroy(uiGroup)
 static void uiGroupDestroy(uiControl *control)
 {
 	uiGroup *group = uiGroup(control);
-
+	// free child
 	if (group->child != NULL) {
 		uiControlSetParent(group->child, NULL);
 		uiControlDestroy(group->child);
 	}
-
+	// and then ourselves
 	g_object_unref(group->widget);
 	uiFreeControl(control);
 }
@@ -36,25 +35,27 @@ void uiGroupSetTitle(uiGroup *group, const char *text)
 void uiGroupSetChild(uiGroup *group, uiControl *child)
 {
 	if (group->child != NULL) {
-		gtk_container_remove(GTK_CONTAINER(group->widget),
-			GTK_WIDGET(uiControlHandle(group->child)));
 		GtkWidget *widget = GTK_WIDGET(uiControlHandle(group->child));
-		uiprivSetControlMargined(widget, FALSE);
+		gtk_container_remove(GTK_CONTAINER(group->widget), widget);
 		uiControlSetParent(group->child, NULL);
+		uiprivWidgetSetMargined(widget, FALSE);
 	}
 
-	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
-	gtk_widget_show(widget);
-	gtk_widget_set_hexpand(widget, TRUE);
-	gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
-	gtk_widget_set_vexpand(widget, TRUE);
-	gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
-	g_object_ref(widget); // Add reference as we destroy it manually.
-	gtk_container_add(GTK_CONTAINER(group->widget), widget);
-
 	group->child = child;
-	uiControlSetParent(group->child, uiControl(group));
-	uiGroupSetMargined(group, group->margined);
+	if (child != NULL) {
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
+		if (!uiUnixControl(child)->explicitlyHidden)
+			gtk_widget_show(widget);
+		gtk_widget_set_hexpand(widget, TRUE);
+		gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+		gtk_widget_set_vexpand(widget, TRUE);
+		gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
+		g_object_ref(widget); // Add reference as we destroy it manually.
+		gtk_container_add(GTK_CONTAINER(group->widget), widget);
+
+		uiControlSetParent(group->child, uiControl(group));
+		uiGroupSetMargined(group, group->margined);
+	}
 }
 
 int uiGroupMargined(uiGroup *group)
@@ -64,10 +65,10 @@ int uiGroupMargined(uiGroup *group)
 
 void uiGroupSetMargined(uiGroup *group, int margined)
 {
-	GtkWidget *widget = GTK_WIDGET(uiControlHandle(group->child));
 	group->margined = margined;
 	if (group->child != NULL) {
-		uiprivSetControlMargined(widget, margined);
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(group->child));
+		uiprivWidgetSetMargined(widget, margined);
 	}
 }
 

@@ -1,4 +1,3 @@
-// 11 june 2015
 #include "uipriv_unix.h"
 
 struct uiTab {
@@ -12,14 +11,13 @@ uiUnixControlAllDefaultsExceptDestroy(uiTab)
 static void uiTabDestroy(uiControl *control)
 {
 	uiTab *tab = uiTab(control);
-
+	// free children
 	for (guint i = 0; i < tab->pages->len; i++) {
 		uiControl *page = g_ptr_array_index(tab->pages, i);
 		uiControlSetParent(page, NULL);
 		uiControlDestroy(page);
 	}
 	g_ptr_array_free(tab->pages, TRUE);
-
 	// and free ourselves
 	g_object_unref(tab->widget);
 	uiFreeControl(uiControl(tab));
@@ -33,8 +31,8 @@ void uiTabAppend(uiTab *tab, const char *name, uiControl *child)
 void uiTabInsertAt(uiTab *tab, const char *name, int n, uiControl *child)
 {
 	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
-	gtk_widget_show(widget);
-
+	if (!uiUnixControl(child)->explicitlyHidden)
+		gtk_widget_show(widget);
 	// Child expands and fills the page
 	gtk_widget_set_hexpand(widget, TRUE);
 	gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
@@ -68,13 +66,13 @@ int uiTabNumPages(uiTab *tab)
 int uiTabMargined(uiTab *tab, int n)
 {
 	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
-	return uiprivChildMargined(widget);
+	return uiprivWidgetMargined(widget);
 }
 
 void uiTabSetMargined(uiTab *tab, int n, int margined)
 {
 	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
-	uiprivSetControlMargined(widget, margined);
+	uiprivWidgetSetMargined(widget, margined);
 }
 
 uiTab *uiNewTab(void)
