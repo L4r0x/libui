@@ -4,86 +4,95 @@
 struct uiGroup {
 	uiUnixControl c;
 	GtkWidget *widget;
-	GtkContainer *container;
-	GtkBin *bin;
-	GtkFrame *frame;
-
-	// unfortunately, even though a GtkFrame is a GtkBin, calling gtk_container_set_border_width() on it /includes/ the GtkFrame's label; we don't want that
-	uiprivChild *child;
-
+	uiControl *child;
 	int margined;
 };
 
 uiUnixControlAllDefaultsExceptDestroy(uiGroup)
 
-static void uiGroupDestroy(uiControl *c)
+static void uiGroupDestroy(uiControl *control)
 {
-	uiGroup *g = uiGroup(c);
+	uiGroup *group = uiGroup(control);
 
-	if (g->child != NULL)
-		uiprivChildDestroy(g->child);
-	g_object_unref(g->widget);
-	uiFreeControl(uiControl(g));
+	if (group->child != NULL) {
+		uiControlSetParent(group->child, NULL);
+		uiControlDestroy(group->child);
+	}
+
+	g_object_unref(group->widget);
+	uiFreeControl(control);
 }
 
-char *uiGroupTitle(uiGroup *g)
+char *uiGroupTitle(uiGroup *group)
 {
-	return uiUnixStrdupText(gtk_frame_get_label(g->frame));
+	return uiUnixStrdupText(gtk_frame_get_label(GTK_FRAME(group->widget)));
 }
 
-void uiGroupSetTitle(uiGroup *g, const char *text)
+void uiGroupSetTitle(uiGroup *group, const char *text)
 {
-	gtk_frame_set_label(g->frame, text);
+	gtk_frame_set_label(GTK_FRAME(group->widget), text);
 }
 
-void uiGroupSetChild(uiGroup *g, uiControl *child)
+void uiGroupSetChild(uiGroup *group, uiControl *child)
 {
-	if (g->child != NULL)
-		uiprivChildRemove(g->child);
-	g->child = uiprivNewChildWithBox(child, uiControl(g), g->container, g->margined);
+	if (group->child != NULL) {
+		gtk_container_remove(GTK_CONTAINER(group->widget),
+			GTK_WIDGET(uiControlHandle(group->child)));
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(group->child));
+		uiprivSetControlMargined(widget, FALSE);
+		uiControlSetParent(group->child, NULL);
+	}
+
+	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
+	gtk_widget_show(widget);
+	gtk_widget_set_hexpand(widget, TRUE);
+	gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+	gtk_widget_set_vexpand(widget, TRUE);
+	gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
+	g_object_ref(widget); // Add reference as we destroy it manually.
+	gtk_container_add(GTK_CONTAINER(group->widget), widget);
+
+	group->child = child;
+	uiControlSetParent(group->child, uiControl(group));
+	uiGroupSetMargined(group, group->margined);
 }
 
-int uiGroupMargined(uiGroup *g)
+int uiGroupMargined(uiGroup *group)
 {
-	return g->margined;
+	return group->margined;
 }
 
-void uiGroupSetMargined(uiGroup *g, int margined)
+void uiGroupSetMargined(uiGroup *group, int margined)
 {
-	g->margined = margined;
-	if (g->child != NULL)
-		uiprivChildSetMargined(g->child, g->margined);
+	GtkWidget *widget = GTK_WIDGET(uiControlHandle(group->child));
+	group->margined = margined;
+	if (group->child != NULL) {
+		uiprivSetControlMargined(widget, margined);
+	}
 }
 
 uiGroup *uiNewGroup(const char *text)
 {
-	uiGroup *g;
-	gfloat yalign;
-	GtkLabel *label;
-	PangoAttribute *bold;
-	PangoAttrList *boldlist;
+	uiGroup *group;
 
-	uiUnixNewControl(uiGroup, g);
+	uiUnixNewControl(uiGroup, group);
 
-	g->widget = gtk_frame_new(text);
-	g->container = GTK_CONTAINER(g->widget);
-	g->bin = GTK_BIN(g->widget);
-	g->frame = GTK_FRAME(g->widget);
+	group->widget = gtk_frame_new(text);
 
 	// with GTK+, groupboxes by default have frames and slightly x-offset regular text
 	// they should have no frame and fully left-justified, bold text
 	// preserve default y-alignment
-	gtk_frame_get_label_align(g->frame, NULL, &yalign);
-	gtk_frame_set_label_align(g->frame, 0, yalign);
-	gtk_frame_set_shadow_type(g->frame, GTK_SHADOW_NONE);
-	label = GTK_LABEL(gtk_frame_get_label_widget(g->frame));
+	gfloat yalign;
+	gtk_frame_get_label_align(GTK_FRAME(group->widget), NULL, &yalign);
+	gtk_frame_set_label_align(GTK_FRAME(group->widget), 0, yalign);
+	gtk_frame_set_shadow_type(GTK_FRAME(group->widget), GTK_SHADOW_NONE);
+	GtkLabel *label = GTK_LABEL(gtk_frame_get_label_widget(GTK_FRAME(group->widget)));
 	// this is the boldness level used by GtkPrintUnixDialog
 	// (it technically uses "bold" but see pango's pango-enum-types.c for the name conversion; GType is weird)
-	bold = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
-	boldlist = pango_attr_list_new();
+	PangoAttribute *bold = pango_attr_weight_new(PANGO_WEIGHT_BOLD);
+	PangoAttrList *boldlist = pango_attr_list_new();
 	pango_attr_list_insert(boldlist, bold);
 	gtk_label_set_attributes(label, boldlist);
-	pango_attr_list_unref(boldlist);		// thanks baedert in irc.gimp.net/#gtk+
-
-	return g;
+	pango_attr_list_unref(boldlist);
+	return group;
 }

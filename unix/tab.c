@@ -3,95 +3,88 @@
 
 struct uiTab {
 	uiUnixControl c;
-
 	GtkWidget *widget;
-	GtkContainer *container;
-	GtkNotebook *notebook;
-
-	GArray *pages;				// []*uiprivChild
+	GPtrArray *pages;
 };
 
 uiUnixControlAllDefaultsExceptDestroy(uiTab)
 
-static void uiTabDestroy(uiControl *c)
+static void uiTabDestroy(uiControl *control)
 {
-	uiTab *t = uiTab(c);
-	guint i;
-	uiprivChild *page;
+	uiTab *tab = uiTab(control);
 
-	for (i = 0; i < t->pages->len; i++) {
-		page = g_array_index(t->pages, uiprivChild *, i);
-		uiprivChildDestroy(page);
+	for (guint i = 0; i < tab->pages->len; i++) {
+		uiControl *page = g_ptr_array_index(tab->pages, i);
+		uiControlSetParent(page, NULL);
+		uiControlDestroy(page);
 	}
-	g_array_free(t->pages, TRUE);
+	g_ptr_array_free(tab->pages, TRUE);
+
 	// and free ourselves
-	g_object_unref(t->widget);
-	uiFreeControl(uiControl(t));
+	g_object_unref(tab->widget);
+	uiFreeControl(uiControl(tab));
 }
 
-void uiTabAppend(uiTab *t, const char *name, uiControl *child)
+void uiTabAppend(uiTab *tab, const char *name, uiControl *child)
 {
-	uiTabInsertAt(t, name, t->pages->len, child);
+	uiTabInsertAt(tab, name, uiTabNumPages(tab), child);
 }
 
-void uiTabInsertAt(uiTab *t, const char *name, int n, uiControl *child)
+void uiTabInsertAt(uiTab *tab, const char *name, int n, uiControl *child)
 {
-	uiprivChild *page;
+	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
+	gtk_widget_show(widget);
 
-	// this will create a tab, because of gtk_container_add()
-	page = uiprivNewChildWithBox(child, uiControl(t), t->container, 0);
+	// Child expands and fills the page
+	gtk_widget_set_hexpand(widget, TRUE);
+	gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+	gtk_widget_set_vexpand(widget, TRUE);
+	gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
 
-	gtk_notebook_set_tab_label_text(t->notebook, uiprivChildBox(page), name);
-	gtk_notebook_reorder_child(t->notebook, uiprivChildBox(page), n);
+	// Add widget to noteboot
+	g_object_ref(widget); //  Add reference as we destroy it manually.
+	gtk_notebook_insert_page(GTK_NOTEBOOK(tab->widget), widget, gtk_label_new(name), n);
 
-	g_array_insert_val(t->pages, n, page);
+	g_ptr_array_insert(tab->pages, n, child);
+	uiControlSetParent(child, uiControl(tab));
 }
 
-void uiTabDelete(uiTab *t, int n)
+void uiTabDelete(uiTab *tab, int n)
 {
-	uiprivChild *page;
+	uiTabSetMargined(tab, n, FALSE); // remove margins
+	uiControl *page = g_ptr_array_index(tab->pages, n);
+	uiControlSetParent(page, NULL);
+	g_ptr_array_remove_index(tab->pages, n);
 
-	page = g_array_index(t->pages, uiprivChild *, n);
-	// this will remove the tab, because gtk_widget_destroy() calls gtk_container_remove()
-	uiprivChildRemove(page);
-	g_array_remove_index(t->pages, n);
+	gtk_notebook_remove_page(GTK_NOTEBOOK(tab->widget), n);
+	gtk_widget_queue_draw(tab->widget); // Need to refresh the widget
 }
 
-int uiTabNumPages(uiTab *t)
+int uiTabNumPages(uiTab *tab)
 {
-	return t->pages->len;
+	return gtk_notebook_get_n_pages(GTK_NOTEBOOK(tab->widget));
 }
 
-int uiTabMargined(uiTab *t, int n)
+int uiTabMargined(uiTab *tab, int n)
 {
-	uiprivChild *page;
-
-	page = g_array_index(t->pages, uiprivChild *, n);
-	return uiprivChildFlag(page);
+	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
+	return uiprivChildMargined(widget);
 }
 
-void uiTabSetMargined(uiTab *t, int n, int margined)
+void uiTabSetMargined(uiTab *tab, int n, int margined)
 {
-	uiprivChild *page;
-
-	page = g_array_index(t->pages, uiprivChild *, n);
-	uiprivChildSetFlag(page, margined);
-	uiprivChildSetMargined(page, uiprivChildFlag(page));
+	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
+	uiprivSetControlMargined(widget, margined);
 }
 
 uiTab *uiNewTab(void)
 {
-	uiTab *t;
+	uiTab *tab;
+	uiUnixNewControl(uiTab, tab);
+	tab->widget = gtk_notebook_new();
+	tab->pages = g_ptr_array_new();
 
-	uiUnixNewControl(uiTab, t);
+	gtk_notebook_set_scrollable(GTK_NOTEBOOK(tab->widget), TRUE);
 
-	t->widget = gtk_notebook_new();
-	t->container = GTK_CONTAINER(t->widget);
-	t->notebook = GTK_NOTEBOOK(t->widget);
-
-	gtk_notebook_set_scrollable(t->notebook, TRUE);
-
-	t->pages = g_array_new(FALSE, TRUE, sizeof (uiprivChild *));
-
-	return t;
+	return tab;
 }
