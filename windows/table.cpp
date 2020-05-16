@@ -1,7 +1,7 @@
 #include "table.hpp"
 #include "uipriv_windows.hpp"
 
-uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void *tableData)
+uiTableModel *uiNewTableModel(uiTableModelHandler mh, void *tableData)
 {
 	uiTableModel *model = uiprivNew(uiTableModel);
 	model->mh = mh;
@@ -48,7 +48,7 @@ void uiTableModelRowDeleted(uiTableModel *model, int oldIndex)
 
 uiTableModelHandler *uiprivTableModelHandler(uiTableModel *model)
 {
-	return model->mh;
+	return &model->mh;
 }
 
 void *uiprivTableModelData(uiTableModel *model)
@@ -118,6 +118,7 @@ static LRESULT CALLBACK tableSubProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 			case HDN_ENDTRACK:
 			case NM_KILLFOCUS:
 				finishEdit = true;
+				break;
 			case NM_DBLCLK:
 				printf("Item column double click\n");
 				break;
