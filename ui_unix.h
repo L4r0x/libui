@@ -19,18 +19,13 @@ typedef struct uiUnixControl uiUnixControl;
 struct uiUnixControl {
 	uiControl c;
 	uiControl *parent;
-	gboolean addedBefore;
 	gboolean explicitlyHidden;
-	void (*SetContainer)(uiUnixControl *, GtkContainer *, gboolean);
 };
 #define uiUnixControl(this) ((uiUnixControl *) (this))
-// TODO document
-_UI_EXTERN void uiUnixControlSetContainer(uiUnixControl *, GtkContainer *, gboolean);
 
 #define uiUnixControlDefaultDestroy(type) \
 	static void type ## Destroy(uiControl *c) \
 	{ \
-		/* TODO is this safe on floating refs? */ \
 		g_object_unref(type(c)->widget); \
 		uiFreeControl(c); \
 	}
@@ -87,21 +82,6 @@ _UI_EXTERN void uiUnixControlSetContainer(uiUnixControl *, GtkContainer *, gbool
 	{ \
 		gtk_widget_set_sensitive(type(c)->widget, FALSE); \
 	}
-// TODO this whole addedBefore stuff is a MASSIVE HACK.
-#define uiUnixControlDefaultSetContainer(type) \
-	static void type ## SetContainer(uiUnixControl *c, GtkContainer *container, gboolean remove) \
-	{ \
-		if (!uiUnixControl(c)->addedBefore) { \
-			g_object_ref_sink(type(c)->widget); /* our own reference, which we release in Destroy() */ \
-			/* massive hack notes: without any of this, nothing gets shown when we show a window; without the if, all things get shown even if some were explicitly hidden (TODO why don't we just show everything except windows on create? */ \
-			/*TODO*/if(!uiUnixControl(c)->explicitlyHidden) gtk_widget_show(type(c)->widget); \
-			uiUnixControl(c)->addedBefore = TRUE; \
-		} \
-		if (remove) \
-			gtk_container_remove(container, type(c)->widget); \
-		else \
-			gtk_container_add(container, type(c)->widget); \
-	}
 
 #define uiUnixControlAllDefaultsExceptDestroy(type) \
 	uiUnixControlDefaultHandle(type) \
@@ -113,28 +93,27 @@ _UI_EXTERN void uiUnixControlSetContainer(uiUnixControl *, GtkContainer *, gbool
 	uiUnixControlDefaultHide(type) \
 	uiUnixControlDefaultEnabled(type) \
 	uiUnixControlDefaultEnable(type) \
-	uiUnixControlDefaultDisable(type) \
-	uiUnixControlDefaultSetContainer(type)
+	uiUnixControlDefaultDisable(type)
 
 #define uiUnixControlAllDefaults(type) \
 	uiUnixControlDefaultDestroy(type) \
 	uiUnixControlAllDefaultsExceptDestroy(type)
 
 // TODO document
-#define uiUnixNewControl(type, var) \
-	var = type(uiUnixAllocControl(sizeof (type), type ## Signature, #type)); \
-	uiControl(var)->Destroy = type ## Destroy; \
-	uiControl(var)->Handle = type ## Handle; \
-	uiControl(var)->Parent = type ## Parent; \
-	uiControl(var)->SetParent = type ## SetParent; \
-	uiControl(var)->Toplevel = type ## Toplevel; \
-	uiControl(var)->Visible = type ## Visible; \
-	uiControl(var)->Show = type ## Show; \
-	uiControl(var)->Hide = type ## Hide; \
-	uiControl(var)->Enabled = type ## Enabled; \
-	uiControl(var)->Enable = type ## Enable; \
-	uiControl(var)->Disable = type ## Disable; \
-	uiUnixControl(var)->SetContainer = type ## SetContainer;
+#define uiUnixNewControl(type, var)                                       \
+	var = type(uiUnixAllocControl(sizeof(type), type##Signature, #type)); \
+	uiControl(var)->Destroy = type##Destroy;                              \
+	uiControl(var)->Handle = type##Handle;                                \
+	uiControl(var)->Parent = type##Parent;                                \
+	uiControl(var)->SetParent = type##SetParent;                          \
+	uiControl(var)->Toplevel = type##Toplevel;                            \
+	uiControl(var)->Visible = type##Visible;                              \
+	uiControl(var)->Show = type##Show;                                    \
+	uiControl(var)->Hide = type##Hide;                                    \
+	uiControl(var)->Enabled = type##Enabled;                              \
+	uiControl(var)->Enable = type##Enable;                                \
+	uiControl(var)->Disable = type##Disable;
+
 // TODO document
 _UI_EXTERN uiUnixControl *uiUnixAllocControl(size_t n, uint32_t typesig, const char *typenamestr);
 

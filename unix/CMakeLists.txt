@@ -8,7 +8,6 @@ list(APPEND _LIBUI_SOURCES
 	unix/box.c
 	unix/button.c
 	unix/checkbox.c
-	unix/child.c
 	unix/colorbutton.c
 	unix/combobox.c
 	unix/control.c

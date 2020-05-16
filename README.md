@@ -18,7 +18,7 @@ libui is currently **mid-alpha** software. Much of what is currently present run
 - document-based programs
 - tighter OS integration (especially for document-based programs), to allow programs to fully feel native, rather than merely look and act native
 - better support for standard dialogs and features (search bars, etc.)
-- OpenGL support
+- Custom header bars
 
 In addition, [here](https://github.com/andlabs/libui/issues?utf8=%E2%9C%93&q=master+in%3Atitle+is%3Aissue+is%3Aopen) is a list of issues generalizing existing problems.
 
@@ -26,58 +26,19 @@ Furthermore, libui is not properly fully documented yet. This is mainly due to t
 
 But libui is not dead; I am working on it whenever I can, and I hope to get it to a point of real quality soon!
 
-## News
+## Screenshots
 
-*Note that today's entry (Eastern Time) may be updated later today.*
+From examples/controlgallery:
 
-* **1 September 2018**
-	* **Alpha 4.1 is here.** This is an emergency fix to Alpha 4 to fix `uiImageAppend()` not working as documented. It now works properly, with one important difference you'll need to care about: **it now requires image data to be alpha-premultiplied**. In addition, `uiImage` also is implemented slightly more nicely now, and `ui.h` has minor documentation typo fixes.
-	* Alpha 4.1 also tries to make everything properly PIC-enabled.
-
-* **10 August 2018**
-	* **Alpha 4 is finally here.** Everything from Alpha 3.5 and what's listed below is in this release; the two biggest changes are still the new text drawing API and new uiTable control. In between all that is a whole bunch of bugfixes, and hopefully more stability too. Thanks to everybody who helped contribute!
-	* Alpha 4 should hopefully also include automated binary releases via CI. Thanks to those who helped set that up!
-
-* **8 August 2018**
-	* Finally introduced an API for loading images, `uiImage`, and a new control, `uiTable`, for displaying tabular data. These provide enough basic functionality for now, but will be improved over time. You can read the documentation for the new features as they are [here](https://github.com/andlabs/libui/blob/f47e1423cf95ad7b1001663f3381b5a819fc67b9/uitable.h). Thanks to everyone who helped get to this point, in particular @bcampbell for the initial Windows code, and to everyone else for their patience!
-
-* **30 May 2018**
-	* Merged the previous Announcements and Updates section of this README into a single News section, and merged the respective archive files into a single NEWS.md file.
-
-* **16 May 2018**
-	* Thanks to @parro-it and @msink, libui now has better CI, including AppVeyor for Windows CI, and automated creation of binary releases when I make a tagged release.
-
-* **13 May 2018**
-	* Added new functions to work with uiDateTimePickers: `uiDateTimePickerTime()`, `uiDateTimePickerSetTime()`, and `uiDateTimePickerOnChanged()`. These operate on standard `<time.h>` `struct tm`s. Thanks @cody271!
-	* Release builds on Windows with MSVC should be fixed now; thanks @l0calh05t, @slahn, @mischnic, and @zentner-kyle.
-
-* **12 May 2018**
-	* GTK+ and OS X now have a cleaner build process for static libraries which no longer has intermediate files and differing configurations. As a result, certain issues should no longer be present. New naming rules for internal symbols of libui have also started being drafted; runtime symbols and edge cases still need to be handled (and the rules applied to Windows) before this can become a regular thing.
-
-* **2 May 2018**
-	* On Windows, you no longer need to carry around a `libui.res` file with static builds. You do need to link in the appropriate manifest file, such as the one in the `windows/` folder (I still need to figure out exactly what is needed apart from the Common Controls v6 dependency, or at least to create a complete-ish template), or at least include it alongside your executables. This also means you should no longer see random cmake errors when building the static libraries.
-
-* **18 April 2018**
-	* Introduced a new `uiTimer()` function for running code on a timer on the main thread. (Thanks to @cody271.)
-	* Migrated all code in the `common/` directory to use `uipriv` prefixes for everything that isn't `static`. This is the first step toward fixing static library oddities within libui, allowing libui to truly be safely used as either a static library or a shared library.
-
-* **18 March 2018**
-	* Introduced an all-new formatted text API that allows you to process formatted text in ways that the old API wouldn't allow. You can read on the whole API [here](https://github.com/andlabs/libui/blob/8944a3fc5528445b9027b1294b6c86bae03eeb89/ui_attrstr.h). There is also a new examples for it: `drawtext`, which shows the whole API at a glance. It doesn't yet support measuring or manipulating text, nor does it currently support functions that would be necessary for things like text editors; all of this will be added back later.
-	* libui also now uses my [utf library](https://github.com/andlabs/utf) for UTF-8 and UTF-16 processing, to allow consistent behavior across platforms. This usage is not completely propagated throughout libui, but the Windows port uses it in most places now, and eventually this will become what libui will use throughout.
-	* Also introduced a formal set of contribution guidelines, see `CONTRIBUTING.md` for details. They are still WIP.
-
-* **17 February 2018**
-	* The longstanding Enter+Escape crashes on Windows have finally been fixed (thanks to @lxn).
-	* **Alpha 3.5 is now here.** This is a quickie release primiarly intended to deploy the above fix to package ui itself. **It is a partial binary release; sorry!** More new things will come in the next release, which will also introduce semver (so it will be called v0.4.0 instead).
-	* Alpha 3.5 also includes a new control gallery example. The screenshots below have not been updated yet.
-
-*Old announcements can be found in the NEWS.md file.*
+Windows | Unix | macOS
+--|--|--
+![Windows](examples/controlgallery/windows.png) | ![Unix](examples/controlgallery/unix.png) | ![OS X](examples/controlgallery/darwin.png)
 
 ## Runtime Requirements
 
-* Windows: Windows Vista SP2 with Platform Update or newer
-* Unix: GTK+ 3.10 or newer
-* Mac OS X: OS X 10.8 or newer
+* Windows: Windows 10
+* Unix: GTK+ 3.18 (Ubuntu 16.04) or newer
+* Mac OS X: macOs 10.13 (High Sierra) or newer
 
 ## Build Requirements
 
@@ -94,7 +55,7 @@ But libui is not dead; I am working on it whenever I can, and I hope to get it t
 
 Out-of-tree builds typical of cmake are preferred:
 
-```
+```bash
 $ # you must be in the top-level libui directory, otherwise this won't work
 $ mkdir build
 $ cd build
@@ -105,7 +66,7 @@ Pass `-DBUILD_SHARED_LIBS=OFF` to `cmake` to build a static library. The standar
 
 If you use a makefile generator with cmake, then
 
-```
+```bash
 $ make
 $ make tester         # for the test program
 $ make examples       # for examples
@@ -170,12 +131,51 @@ See also [this](https://github.com/andlabs/libui/pull/20#issuecomment-211381971)
 
 See `CONTRIBUTING.md`.
 
-## Screenshots
+## News
 
-From examples/controlgallery:
+* **7 May 2020**
+	* Fork & Refactoring.
+	* Drop support for outdated OS Versions.
 
-![Windows](examples/controlgallery/windows.png)
+* **1 September 2018**
+	* **Alpha 4.1 is here.** This is an emergency fix to Alpha 4 to fix `uiImageAppend()` not working as documented. It now works properly, with one important difference you'll need to care about: **it now requires image data to be alpha-premultiplied**. In addition, `uiImage` also is implemented slightly more nicely now, and `ui.h` has minor documentation typo fixes.
+	* Alpha 4.1 also tries to make everything properly PIC-enabled.
 
-![Unix](examples/controlgallery/unix.png)
+* **10 August 2018**
+	* **Alpha 4 is finally here.** Everything from Alpha 3.5 and what's listed below is in this release; the two biggest changes are still the new text drawing API and new uiTable control. In between all that is a whole bunch of bugfixes, and hopefully more stability too. Thanks to everybody who helped contribute!
+	* Alpha 4 should hopefully also include automated binary releases via CI. Thanks to those who helped set that up!
 
-![OS X](examples/controlgallery/darwin.png)
+* **8 August 2018**
+	* Finally introduced an API for loading images, `uiImage`, and a new control, `uiTable`, for displaying tabular data. These provide enough basic functionality for now, but will be improved over time. You can read the documentation for the new features as they are [here](https://github.com/andlabs/libui/blob/f47e1423cf95ad7b1001663f3381b5a819fc67b9/uitable.h). Thanks to everyone who helped get to this point, in particular @bcampbell for the initial Windows code, and to everyone else for their patience!
+
+* **30 May 2018**
+	* Merged the previous Announcements and Updates section of this README into a single News section, and merged the respective archive files into a single NEWS.md file.
+
+* **16 May 2018**
+	* Thanks to @parro-it and @msink, libui now has better CI, including AppVeyor for Windows CI, and automated creation of binary releases when I make a tagged release.
+
+* **13 May 2018**
+	* Added new functions to work with uiDateTimePickers: `uiDateTimePickerTime()`, `uiDateTimePickerSetTime()`, and `uiDateTimePickerOnChanged()`. These operate on standard `<time.h>` `struct tm`s. Thanks @cody271!
+	* Release builds on Windows with MSVC should be fixed now; thanks @l0calh05t, @slahn, @mischnic, and @zentner-kyle.
+
+* **12 May 2018**
+	* GTK+ and OS X now have a cleaner build process for static libraries which no longer has intermediate files and differing configurations. As a result, certain issues should no longer be present. New naming rules for internal symbols of libui have also started being drafted; runtime symbols and edge cases still need to be handled (and the rules applied to Windows) before this can become a regular thing.
+
+* **2 May 2018**
+	* On Windows, you no longer need to carry around a `libui.res` file with static builds. You do need to link in the appropriate manifest file, such as the one in the `windows/` folder (I still need to figure out exactly what is needed apart from the Common Controls v6 dependency, or at least to create a complete-ish template), or at least include it alongside your executables. This also means you should no longer see random cmake errors when building the static libraries.
+
+* **18 April 2018**
+	* Introduced a new `uiTimer()` function for running code on a timer on the main thread. (Thanks to @cody271.)
+	* Migrated all code in the `common/` directory to use `uipriv` prefixes for everything that isn't `static`. This is the first step toward fixing static library oddities within libui, allowing libui to truly be safely used as either a static library or a shared library.
+
+* **18 March 2018**
+	* Introduced an all-new formatted text API that allows you to process formatted text in ways that the old API wouldn't allow. You can read on the whole API [here](https://github.com/andlabs/libui/blob/8944a3fc5528445b9027b1294b6c86bae03eeb89/ui_attrstr.h). There is also a new examples for it: `drawtext`, which shows the whole API at a glance. It doesn't yet support measuring or manipulating text, nor does it currently support functions that would be necessary for things like text editors; all of this will be added back later.
+	* libui also now uses my [utf library](https://github.com/andlabs/utf) for UTF-8 and UTF-16 processing, to allow consistent behavior across platforms. This usage is not completely propagated throughout libui, but the Windows port uses it in most places now, and eventually this will become what libui will use throughout.
+	* Also introduced a formal set of contribution guidelines, see `CONTRIBUTING.md` for details. They are still WIP.
+
+* **17 February 2018**
+	* The longstanding Enter+Escape crashes on Windows have finally been fixed (thanks to @lxn).
+	* **Alpha 3.5 is now here.** This is a quickie release primiarly intended to deploy the above fix to package ui itself. **It is a partial binary release; sorry!** More new things will come in the next release, which will also introduce semver (so it will be called v0.4.0 instead).
+	* Alpha 3.5 also includes a new control gallery example. The screenshots below have not been updated yet.
+
+*Old announcements can be found in the NEWS.md file.*

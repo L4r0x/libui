@@ -1,6 +1,5 @@
 // 6 april 2015
 #import "uipriv_darwin.h"
-#import "attrstr.h"
 
 static BOOL canQuit = NO;
 static NSAutoreleasePool *globalPool;
@@ -14,8 +13,6 @@ static BOOL stepsIsRunning;
 
 - (void)sendEvent:(NSEvent *)e
 {
-	if (uiprivSendAreaEvents(e) != 0)
-		return;
 	[super sendEvent:e];
 }
 
@@ -27,8 +24,6 @@ static BOOL stepsIsRunning;
 {
 	if (uiprivColorButtonInhibitSendAction(sel, from, to))
 		return NO;
-	if (uiprivFontButtonInhibitSendAction(sel, from, to))
-		return NO;
 	return [super sendAction:sel to:to from:from];
 }
 
@@ -37,10 +32,6 @@ static BOOL stepsIsRunning;
 // we also need to override it (see fontbutton.m)
 - (id)targetForAction:(SEL)sel to:(id)to from:(id)from
 {
-	id override;
-
-	if (uiprivFontButtonOverrideTargetForAction(sel, from, to, &override))
-		return override;
 	return [super targetForAction:sel to:to from:from];
 }
 
@@ -121,15 +112,10 @@ const char *uiInit(uiInitOptions *o)
 
 		uiprivInitAlloc();
 		uiprivLoadFutures();
-		uiprivLoadUndocumented();
 
 		// always do this so we always have an application menu
 		uiprivAppDelegate().menuManager = [[uiprivMenuManager new] autorelease];
 		[uiprivNSApp() setMainMenu:[uiprivAppDelegate().menuManager makeMenubar]];
-
-		uiprivSetupFontPanel();
-
-		uiprivInitUnderlineColors();
 	}
 
 	globalPool = [[NSAutoreleasePool alloc] init];
@@ -144,7 +130,6 @@ void uiUninit(void)
 	[globalPool release];
 
 	@autoreleasepool {
-		uiprivUninitUnderlineColors();
 		[delegate release];
 		[uiprivNSApp() setDelegate:nil];
 		[app release];
@@ -199,7 +184,6 @@ int uiMainStep(int wait)
 // - https://github.com/gnustep/gui/blob/master/Source/NSApplication.m
 int uiprivMainStep(uiprivNextEventArgs *nea, BOOL (^interceptEvent)(NSEvent *e))
 {
-	NSDate *expire;
 	NSEvent *e;
 	NSEventType type;
 

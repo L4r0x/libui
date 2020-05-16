@@ -15,7 +15,7 @@ struct uiTableModelClass {
 // Our custom table model wrapper
 struct uiTableModel {
 	GObject parent_instance;
-	uiTableModelHandler *mh;
+	uiTableModelHandler mh;
 	void *data;
 };
 

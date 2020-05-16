@@ -116,7 +116,7 @@ uiBox *makePage16(void)
 	mh.NumRows = modelNumRows;
 	mh.CellValue = modelCellValue;
 	mh.SetCellValue = modelSetCellValue;
-	m = uiNewTableModel(&mh, NULL);
+	m = uiNewTableModel(mh, NULL);
 
 	memset(&p, 0, sizeof (uiTableParams));
 	p.Model = m;

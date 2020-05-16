@@ -1,84 +1,77 @@
-// 7 april 2015
-#include <string.h>
 #include "uipriv_unix.h"
 
-static GPtrArray *allocations;
+struct uiprivMem {
+	const char *type;
+	void *p;
+};
 
-#define UINT8(p) ((uint8_t *) (p))
-#define PVOID(p) ((void *) (p))
-#define EXTRA (sizeof (size_t) + sizeof (const char **))
-#define DATA(p) PVOID(UINT8(p) + EXTRA)
-#define BASE(p) PVOID(UINT8(p) - EXTRA)
-#define SIZE(p) ((size_t *) (p))
-#define CCHAR(p) ((const char **) (p))
-#define TYPE(p) CCHAR(UINT8(p) + sizeof (size_t))
+typedef struct uiprivMem uiprivMem;
+
+static GArray *allocations;
+
+static int removeAllocEntry(uiprivMem mem)
+{
+	for (guint i = 0; i < allocations->len; ++i) {
+		if (g_array_index(allocations, uiprivMem, i).p == mem.p) {
+			g_array_remove_index_fast(allocations, i);
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+static void addAllocEntry(uiprivMem mem)
+{
+	g_array_append_val(allocations, mem);
+}
 
 void uiprivInitAlloc(void)
 {
-	allocations = g_ptr_array_new();
-}
-
-static void uninitComplain(gpointer ptr, gpointer data)
-{
-	char **str = (char **) data;
-	char *str2;
-
-	if (*str == NULL)
-		*str = g_strdup("");
-	str2 = g_strdup_printf("%s%p %s\n", *str, ptr, *TYPE(ptr));
-	g_free(*str);
-	*str = str2;
+	allocations = g_array_new(FALSE, FALSE, sizeof(uiprivMem));
 }
 
 void uiprivUninitAlloc(void)
 {
-	char *str = NULL;
-
 	if (allocations->len == 0) {
-		g_ptr_array_free(allocations, TRUE);
+		g_array_free(allocations, TRUE);
 		return;
 	}
-	g_ptr_array_foreach(allocations, uninitComplain, &str);
+
+	char *str = g_strdup("");
+	for (guint i = 0; i < allocations->len; ++i) {
+		uiprivMem mem = g_array_index(allocations, uiprivMem, i);
+		char *new_str = g_strdup_printf("%s%p %s\n", str, mem.p, mem.type);
+		g_free(str);
+		str = new_str;
+	}
 	uiprivUserBug("Some data was leaked; either you left a uiControl lying around or there's a bug in libui itself. Leaked data:\n%s", str);
 	g_free(str);
 }
 
 void *uiprivAlloc(size_t size, const char *type)
 {
-	void *out;
-
-	out = g_malloc0(EXTRA + size);
-	*SIZE(out) = size;
-	*TYPE(out) = type;
-	g_ptr_array_add(allocations, out);
-	return DATA(out);
+	return uiprivRealloc(NULL, size, type);
 }
 
-void *uiprivRealloc(void *p, size_t new, const char *type)
+void *uiprivRealloc(void *p, size_t size, const char *type)
 {
-	void *out;
-	size_t *s;
-
-	if (p == NULL)
-		return uiprivAlloc(new, type);
-	p = BASE(p);
-	out = g_realloc(p, EXTRA + new);
-	s = SIZE(out);
-	if (new > *s)
-		memset(((uint8_t *) DATA(out)) + *s, 0, new - *s);
-	*s = new;
-	if (g_ptr_array_remove(allocations, p) == FALSE)
-		uiprivImplBug("%p not found in allocations array in uiprivRealloc()", p);
-	g_ptr_array_add(allocations, out);
-	return DATA(out);
+	uiprivMem mem = {.type = type, .p = p};
+	if (p != NULL) {
+		if (!removeAllocEntry(mem)) {
+			uiprivImplBug("called uiprivRealloc() on unknown ptr %p", p);
+		}
+	} else if (size == 0) {
+		uiprivImplBug("attempt to free NULL");
+	}
+	mem.p = g_realloc(p, size);
+	if (mem.p != NULL) {
+		memset(mem.p, 0, size);
+		addAllocEntry(mem);
+	}
+	return mem.p;
 }
 
 void uiprivFree(void *p)
 {
-	if (p == NULL)
-		uiprivImplBug("attempt to uiprivFree(NULL)");
-	p = BASE(p);
-	g_free(p);
-	if (g_ptr_array_remove(allocations, p) == FALSE)
-		uiprivImplBug("%p not found in allocations array in uiprivFree()", p);
+	uiprivRealloc(p, 0, NULL);
 }

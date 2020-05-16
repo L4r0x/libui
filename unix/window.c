@@ -1,158 +1,136 @@
 // 11 june 2015
 #include "uipriv_unix.h"
 
+// The window consists of an outer box holding the menubar and the content box.
+// The content box contains the child control and is used for calculating
+// the windows content size.
 struct uiWindow {
 	uiUnixControl c;
-
 	GtkWidget *widget;
-	GtkContainer *container;
-	GtkWindow *window;
-
-	GtkWidget *vboxWidget;
-	GtkContainer *vboxContainer;
-	GtkBox *vbox;
-
-	GtkWidget *childHolderWidget;
-	GtkContainer *childHolderContainer;
-
+	GtkWidget *box;
 	GtkWidget *menubar;
-
+	GtkWidget *content;
 	uiControl *child;
 	int margined;
+	gboolean fullscreen;
 
 	int (*onClosing)(uiWindow *, void *);
 	void *onClosingData;
 	void (*onContentSizeChanged)(uiWindow *, void *);
 	void *onContentSizeChangedData;
-	gboolean fullscreen;
 };
 
-static gboolean onClosing(GtkWidget *win, GdkEvent *e, gpointer data)
+static gboolean onClosing(GtkWidget *widget, GdkEvent *e, gpointer data)
 {
-	uiWindow *w = uiWindow(data);
+	uiWindow *window = uiWindow(data);
 
-	// manually destroy the window ourselves; don't let the delete-event handler do it
-	if ((*(w->onClosing))(w, w->onClosingData))
-		uiControlDestroy(uiControl(w));
-	// don't continue to the default delete-event handler; we destroyed the window by now
+	// manually destroy the window ourselves
+	if (window->onClosing && (*(window->onClosing))(window, window->onClosingData))
+		uiControlDestroy(uiControl(window));
+	// don't continue to the default delete-event handler
 	return TRUE;
 }
 
 static void onSizeAllocate(GtkWidget *widget, GdkRectangle *allocation, gpointer data)
 {
-	uiWindow *w = uiWindow(data);
+	uiWindow *window = uiWindow(data);
 
 	// TODO deal with spurious size-allocates
-	(*(w->onContentSizeChanged))(w, w->onContentSizeChangedData);
-}
-
-static int defaultOnClosing(uiWindow *w, void *data)
-{
-	return 0;
-}
-
-static void defaultOnPositionContentSizeChanged(uiWindow *w, void *data)
-{
-	// do nothing
-}
-
-static void uiWindowDestroy(uiControl *c)
-{
-	uiWindow *w = uiWindow(c);
-
-	// first hide ourselves
-	gtk_widget_hide(w->widget);
-	// now destroy the child
-	if (w->child != NULL) {
-		uiControlSetParent(w->child, NULL);
-		uiUnixControlSetContainer(uiUnixControl(w->child), w->childHolderContainer, TRUE);
-		uiControlDestroy(w->child);
+	if (window->onContentSizeChanged) {
+		(*(window->onContentSizeChanged))(window, window->onContentSizeChangedData);
 	}
-	// now destroy the menus, if any
-	if (w->menubar != NULL)
-		uiprivFreeMenubar(w->menubar);
-	gtk_widget_destroy(w->childHolderWidget);
-	gtk_widget_destroy(w->vboxWidget);
-	// and finally free ourselves
-	// use gtk_widget_destroy() instead of g_object_unref() because GTK+ has internal references (see #165)
-	gtk_widget_destroy(w->widget);
-	uiFreeControl(uiControl(w));
 }
 
 uiUnixControlDefaultHandle(uiWindow)
-
-uiControl *uiWindowParent(uiControl *c)
-{
-	return NULL;
-}
-
-void uiWindowSetParent(uiControl *c, uiControl *parent)
-{
-	uiUserBugCannotSetParentOnToplevel("uiWindow");
-}
-
-static int uiWindowToplevel(uiControl *c)
-{
-	return 1;
-}
-
 uiUnixControlDefaultVisible(uiWindow)
-
-static void uiWindowShow(uiControl *c)
-{
-	uiWindow *w = uiWindow(c);
-
-	// don't use gtk_widget_show_all() as that will show all children, regardless of user settings
-	// don't use gtk_widget_show(); that doesn't bring to front or give keyboard focus
-	// (gtk_window_present() does call gtk_widget_show() though)
-	gtk_window_present(w->window);
-}
-
 uiUnixControlDefaultHide(uiWindow)
 uiUnixControlDefaultEnabled(uiWindow)
 uiUnixControlDefaultEnable(uiWindow)
 uiUnixControlDefaultDisable(uiWindow)
-// TODO?
-uiUnixControlDefaultSetContainer(uiWindow)
 
-char *uiWindowTitle(uiWindow *w)
+static void uiWindowDestroy(uiControl *control)
 {
-	return uiUnixStrdupText(gtk_window_get_title(w->window));
+	uiWindow *window = uiWindow(control);
+
+	// first hide ourselves
+	gtk_widget_hide(window->widget);
+	// now destroy the child
+	if (window->child != NULL) {
+		uiControlSetParent(window->child, NULL);
+		uiControlDestroy(window->child);
+	}
+	// now destroy the menus, if any
+	if (window->menubar != NULL)
+		uiprivFreeMenubar(window->menubar);
+	gtk_widget_destroy(window->content);
+	gtk_widget_destroy(window->box);
+	// and finally free ourselves
+	// use gtk_widget_destroy() instead of g_object_unref() because GTK+ has internal references (see #165)
+	gtk_widget_destroy(window->widget);
+	uiFreeControl(uiControl(window));
 }
 
-void uiWindowSetTitle(uiWindow *w, const char *title)
+
+uiControl *uiWindowParent(uiControl *control)
 {
-	gtk_window_set_title(w->window, title);
+	return NULL;
 }
 
-void uiWindowContentSize(uiWindow *w, int *width, int *height)
+void uiWindowSetParent(uiControl *control, uiControl *parent)
+{
+	uiUserBugCannotSetParentOnToplevel("uiWindow");
+}
+
+static int uiWindowToplevel(uiControl *control)
+{
+	return 1;
+}
+
+static void uiWindowShow(uiControl *control)
+{
+	uiWindow *window = uiWindow(control);
+	// gtk_widget_show() doesn't bring to front or give keyboard focus
+	gtk_window_present(GTK_WINDOW(window->widget));
+}
+
+char *uiWindowTitle(uiWindow *window)
+{
+	return uiUnixStrdupText(gtk_window_get_title(GTK_WINDOW(window->widget)));
+}
+
+void uiWindowSetTitle(uiWindow *window, const char *title)
+{
+	gtk_window_set_title(GTK_WINDOW(window->widget), title);
+}
+
+void uiWindowContentSize(uiWindow *window, int *width, int *height)
 {
 	GtkAllocation allocation;
 
-	gtk_widget_get_allocation(w->childHolderWidget, &allocation);
+	gtk_widget_get_allocation(window->content, &allocation);
 	*width = allocation.width;
 	*height = allocation.height;
 }
 
-void uiWindowSetContentSize(uiWindow *w, int width, int height)
+void uiWindowSetContentSize(uiWindow *window, int width, int height)
 {
-	GtkAllocation childAlloc;
-	gint winWidth, winHeight;
-
 	// we need to resize the child holder widget to the given size
 	// we can't resize that without running the event loop
 	// but we can do gtk_window_set_size()
 	// so how do we deal with the differences in sizes?
 	// simple arithmetic, of course!
 
-	// from what I can tell, the return from gtk_widget_get_allocation(w->window) and gtk_window_get_size(w->window) will be the same
+	// from what I can tell, the return from gtk_widget_get_allocation(w->window)
+	// and gtk_window_get_size(w->window) will be the same
 	// this is not affected by Wayland and not affected by GTK+ builtin CSD
 	// so we can safely juse use them to get the real window size!
 	// since we're using gtk_window_resize(), use the latter
-	gtk_window_get_size(w->window, &winWidth, &winHeight);
+	gint winWidth, winHeight;
+	gtk_window_get_size(GTK_WINDOW(window->widget), &winWidth, &winHeight);
 
 	// now get the child holder widget's current allocation
-	gtk_widget_get_allocation(w->childHolderWidget, &childAlloc);
+	GtkAllocation childAlloc;
+	gtk_widget_get_allocation(window->content, &childAlloc);
 	// and punch that out of the window size
 	winWidth -= childAlloc.width;
 	winHeight -= childAlloc.height;
@@ -162,118 +140,117 @@ void uiWindowSetContentSize(uiWindow *w, int width, int height)
 	winHeight += height;
 	// and set it
 	// this will not move the window in my tests, so we're good
-	gtk_window_resize(w->window, winWidth, winHeight);
+	gtk_window_resize(GTK_WINDOW(window->widget), winWidth, winHeight);
 }
 
-int uiWindowFullscreen(uiWindow *w)
+int uiWindowFullscreen(uiWindow *window)
 {
-	return w->fullscreen;
+	return window->fullscreen;
 }
 
 // TODO use window-state-event to track
 // TODO does this send an extra size changed?
 // TODO what behavior do we want?
-void uiWindowSetFullscreen(uiWindow *w, int fullscreen)
+void uiWindowSetFullscreen(uiWindow *window, int fullscreen)
 {
-	w->fullscreen = fullscreen;
-	if (w->fullscreen)
-		gtk_window_fullscreen(w->window);
+	window->fullscreen = fullscreen;
+	if (window->fullscreen)
+		gtk_window_fullscreen(GTK_WINDOW(window->widget));
 	else
-		gtk_window_unfullscreen(w->window);
+		gtk_window_unfullscreen(GTK_WINDOW(window->widget));
 }
 
-void uiWindowOnContentSizeChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data)
+void uiWindowOnContentSizeChanged(uiWindow *window, void (*f)(uiWindow *, void *), void *data)
 {
-	w->onContentSizeChanged = f;
-	w->onContentSizeChangedData = data;
+	window->onContentSizeChanged = f;
+	window->onContentSizeChangedData = data;
 }
 
-void uiWindowOnClosing(uiWindow *w, int (*f)(uiWindow *, void *), void *data)
+void uiWindowOnClosing(uiWindow *window, int (*f)(uiWindow *, void *), void *data)
 {
-	w->onClosing = f;
-	w->onClosingData = data;
+	window->onClosing = f;
+	window->onClosingData = data;
 }
 
-int uiWindowBorderless(uiWindow *w)
+int uiWindowBorderless(uiWindow *window)
 {
-	return gtk_window_get_decorated(w->window) == FALSE;
+	return !gtk_window_get_decorated(GTK_WINDOW(window->widget));
 }
 
-void uiWindowSetBorderless(uiWindow *w, int borderless)
+void uiWindowSetBorderless(uiWindow *window, int borderless)
 {
-	gtk_window_set_decorated(w->window, borderless == 0);
+	gtk_window_set_decorated(GTK_WINDOW(window->widget), !borderless);
 }
 
 // TODO save and restore expands and aligns
-void uiWindowSetChild(uiWindow *w, uiControl *child)
+void uiWindowSetChild(uiWindow *window, uiControl *child)
 {
-	if (w->child != NULL) {
-		uiControlSetParent(w->child, NULL);
-		uiUnixControlSetContainer(uiUnixControl(w->child), w->childHolderContainer, TRUE);
+	if (window->child != NULL) {
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(window->child));
+		gtk_container_remove(GTK_CONTAINER(window->content), widget);
+		uiControlSetParent(window->child, NULL);
+		uiprivWidgetSetMargined(widget, FALSE);
 	}
-	w->child = child;
-	if (w->child != NULL) {
-		uiControlSetParent(w->child, uiControl(w));
-		uiUnixControlSetContainer(uiUnixControl(w->child), w->childHolderContainer, FALSE);
+	window->child = child;
+	if (window->child != NULL) {
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
+		if (!uiUnixControl(child)->explicitlyHidden)
+			gtk_widget_show(widget);
+		gtk_widget_set_hexpand(widget, TRUE);
+		gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+		gtk_widget_set_vexpand(widget, TRUE);
+		gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
+		g_object_ref(widget); // Add reference as we destroy it manually.
+		gtk_container_add(GTK_CONTAINER(window->content), widget);
+
+		uiControlSetParent(window->child, uiControl(window));
+		uiWindowSetMargined(window, window->margined);
 	}
 }
 
-int uiWindowMargined(uiWindow *w)
+int uiWindowMargined(uiWindow *window)
 {
-	return w->margined;
+	return window->margined;
 }
 
-void uiWindowSetMargined(uiWindow *w, int margined)
+void uiWindowSetMargined(uiWindow *window, int margined)
 {
-	w->margined = margined;
-	uiprivSetMargined(w->childHolderContainer, w->margined);
+	window->margined = margined;
+	GtkWidget *widget = GTK_WIDGET(uiControlHandle(window->child));
+	uiprivWidgetSetMargined(widget, margined);
 }
 
 uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 {
-	uiWindow *w;
+	uiWindow *window;
+	uiUnixNewControl(uiWindow, window);
 
-	uiUnixNewControl(uiWindow, w);
+	window->widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(window->widget), title);
+	gtk_window_resize(GTK_WINDOW(window->widget), width, height);
 
-	w->widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	w->container = GTK_CONTAINER(w->widget);
-	w->window = GTK_WINDOW(w->widget);
-
-	gtk_window_set_title(w->window, title);
-	gtk_window_resize(w->window, width, height);
-
-	w->vboxWidget = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-	w->vboxContainer = GTK_CONTAINER(w->vboxWidget);
-	w->vbox = GTK_BOX(w->vboxWidget);
-
-	// set the vbox as the GtkWindow child
-	gtk_container_add(w->container, w->vboxWidget);
+	// The box contains the menubar and the content box
+	window->box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_container_add(GTK_CONTAINER(window->widget), window->box);
+	gtk_widget_show(window->box);
 
 	if (hasMenubar) {
-		w->menubar = uiprivMakeMenubar(uiWindow(w));
-		gtk_container_add(w->vboxContainer, w->menubar);
+		window->menubar = uiprivMakeMenubar(uiWindow(window));
+		gtk_container_add(GTK_CONTAINER(window->box), window->menubar);
+		gtk_widget_show_all(window->menubar);
 	}
 
-	w->childHolderWidget = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	w->childHolderContainer = GTK_CONTAINER(w->childHolderWidget);
-	gtk_widget_set_hexpand(w->childHolderWidget, TRUE);
-	gtk_widget_set_halign(w->childHolderWidget, GTK_ALIGN_FILL);
-	gtk_widget_set_vexpand(w->childHolderWidget, TRUE);
-	gtk_widget_set_valign(w->childHolderWidget, GTK_ALIGN_FILL);
-	gtk_container_add(w->vboxContainer, w->childHolderWidget);
-
-	// show everything in the vbox, but not the GtkWindow itself
-	gtk_widget_show_all(w->vboxWidget);
+	// Create the content box which holds the windows child
+	window->content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_container_add(GTK_CONTAINER(window->box), window->content);
+	gtk_widget_show(window->content);
 
 	// and connect our events
-	g_signal_connect(w->widget, "delete-event", G_CALLBACK(onClosing), w);
-	g_signal_connect(w->childHolderWidget, "size-allocate", G_CALLBACK(onSizeAllocate), w);
-	uiWindowOnClosing(w, defaultOnClosing, NULL);
-	uiWindowOnContentSizeChanged(w, defaultOnPositionContentSizeChanged, NULL);
+	uiWindowOnClosing(window, NULL, NULL);
+	g_signal_connect(window->widget, "delete-event", G_CALLBACK(onClosing), window);
 
-	// normally it's SetParent() that does this, but we can't call SetParent() on a uiWindow
-	// TODO we really need to clean this up, especially since see uiWindowDestroy() above
-	g_object_ref(w->widget);
+	uiWindowOnContentSizeChanged(window, NULL, NULL);
+	g_signal_connect(window->content, "size-allocate", G_CALLBACK(onSizeAllocate), window);
 
-	return w;
+	return window;
 }
