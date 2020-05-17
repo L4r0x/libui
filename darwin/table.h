@@ -7,7 +7,7 @@
 // TODO get rid of forward declaration
 @class uiprivTableModel;
 struct uiTableModel {
-	uiTableModelHandler *mh;
+	uiTableModelHandler mh;
 	void *data;
 	uiprivTableModel *m;
 	NSMutableArray *tables;

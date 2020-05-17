@@ -90,7 +90,7 @@ static void setBackgroundColor(uiprivTableView *t, NSTableRowView *rv, NSInteger
 
 @end
 
-uiTableModel *uiNewTableModel(uiTableModelHandler *mh, void* tableData)
+uiTableModel *uiNewTableModel(uiTableModelHandler mh, void* tableData)
 {
 	uiTableModel *m;
 
@@ -155,7 +155,7 @@ void uiTableModelRowDeleted(uiTableModel *m, int oldIndex)
 
 uiTableModelHandler *uiprivTableModelHandler(uiTableModel *m)
 {
-	return m->mh;
+	return &m->mh;
 }
 
 void *uiprivTableModelData(uiTableModel *m)
