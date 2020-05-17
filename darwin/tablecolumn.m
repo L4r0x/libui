@@ -179,7 +179,7 @@ struct textColumnCreateParams {
 			// doesn't seem to have an associated bezel style
 			[self->cb setBordered:NO];
 			[self->cb setTransparent:NO];
-			uiDarwinSetControlFont(self->cb, NSRegularControlSize);
+			uiDarwinSetControlFont(self->cb, NSControlSizeRegular);
 			[self->cb setTranslatesAutoresizingMaskIntoConstraints:NO];
 			[self addSubview:self->cb];
 
@@ -359,7 +359,7 @@ struct textColumnCreateParams {
 		self->modelColumn = mc;
 
 		self->p = [[NSProgressIndicator alloc] initWithFrame:NSZeroRect];
-		[self->p setControlSize:NSRegularControlSize];
+		[self->p setControlSize:NSControlSizeRegular];
 		[self->p setBezeled:YES];
 		[self->p setStyle:NSProgressIndicatorBarStyle];
 		[self->p setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -482,7 +482,7 @@ struct textColumnCreateParams {
 		[self->b setButtonType:NSMomentaryPushInButton];
 		[self->b setBordered:YES];
 		[self->b setBezelStyle:NSRoundRectBezelStyle];
-		uiDarwinSetControlFont(self->b, NSRegularControlSize);
+		uiDarwinSetControlFont(self->b, NSControlSizeRegular);
 		[self->b setTarget:self];
 		[self->b setAction:@selector(uiprivOnClicked:)];
 		[self->b setTranslatesAutoresizingMaskIntoConstraints:NO];

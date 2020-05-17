@@ -144,7 +144,7 @@ static uiDateTimePicker *finishNewDateTimePicker(NSDatePickerElementFlags elemen
 	[d->dp setDatePickerStyle:NSTextFieldAndStepperDatePickerStyle];
 	[d->dp setDatePickerElements:elements];
 	[d->dp setDatePickerMode:NSSingleDateMode];
-	uiDarwinSetControlFont(d->dp, NSRegularControlSize);
+	uiDarwinSetControlFont(d->dp, NSControlSizeRegular);
 
 	if (datePickerDelegate == nil) {
 		datePickerDelegate = [[uiprivDatePickerDelegateClass new] autorelease];

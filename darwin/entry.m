@@ -178,7 +178,7 @@ static void defaultOnChanged(uiEntry *e, void *data)
 // these are based on interface builder defaults; my comments in the old code weren't very good so I don't really know what talked about what, sorry :/
 void uiprivFinishNewTextField(NSTextField *t, BOOL isEntry)
 {
-	uiDarwinSetControlFont(t, NSRegularControlSize);
+	uiDarwinSetControlFont(t, NSControlSizeRegular);
 
 	// THE ORDER OF THESE CALLS IS IMPORTANT; CHANGE IT AND THE BORDERS WILL DISAPPEAR
 	[t setBordered:NO];

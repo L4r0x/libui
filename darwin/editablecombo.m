@@ -173,7 +173,7 @@ uiEditableCombobox *uiNewEditableCombobox(void)
 	[c->cb setUsesDataSource:NO];
 	[c->cb setButtonBordered:YES];
 	[c->cb setCompletes:NO];
-	uiDarwinSetControlFont(c->cb, NSRegularControlSize);
+	uiDarwinSetControlFont(c->cb, NSControlSizeRegular);
 
 	if (comboboxDelegate == nil) {
 		comboboxDelegate = [[editableComboboxDelegateClass new] autorelease];

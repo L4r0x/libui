@@ -115,7 +115,7 @@ uiCombobox *uiNewCombobox(void)
 	[pbcell setArrowPosition:NSPopUpArrowAtBottom];
 	// the font defined by Interface Builder is Menu 13, which is lol
 	// just use the regular control size for consistency
-	uiDarwinSetControlFont(c->pb, NSRegularControlSize);
+	uiDarwinSetControlFont(c->pb, NSControlSizeRegular);
 
 	// NSPopUpButton doesn't work like a combobox
 	// - it automatically selects the first item

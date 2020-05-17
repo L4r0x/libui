@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 # TODO figure out what other variables must be set with CACHE
 # TODO figure out if FORCE is needed here
 # TODO figure out whether STRING "" is best or if something else is better; also what FORCE does because I forget and later I say it's needed
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "" FORCE)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "" FORCE)
 
 # we want to disable incremental linking
 # see also:

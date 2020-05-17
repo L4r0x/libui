@@ -116,7 +116,7 @@ uiCheckbox *uiNewCheckbox(const char *text)
 	// doesn't seem to have an associated bezel style
 	[c->button setBordered:NO];
 	[c->button setTransparent:NO];
-	uiDarwinSetControlFont(c->button, NSRegularControlSize);
+	uiDarwinSetControlFont(c->button, NSControlSizeRegular);
 
 	if (checkboxDelegate == nil) {
 		checkboxDelegate = [[checkboxDelegateClass new] autorelease];

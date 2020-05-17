@@ -131,10 +131,10 @@ uiSlider *uiNewSlider(int min, int max)
 	[s->slider setMaxValue:max];
 	[s->slider setAllowsTickMarkValuesOnly:NO];
 	[s->slider setNumberOfTickMarks:0];
-	[s->slider setTickMarkPosition:NSTickMarkAbove];
+	[s->slider setTickMarkPosition:NSTickMarkPositionAbove];
 
 	cell = (NSSliderCell *) [s->slider cell];
-	[cell setSliderType:NSLinearSlider];
+	[cell setSliderType:NSSliderTypeLinear];
 
 	if (sliderDelegate == nil) {
 		sliderDelegate = [[sliderDelegateClass new] autorelease];

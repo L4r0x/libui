@@ -1,7 +1,7 @@
 // 15 august 2015
 #import "uipriv_darwin.h"
 
-#define defaultStyleMask (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask)
+#define defaultStyleMask (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable)
 
 struct uiWindow {
 	uiDarwinControl c;
@@ -289,7 +289,7 @@ void uiWindowSetFullscreen(uiWindow *w, int fullscreen)
 	[w->window toggleFullScreen:w->window];
 	w->suppressSizeChanged = NO;
 	if (!w->fullscreen && w->borderless)		// borderless doesn't play nice with fullscreen; restore borderless after removing
-		[w->window setStyleMask:NSBorderlessWindowMask];
+		[w->window setStyleMask:NSWindowStyleMaskBorderless];
 }
 
 void uiWindowOnContentSizeChanged(uiWindow *w, void (*f)(uiWindow *, void *), void *data)
@@ -315,7 +315,7 @@ void uiWindowSetBorderless(uiWindow *w, int borderless)
 	if (w->borderless) {
 		// borderless doesn't play nice with fullscreen; wait for later
 		if (!w->fullscreen)
-			[w->window setStyleMask:NSBorderlessWindowMask];
+			[w->window setStyleMask:NSWindowStyleMaskBorderless];
 	} else {
 		[w->window setStyleMask:defaultStyleMask];
 		// borderless doesn't play nice with fullscreen; restore state
