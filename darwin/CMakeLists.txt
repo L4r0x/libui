@@ -13,7 +13,6 @@ list(APPEND _LIBUI_SOURCES
 	darwin/debug.m
 	darwin/editablecombo.m
 	darwin/entry.m
-	darwin/future.m
 	darwin/grid.m
 	darwin/group.m
 	darwin/image.m
@@ -34,7 +33,6 @@ list(APPEND _LIBUI_SOURCES
 	darwin/tablecolumn.m
 	darwin/text.m
 	darwin/window.m
-	darwin/winmoveresize.m
 )
 set(_LIBUI_SOURCES ${_LIBUI_SOURCES} PARENT_SCOPE)
 

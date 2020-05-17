@@ -18,20 +18,6 @@ struct uiWindow {
 	int borderless;
 };
 
-@implementation uiprivNSWindow
-
-- (void)uiprivDoMove:(NSEvent *)initialEvent
-{
-	uiprivDoManualMove(self, initialEvent);
-}
-
-- (void)uiprivDoResize:(NSEvent *)initialEvent on:(uiWindowResizeEdge)edge
-{
-	uiprivDoManualResize(self, initialEvent, edge);
-}
-
-@end
-
 @interface windowDelegateClass : NSObject<NSWindowDelegate> {
 	uiprivMap *windows;
 }
@@ -375,7 +361,7 @@ uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 
 	uiDarwinNewControl(uiWindow, w);
 
-	w->window = [[uiprivNSWindow alloc] initWithContentRect:NSMakeRect(0, 0, (CGFloat) width, (CGFloat) height)
+	w->window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, (CGFloat) width, (CGFloat) height)
 		styleMask:defaultStyleMask
 		backing:NSBackingStoreBuffered
 		defer:YES];

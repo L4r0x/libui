@@ -18,11 +18,6 @@
 #define uiprivToNSString(str) [NSString stringWithUTF8String:(str)]
 #define uiprivFromNSString(str) [(str) UTF8String]
 
-// TODO find a better place for this
-#ifndef NSAppKitVersionNumber10_9
-#define NSAppKitVersionNumber10_9 1265
-#endif
-
 _UI_ENUM(uiWindowResizeEdge){
 	uiWindowResizeEdgeLeft,
 	uiWindowResizeEdgeTop,
@@ -85,10 +80,6 @@ extern void uiprivFinishNewTextField(NSTextField *, BOOL);
 extern NSTextField *uiprivNewEditableTextField(void);
 
 // window.m
-@interface uiprivNSWindow : NSWindow
-- (void)uiprivDoMove:(NSEvent *)initialEvent;
-- (void)uiprivDoResize:(NSEvent *)initialEvent on:(uiWindowResizeEdge)edge;
-@end
 extern uiWindow *uiprivWindowFromNSWindow(NSWindow *);
 
 // alloc.m
@@ -136,15 +127,3 @@ extern NSTextField *uiprivNewLabel(NSString *str);
 
 // image.m
 extern NSImage *uiprivImageNSImage(uiImage *);
-
-// winmoveresize.m
-extern void uiprivDoManualMove(NSWindow *w, NSEvent *initialEvent);
-extern void uiprivDoManualResize(NSWindow *w, NSEvent *initialEvent, uiWindowResizeEdge edge);
-
-// future.m
-extern CFStringRef *uiprivFUTURE_kCTFontOpenTypeFeatureTag;
-extern CFStringRef *uiprivFUTURE_kCTFontOpenTypeFeatureValue;
-extern CFStringRef *uiprivFUTURE_kCTBackgroundColorAttributeName;
-extern void uiprivLoadFutures(void);
-extern void uiprivFUTURE_NSLayoutConstraint_setIdentifier(NSLayoutConstraint *constraint, NSString *identifier);
-extern BOOL uiprivFUTURE_NSWindow_performWindowDragWithEvent(NSWindow *w, NSEvent *initialEvent);
