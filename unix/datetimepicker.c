@@ -645,6 +645,8 @@ static GtkWidget *newTP(void)
 	return w;
 }
 
+uiUnixDefineControlFunctions(uiDateTimePicker)
+
 uiDateTimePicker *finishNewDateTimePicker(GtkWidget *(*fn)(void))
 {
 	uiDateTimePicker *d;

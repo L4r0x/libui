@@ -85,6 +85,8 @@ void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 	gtk_text_view_set_editable(e->textview, editable);
 }
 
+uiUnixDefineControlFunctions(uiMultilineEntry)
+
 static uiMultilineEntry *finishMultilineEntry(GtkPolicyType hpolicy, GtkWrapMode wrapMode)
 {
 	uiMultilineEntry *e;

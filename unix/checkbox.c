@@ -60,6 +60,8 @@ void uiCheckboxSetChecked(uiCheckbox *c, int checked)
 	g_signal_handler_unblock(c->toggleButton, c->onToggledSignal);
 }
 
+uiUnixDefineControlFunctions(uiCheckbox)
+
 uiCheckbox *uiNewCheckbox(const char *text)
 {
 	uiCheckbox *c;

@@ -61,6 +61,8 @@ void uiEditableComboboxOnChanged(uiEditableCombobox *c, void (*f)(uiEditableComb
 	c->onChangedData = data;
 }
 
+uiUnixDefineControlFunctions(uiEditableCombobox)
+
 uiEditableCombobox *uiNewEditableCombobox(void)
 {
 	uiEditableCombobox *c;

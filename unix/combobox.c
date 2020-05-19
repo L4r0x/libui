@@ -49,6 +49,8 @@ void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), v
 	c->onSelectedData = data;
 }
 
+uiUnixDefineControlFunctions(uiCombobox)
+
 uiCombobox *uiNewCombobox(void)
 {
 	uiCombobox *c;

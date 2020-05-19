@@ -103,6 +103,8 @@ void uiRadioButtonsOnSelected(uiRadioButtons *r, void (*f)(uiRadioButtons *, voi
 	r->onSelectedData = data;
 }
 
+uiUnixDefineControlFunctions(uiRadioButtons)
+
 uiRadioButtons *uiNewRadioButtons(void)
 {
 	uiRadioButtons *r;

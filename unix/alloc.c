@@ -32,20 +32,19 @@ void uiprivInitAlloc(void)
 
 void uiprivUninitAlloc(void)
 {
-	if (allocations->len == 0) {
-		g_array_free(allocations, TRUE);
-		return;
+	if (allocations->len > 0) {
+		char *str = g_strdup("");
+		for (guint i = 0; i < allocations->len; ++i) {
+			uiprivMem mem = g_array_index(allocations, uiprivMem, i);
+			char *new_str = g_strdup_printf("%s%p %s\n", str, mem.p, mem.type);
+			g_free(str);
+			str = new_str;
+		}
+		uiprivUserBug("Some data was leaked; either you left a uiControl lying around or there's a bug in libui itself. Leaked data:\n%s", str);
+		g_free(str);
 	}
 
-	char *str = g_strdup("");
-	for (guint i = 0; i < allocations->len; ++i) {
-		uiprivMem mem = g_array_index(allocations, uiprivMem, i);
-		char *new_str = g_strdup_printf("%s%p %s\n", str, mem.p, mem.type);
-		g_free(str);
-		str = new_str;
-	}
-	uiprivUserBug("Some data was leaked; either you left a uiControl lying around or there's a bug in libui itself. Leaked data:\n%s", str);
-	g_free(str);
+	g_array_free(allocations, TRUE);
 }
 
 void *uiprivAlloc(size_t size, const char *type)

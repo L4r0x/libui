@@ -58,10 +58,9 @@ _UI_EXTERN void uiFreeText(char *text);
 
 typedef struct uiControl uiControl;
 
-struct uiControl {
-	uint32_t Signature;
-	uint32_t OSSignature;
-	uint32_t TypeSignature;
+// The function table for uiControls is defined a single time for each control type.
+// All instances of the same type share the same uiControlFunctions.
+struct uiControlFunctions {
 	void (*Destroy)(uiControl *);
 	uintptr_t (*Handle)(uiControl *);
 	uiControl *(*Parent)(uiControl *);
@@ -74,26 +73,33 @@ struct uiControl {
 	void (*Enable)(uiControl *);
 	void (*Disable)(uiControl *);
 };
-// TOOD add argument names to all arguments
+
+typedef struct uiControlFunctions uiControlFunctions;
+
+struct uiControl {
+	uint32_t TypeSignature; // type identifier
+	uiControlFunctions *functions;
+	// platform specific member variables...
+};
+
 #define uiControl(this) ((uiControl *)(this))
-_UI_EXTERN void uiControlDestroy(uiControl *);
-_UI_EXTERN uintptr_t uiControlHandle(uiControl *);
-_UI_EXTERN uiControl *uiControlParent(uiControl *);
-_UI_EXTERN void uiControlSetParent(uiControl *, uiControl *);
-_UI_EXTERN int uiControlToplevel(uiControl *);
-_UI_EXTERN int uiControlVisible(uiControl *);
-_UI_EXTERN void uiControlShow(uiControl *);
-_UI_EXTERN void uiControlHide(uiControl *);
-_UI_EXTERN int uiControlEnabled(uiControl *);
-_UI_EXTERN void uiControlEnable(uiControl *);
-_UI_EXTERN void uiControlDisable(uiControl *);
+_UI_EXTERN void uiControlDestroy(uiControl *control);
+_UI_EXTERN uintptr_t uiControlHandle(uiControl *control);
+_UI_EXTERN uiControl *uiControlParent(uiControl *control);
+_UI_EXTERN void uiControlSetParent(uiControl *control, uiControl *parent);
+_UI_EXTERN int uiControlToplevel(uiControl *control);
+_UI_EXTERN int uiControlVisible(uiControl *control);
+_UI_EXTERN void uiControlShow(uiControl *control);
+_UI_EXTERN void uiControlHide(uiControl *control);
+_UI_EXTERN int uiControlEnabled(uiControl *control);
+_UI_EXTERN void uiControlEnable(uiControl *control);
+_UI_EXTERN void uiControlDisable(uiControl *control);
 
-_UI_EXTERN uiControl *uiAllocControl(size_t n, uint32_t OSsig, uint32_t typesig, const char *typenamestr);
-_UI_EXTERN void uiFreeControl(uiControl *);
+_UI_EXTERN uiControl *uiAllocControl(size_t n, uint32_t typesig, const char *typenamestr, uiControlFunctions *functions);
+_UI_EXTERN void uiFreeControl(uiControl *control);
 
-// TODO make sure all controls have these
-_UI_EXTERN void uiControlVerifySetParent(uiControl *, uiControl *);
-_UI_EXTERN int uiControlEnabledToUser(uiControl *);
+_UI_EXTERN void uiControlVerifySetParent(uiControl *control, uiControl *parent);
+_UI_EXTERN int uiControlEnabledToUser(uiControl *control);
 
 _UI_EXTERN void uiUserBugCannotSetParentOnToplevel(const char *type);
 

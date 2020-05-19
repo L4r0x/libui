@@ -60,6 +60,8 @@ void uiEntrySetReadOnly(uiEntry *e, int readonly)
 	gtk_editable_set_editable(e->editable, editable);
 }
 
+uiUnixDefineControlFunctions(uiEntry)
+
 static uiEntry *finishNewEntry(GtkWidget *w, const gchar *signal)
 {
 	uiEntry *e;

@@ -20,6 +20,8 @@ void uiLabelSetText(uiLabel *l, const char *text)
 	gtk_label_set_text(l->label, text);
 }
 
+uiUnixDefineControlFunctions(uiLabel)
+
 uiLabel *uiNewLabel(const char *text)
 {
 	uiLabel *l;

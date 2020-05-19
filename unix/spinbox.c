@@ -45,6 +45,8 @@ void uiSpinboxOnChanged(uiSpinbox *s, void (*f)(uiSpinbox *, void *), void *data
 	s->onChangedData = data;
 }
 
+uiUnixDefineControlFunctions(uiSpinbox)
+
 uiSpinbox *uiNewSpinbox(int min, int max)
 {
 	uiSpinbox *s;

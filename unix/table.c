@@ -311,6 +311,8 @@ static void uiTableDestroy(uiControl *control)
 	uiFreeControl(uiControl(table));
 }
 
+uiUnixDefineControlFunctions(uiTable)
+
 uiTable *uiNewTable(uiTableParams *p)
 {
 	uiTable *table;

@@ -8,6 +8,7 @@ struct uiSeparator {
 };
 
 uiUnixControlAllDefaults(uiSeparator)
+uiUnixDefineControlFunctions(uiSeparator)
 
 uiSeparator *uiNewHorizontalSeparator(void)
 {

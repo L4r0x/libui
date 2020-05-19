@@ -72,6 +72,8 @@ void uiGroupSetMargined(uiGroup *group, int margined)
 	}
 }
 
+uiUnixDefineControlFunctions(uiGroup)
+
 uiGroup *uiNewGroup(const char *text)
 {
 	uiGroup *group;

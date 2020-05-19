@@ -220,6 +220,8 @@ void uiWindowSetMargined(uiWindow *window, int margined)
 	uiprivWidgetSetMargined(widget, margined);
 }
 
+uiUnixDefineControlFunctions(uiWindow)
+
 uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 {
 	uiWindow *window;

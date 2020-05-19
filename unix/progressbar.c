@@ -61,6 +61,8 @@ void uiProgressBarSetValue(uiProgressBar *p, int value)
 	gtk_progress_bar_set_fraction(p->pbar, ((gdouble) value) / 100);
 }
 
+uiUnixDefineControlFunctions(uiProgressBar)
+
 uiProgressBar *uiNewProgressBar(void)
 {
 	uiProgressBar *p;

@@ -58,13 +58,13 @@ struct uiUnixControl {
 #define uiUnixControlDefaultShow(type) \
 	static void type ## Show(uiControl *c) \
 	{ \
-		/*TODO part of massive hack about hidden before*/uiUnixControl(c)->explicitlyHidden=FALSE; \
+		uiUnixControl(c)->explicitlyHidden=FALSE; \
 		gtk_widget_show(type(c)->widget); \
 	}
 #define uiUnixControlDefaultHide(type) \
 	static void type ## Hide(uiControl *c) \
 	{ \
-		/*TODO part of massive hack about hidden before*/uiUnixControl(c)->explicitlyHidden=TRUE; \
+		uiUnixControl(c)->explicitlyHidden=TRUE; \
 		gtk_widget_hide(type(c)->widget); \
 	}
 #define uiUnixControlDefaultEnabled(type) \
@@ -99,23 +99,27 @@ struct uiUnixControl {
 	uiUnixControlDefaultDestroy(type) \
 	uiUnixControlAllDefaultsExceptDestroy(type)
 
-// TODO document
-#define uiUnixNewControl(type, var)                                       \
-	var = type(uiUnixAllocControl(sizeof(type), type##Signature, #type)); \
-	uiControl(var)->Destroy = type##Destroy;                              \
-	uiControl(var)->Handle = type##Handle;                                \
-	uiControl(var)->Parent = type##Parent;                                \
-	uiControl(var)->SetParent = type##SetParent;                          \
-	uiControl(var)->Toplevel = type##Toplevel;                            \
-	uiControl(var)->Visible = type##Visible;                              \
-	uiControl(var)->Show = type##Show;                                    \
-	uiControl(var)->Hide = type##Hide;                                    \
-	uiControl(var)->Enabled = type##Enabled;                              \
-	uiControl(var)->Enable = type##Enable;                                \
-	uiControl(var)->Disable = type##Disable;
+#define uiUnixDefineControlFunctions(type)        \
+	static uiControlFunctions type##Functions = { \
+		.Destroy = type##Destroy,                 \
+		.Handle = type##Handle,                   \
+		.Parent = type##Parent,                   \
+		.SetParent = type##SetParent,             \
+		.Toplevel = type##Toplevel,               \
+		.Visible = type##Visible,                 \
+		.Show = type##Show,                       \
+		.Hide = type##Hide,                       \
+		.Enabled = type##Enabled,                 \
+		.Enable = type##Enable,                   \
+		.Disable = type##Disable,                 \
+	};
 
 // TODO document
-_UI_EXTERN uiUnixControl *uiUnixAllocControl(size_t n, uint32_t typesig, const char *typenamestr);
+#define uiUnixNewControl(type, var) \
+	var = type(uiUnixAllocControl(sizeof(type), type##Signature, #type, &type##Functions));
+
+// TODO document
+_UI_EXTERN uiUnixControl *uiUnixAllocControl(size_t n, uint32_t typesig, const char *typenamestr, uiControlFunctions *functions);
 
 // uiUnixStrdupText() takes the given string and produces a copy of it suitable for being freed by uiFreeText().
 _UI_EXTERN char *uiUnixStrdupText(const char *);

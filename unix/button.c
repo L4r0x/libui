@@ -34,6 +34,8 @@ void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *, void *), void *data)
 	b->onClickedData = data;
 }
 
+uiUnixDefineControlFunctions(uiButton)
+
 uiButton *uiNewButton(const char *text)
 {
 	uiButton *b;

@@ -92,6 +92,8 @@ void uiGridSetPadded(uiGrid *grid, int padded)
 	}
 }
 
+uiUnixDefineControlFunctions(uiGrid)
+
 uiGrid *uiNewGrid(void)
 {
 	uiGrid *grid;

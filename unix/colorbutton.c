@@ -54,6 +54,8 @@ void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *)
 	b->onChangedData = data;
 }
 
+uiUnixDefineControlFunctions(uiColorButton)
+
 uiColorButton *uiNewColorButton(void)
 {
 	uiColorButton *b;

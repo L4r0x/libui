@@ -62,7 +62,12 @@ void uiBoxDelete(uiBox *box, int index)
 
 	GtkWidget *widget = GTK_WIDGET(uiControlHandle(child));
 	gtk_container_remove(GTK_CONTAINER(box->widget), widget);
-	gtk_size_group_remove_widget(box->stretchygroup, widget);
+
+	// Remove from size group
+	GSList *widgets = gtk_size_group_get_widgets(box->stretchygroup);
+	if (g_slist_find(widgets, widget) != NULL) {
+		gtk_size_group_remove_widget(box->stretchygroup, widget);
+	}
 }
 
 int uiBoxPadded(uiBox *box)
@@ -82,6 +87,8 @@ void uiBoxSetPadded(uiBox *box, int padded)
 		gtk_box_set_spacing(GTK_BOX(box->widget), 0);
 	}
 }
+
+uiUnixDefineControlFunctions(uiBox)
 
 static uiBox *uiprivNewBox(GtkOrientation orientation)
 {

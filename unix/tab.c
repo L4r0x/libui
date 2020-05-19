@@ -75,6 +75,8 @@ void uiTabSetMargined(uiTab *tab, int n, int margined)
 	uiprivWidgetSetMargined(widget, margined);
 }
 
+uiUnixDefineControlFunctions(uiTab)
+
 uiTab *uiNewTab(void)
 {
 	uiTab *tab;

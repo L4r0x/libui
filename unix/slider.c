@@ -44,6 +44,8 @@ void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *, void *), void *data)
 	s->onChangedData = data;
 }
 
+uiUnixDefineControlFunctions(uiSlider)
+
 uiSlider *uiNewSlider(int min, int max)
 {
 	uiSlider *s;

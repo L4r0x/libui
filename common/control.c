@@ -4,70 +4,65 @@
 
 void uiControlDestroy(uiControl *c)
 {
-	(*(c->Destroy))(c);
+	(*(c->functions->Destroy))(c);
 }
 
 uintptr_t uiControlHandle(uiControl *c)
 {
-	return (*(c->Handle))(c);
+	return (*(c->functions->Handle))(c);
 }
 
 uiControl *uiControlParent(uiControl *c)
 {
-	return (*(c->Parent))(c);
+	return (*(c->functions->Parent))(c);
 }
 
 void uiControlSetParent(uiControl *c, uiControl *parent)
 {
-	(*(c->SetParent))(c, parent);
+	(*(c->functions->SetParent))(c, parent);
 }
 
 int uiControlToplevel(uiControl *c)
 {
-	return (*(c->Toplevel))(c);
+	return (*(c->functions->Toplevel))(c);
 }
 
 int uiControlVisible(uiControl *c)
 {
-	return (*(c->Visible))(c);
+	return (*(c->functions->Visible))(c);
 }
 
 void uiControlShow(uiControl *c)
 {
-	(*(c->Show))(c);
+	(*(c->functions->Show))(c);
 }
 
 void uiControlHide(uiControl *c)
 {
-	(*(c->Hide))(c);
+	(*(c->functions->Hide))(c);
 }
 
 int uiControlEnabled(uiControl *c)
 {
-	return (*(c->Enabled))(c);
+	return (*(c->functions->Enabled))(c);
 }
 
 void uiControlEnable(uiControl *c)
 {
-	(*(c->Enable))(c);
+	(*(c->functions->Enable))(c);
 }
 
 void uiControlDisable(uiControl *c)
 {
-	(*(c->Disable))(c);
+	(*(c->functions->Disable))(c);
 }
 
-#define uiprivControlSignature 0x7569436F
-
-uiControl *uiAllocControl(size_t size, uint32_t OSsig, uint32_t typesig, const char *typenamestr)
+uiControl *uiAllocControl(size_t size, uint32_t typesig, const char *typenamestr, uiControlFunctions *functions)
 {
-	uiControl *c;
-
-	c = (uiControl *) uiprivAlloc(size, typenamestr);
-	c->Signature = uiprivControlSignature;
-	c->OSSignature = OSsig;
-	c->TypeSignature = typesig;
-	return c;
+	uiControl *control = (uiControl *) uiprivAlloc(size, typenamestr);
+	control->TypeSignature = typesig;
+	control->functions = functions;
+	return control;
 }
 
 void uiFreeControl(uiControl *c)
