@@ -297,8 +297,6 @@ void uiTableAppendButtonColumn(uiTable *table, const char *name, int buttonModel
 	g_ptr_array_add(table->columnParams, params);
 }
 
-uiUnixControlAllDefaultsExceptDestroy(uiTable)
-
 static void uiTableDestroy(uiControl *control)
 {
 	uiTable *table = uiTable(control);
@@ -311,12 +309,12 @@ static void uiTableDestroy(uiControl *control)
 	uiFreeControl(uiControl(table));
 }
 
-uiUnixDefineControlFunctions(uiTable)
+uiUnixControlDefaultHandle(uiTable)
+uiUnixControlFunctionsDefaultExceptDestroy(uiTable)
 
 uiTable *uiNewTable(uiTableParams *p)
 {
-	uiTable *table;
-	uiUnixNewControl(uiTable, table);
+	uiTable *table = uiUnixNewControl(uiTable);
 	table->model = p->Model;
 	table->columnParams = g_ptr_array_new();
 	table->backgroundColumn = p->RowBackgroundColorModelColumn;

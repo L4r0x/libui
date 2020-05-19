@@ -21,85 +21,56 @@ struct uiUnixControl {
 	uiControl *parent;
 	gboolean explicitlyHidden;
 };
-#define uiUnixControl(this) ((uiUnixControl *) (this))
+#define uiUnixControl(this) ((uiUnixControl *)(this))
 
-#define uiUnixControlDefaultDestroy(type) \
-	static void type ## Destroy(uiControl *c) \
-	{ \
-		g_object_unref(type(c)->widget); \
-		uiFreeControl(c); \
-	}
-#define uiUnixControlDefaultHandle(type) \
-	static uintptr_t type ## Handle(uiControl *c) \
-	{ \
-		return (uintptr_t) (type(c)->widget); \
-	}
-#define uiUnixControlDefaultParent(type) \
-	static uiControl *type ## Parent(uiControl *c) \
-	{ \
-		return uiUnixControl(c)->parent; \
-	}
-#define uiUnixControlDefaultSetParent(type) \
-	static void type ## SetParent(uiControl *c, uiControl *parent) \
-	{ \
-		uiControlVerifySetParent(c, parent); \
-		uiUnixControl(c)->parent = parent; \
-	}
-#define uiUnixControlDefaultToplevel(type) \
-	static int type ## Toplevel(uiControl *c) \
-	{ \
-		return 0; \
-	}
-#define uiUnixControlDefaultVisible(type) \
-	static int type ## Visible(uiControl *c) \
-	{ \
-		return gtk_widget_get_visible(type(c)->widget); \
-	}
-#define uiUnixControlDefaultShow(type) \
-	static void type ## Show(uiControl *c) \
-	{ \
-		uiUnixControl(c)->explicitlyHidden=FALSE; \
-		gtk_widget_show(type(c)->widget); \
-	}
-#define uiUnixControlDefaultHide(type) \
-	static void type ## Hide(uiControl *c) \
-	{ \
-		uiUnixControl(c)->explicitlyHidden=TRUE; \
-		gtk_widget_hide(type(c)->widget); \
-	}
-#define uiUnixControlDefaultEnabled(type) \
-	static int type ## Enabled(uiControl *c) \
-	{ \
-		return gtk_widget_get_sensitive(type(c)->widget); \
-	}
-#define uiUnixControlDefaultEnable(type) \
-	static void type ## Enable(uiControl *c) \
-	{ \
-		gtk_widget_set_sensitive(type(c)->widget, TRUE); \
-	}
-#define uiUnixControlDefaultDisable(type) \
-	static void type ## Disable(uiControl *c) \
-	{ \
-		gtk_widget_set_sensitive(type(c)->widget, FALSE); \
+void uiUnixControlDestroy(uiControl *c);
+uiControl *uiUnixControlParent(uiControl *c);
+void uiUnixControlSetParent(uiControl *c, uiControl *parent);
+int uiUnixControlToplevel(uiControl *c);
+int uiUnixControlVisible(uiControl *c);
+void uiUnixControlShow(uiControl *c);
+void uiUnixControlHide(uiControl *c);
+int uiUnixControlEnabled(uiControl *c);
+void uiUnixControlEnable(uiControl *c);
+void uiUnixControlDisable(uiControl *c);
+
+#define uiUnixControlDefaultHandle(type)        \
+	static uintptr_t type##Handle(uiControl *c) \
+	{                                           \
+		return (uintptr_t)(type(c)->widget);    \
 	}
 
-#define uiUnixControlAllDefaultsExceptDestroy(type) \
-	uiUnixControlDefaultHandle(type) \
-	uiUnixControlDefaultParent(type) \
-	uiUnixControlDefaultSetParent(type) \
-	uiUnixControlDefaultToplevel(type) \
-	uiUnixControlDefaultVisible(type) \
-	uiUnixControlDefaultShow(type) \
-	uiUnixControlDefaultHide(type) \
-	uiUnixControlDefaultEnabled(type) \
-	uiUnixControlDefaultEnable(type) \
-	uiUnixControlDefaultDisable(type)
+#define uiUnixControlFunctionsDefaultExceptDestroy(type) \
+	static uiControlFunctions type##Functions = {        \
+		.Destroy = type##Destroy,                        \
+		.Handle = type##Handle,                          \
+		.Parent = uiUnixControlParent,                   \
+		.SetParent = uiUnixControlSetParent,             \
+		.Toplevel = uiUnixControlToplevel,               \
+		.Visible = uiUnixControlVisible,                 \
+		.Show = uiUnixControlShow,                       \
+		.Hide = uiUnixControlHide,                       \
+		.Enabled = uiUnixControlEnabled,                 \
+		.Enable = uiUnixControlEnable,                   \
+		.Disable = uiUnixControlDisable,                 \
+	};
 
-#define uiUnixControlAllDefaults(type) \
-	uiUnixControlDefaultDestroy(type) \
-	uiUnixControlAllDefaultsExceptDestroy(type)
+#define uiUnixControlFunctionsDefault(type)       \
+	static uiControlFunctions type##Functions = { \
+		.Destroy = uiUnixControlDestroy,          \
+		.Handle = type##Handle,                   \
+		.Parent = uiUnixControlParent,            \
+		.SetParent = uiUnixControlSetParent,      \
+		.Toplevel = uiUnixControlToplevel,        \
+		.Visible = uiUnixControlVisible,          \
+		.Show = uiUnixControlShow,                \
+		.Hide = uiUnixControlHide,                \
+		.Enabled = uiUnixControlEnabled,          \
+		.Enable = uiUnixControlEnable,            \
+		.Disable = uiUnixControlDisable,          \
+	};
 
-#define uiUnixDefineControlFunctions(type)        \
+#define uiUnixControlFunctions(type)              \
 	static uiControlFunctions type##Functions = { \
 		.Destroy = type##Destroy,                 \
 		.Handle = type##Handle,                   \
@@ -114,15 +85,16 @@ struct uiUnixControl {
 		.Disable = type##Disable,                 \
 	};
 
-// TODO document
-#define uiUnixNewControl(type, var) \
-	var = type(uiUnixAllocControl(sizeof(type), type##Signature, #type, &type##Functions));
+// Macro for allocating new controls of a specific type
+#define uiUnixNewControl(type) \
+	type(uiUnixAllocControl(sizeof(type), type##Signature, #type, &type##Functions))
 
-// TODO document
-_UI_EXTERN uiUnixControl *uiUnixAllocControl(size_t n, uint32_t typesig, const char *typenamestr, uiControlFunctions *functions);
+// Allocate new controls of a specific type
+_UI_EXTERN uiUnixControl *uiUnixAllocControl(
+	size_t n, uint32_t typesig, const char *typenamestr, uiControlFunctions *functions);
 
-// uiUnixStrdupText() takes the given string and produces a copy of it suitable for being freed by uiFreeText().
-_UI_EXTERN char *uiUnixStrdupText(const char *);
+// Produces a copy of the string suitable for being freed by uiFreeText().
+_UI_EXTERN char *uiUnixStrdupText(const char *string);
 
 #ifdef __cplusplus
 }

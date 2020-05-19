@@ -41,13 +41,6 @@ static void onSizeAllocate(GtkWidget *widget, GdkRectangle *allocation, gpointer
 	}
 }
 
-uiUnixControlDefaultHandle(uiWindow)
-uiUnixControlDefaultVisible(uiWindow)
-uiUnixControlDefaultHide(uiWindow)
-uiUnixControlDefaultEnabled(uiWindow)
-uiUnixControlDefaultEnable(uiWindow)
-uiUnixControlDefaultDisable(uiWindow)
-
 static void uiWindowDestroy(uiControl *control)
 {
 	uiWindow *window = uiWindow(control);
@@ -220,13 +213,18 @@ void uiWindowSetMargined(uiWindow *window, int margined)
 	uiprivWidgetSetMargined(widget, margined);
 }
 
-uiUnixDefineControlFunctions(uiWindow)
+#define uiWindowHandle uiUnixControlHandle
+#define uiWindowVisible uiUnixControlVisible
+#define uiWindowHide uiUnixControlHide
+#define uiWindowEnabled uiUnixControlEnabled
+#define uiWindowEnable uiUnixControlEnable
+#define uiWindowDisable uiUnixControlDisable
+uiUnixControlDefaultHandle(uiWindow)
+uiUnixControlFunctions(uiWindow)
 
 uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 {
-	uiWindow *window;
-	uiUnixNewControl(uiWindow, window);
-
+	uiWindow *window = uiUnixNewControl(uiWindow);
 	window->widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(window->widget), title);
 	gtk_window_resize(GTK_WINDOW(window->widget), width, height);

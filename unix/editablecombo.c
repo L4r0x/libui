@@ -12,8 +12,6 @@ struct uiEditableCombobox {
 	gulong onChangedSignal;
 };
 
-uiUnixControlAllDefaults(uiEditableCombobox)
-
 static void onChanged(GtkComboBox *cbox, gpointer data)
 {
 	uiEditableCombobox *c = uiEditableCombobox(data);
@@ -61,14 +59,12 @@ void uiEditableComboboxOnChanged(uiEditableCombobox *c, void (*f)(uiEditableComb
 	c->onChangedData = data;
 }
 
-uiUnixDefineControlFunctions(uiEditableCombobox)
+uiUnixControlDefaultHandle(uiEditableCombobox)
+uiUnixControlFunctionsDefault(uiEditableCombobox)
 
 uiEditableCombobox *uiNewEditableCombobox(void)
 {
-	uiEditableCombobox *c;
-
-	uiUnixNewControl(uiEditableCombobox, c);
-
+	uiEditableCombobox *c = uiUnixNewControl(uiEditableCombobox);
 	c->widget = gtk_combo_box_text_new_with_entry();
 	c->bin = GTK_BIN(c->widget);
 	c->combobox = GTK_COMBO_BOX(c->widget);

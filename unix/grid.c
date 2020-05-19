@@ -6,8 +6,6 @@ struct uiGrid {
 	GPtrArray *children;
 };
 
-uiUnixControlAllDefaultsExceptDestroy(uiGrid)
-
 static void uiGridDestroy(uiControl *control)
 {
 	uiGrid *grid = uiGrid(control);
@@ -92,12 +90,12 @@ void uiGridSetPadded(uiGrid *grid, int padded)
 	}
 }
 
-uiUnixDefineControlFunctions(uiGrid)
+uiUnixControlDefaultHandle(uiGrid)
+uiUnixControlFunctionsDefaultExceptDestroy(uiGrid)
 
 uiGrid *uiNewGrid(void)
 {
-	uiGrid *grid;
-	uiUnixNewControl(uiGrid, grid);
+	uiGrid *grid = uiUnixNewControl(uiGrid);
 	grid->widget = gtk_grid_new();
 	grid->children = g_ptr_array_new();
 

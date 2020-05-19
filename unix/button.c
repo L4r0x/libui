@@ -8,8 +8,6 @@ struct uiButton {
 	void *onClickedData;
 };
 
-uiUnixControlAllDefaults(uiButton)
-
 static void onClicked(GtkButton *button, gpointer data)
 {
 	uiButton *b = uiButton(data);
@@ -34,12 +32,12 @@ void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *, void *), void *data)
 	b->onClickedData = data;
 }
 
-uiUnixDefineControlFunctions(uiButton)
+uiUnixControlDefaultHandle(uiButton)
+uiUnixControlFunctionsDefault(uiButton)
 
 uiButton *uiNewButton(const char *text)
 {
-	uiButton *b;
-	uiUnixNewControl(uiButton, b);
+	uiButton *b = uiUnixNewControl(uiButton);
 	b->widget = gtk_button_new_with_label(text);
 	b->onClicked = NULL;
 	b->onClickedData = NULL;

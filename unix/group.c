@@ -7,8 +7,6 @@ struct uiGroup {
 	int margined;
 };
 
-uiUnixControlAllDefaultsExceptDestroy(uiGroup)
-
 static void uiGroupDestroy(uiControl *control)
 {
 	uiGroup *group = uiGroup(control);
@@ -72,13 +70,12 @@ void uiGroupSetMargined(uiGroup *group, int margined)
 	}
 }
 
-uiUnixDefineControlFunctions(uiGroup)
+uiUnixControlDefaultHandle(uiGroup)
+uiUnixControlFunctionsDefaultExceptDestroy(uiGroup)
 
 uiGroup *uiNewGroup(const char *text)
 {
-	uiGroup *group;
-
-	uiUnixNewControl(uiGroup, group);
+	uiGroup *group = uiUnixNewControl(uiGroup);
 
 	group->widget = gtk_frame_new(text);
 

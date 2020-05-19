@@ -6,8 +6,6 @@ struct uiTab {
 	GPtrArray *pages;
 };
 
-uiUnixControlAllDefaultsExceptDestroy(uiTab)
-
 static void uiTabDestroy(uiControl *control)
 {
 	uiTab *tab = uiTab(control);
@@ -75,12 +73,12 @@ void uiTabSetMargined(uiTab *tab, int n, int margined)
 	uiprivWidgetSetMargined(widget, margined);
 }
 
-uiUnixDefineControlFunctions(uiTab)
+uiUnixControlDefaultHandle(uiTab)
+uiUnixControlFunctionsDefaultExceptDestroy(uiTab)
 
 uiTab *uiNewTab(void)
 {
-	uiTab *tab;
-	uiUnixNewControl(uiTab, tab);
+	uiTab *tab = uiUnixNewControl(uiTab);
 	tab->widget = gtk_notebook_new();
 	tab->pages = g_ptr_array_new();
 

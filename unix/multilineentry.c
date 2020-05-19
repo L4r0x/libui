@@ -16,8 +16,6 @@ struct uiMultilineEntry {
 	gulong onChangedSignal;
 };
 
-uiUnixControlAllDefaults(uiMultilineEntry)
-
 static void onChanged(GtkTextBuffer *textbuf, gpointer data)
 {
 	uiMultilineEntry *e = uiMultilineEntry(data);
@@ -85,14 +83,12 @@ void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 	gtk_text_view_set_editable(e->textview, editable);
 }
 
-uiUnixDefineControlFunctions(uiMultilineEntry)
+uiUnixControlDefaultHandle(uiMultilineEntry)
+uiUnixControlFunctionsDefault(uiMultilineEntry)
 
 static uiMultilineEntry *finishMultilineEntry(GtkPolicyType hpolicy, GtkWrapMode wrapMode)
 {
-	uiMultilineEntry *e;
-
-	uiUnixNewControl(uiMultilineEntry, e);
-
+	uiMultilineEntry *e = uiUnixNewControl(uiMultilineEntry);
 	e->widget = gtk_scrolled_window_new(NULL, NULL);
 	e->scontainer = GTK_CONTAINER(e->widget);
 	e->sw = GTK_SCROLLED_WINDOW(e->widget);

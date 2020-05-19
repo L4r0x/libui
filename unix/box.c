@@ -9,8 +9,6 @@ struct uiBox {
 	GtkSizeGroup *stretchygroup;
 };
 
-uiUnixControlAllDefaultsExceptDestroy(uiBox)
-
 static void uiBoxDestroy(uiControl *control)
 {
 	uiBox *box = uiBox(control);
@@ -88,12 +86,12 @@ void uiBoxSetPadded(uiBox *box, int padded)
 	}
 }
 
-uiUnixDefineControlFunctions(uiBox)
+uiUnixControlDefaultHandle(uiBox)
+uiUnixControlFunctionsDefaultExceptDestroy(uiBox)
 
 static uiBox *uiprivNewBox(GtkOrientation orientation)
 {
-	uiBox *box;
-	uiUnixNewControl(uiBox, box);
+	uiBox *box = uiUnixNewControl(uiBox);
 	box->widget = gtk_box_new(orientation, 0);
 	box->vertical = orientation == GTK_ORIENTATION_VERTICAL;
 

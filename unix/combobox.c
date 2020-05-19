@@ -11,8 +11,6 @@ struct uiCombobox {
 	gulong onSelectedSignal;
 };
 
-uiUnixControlAllDefaults(uiCombobox)
-
 static void onChanged(GtkComboBox *cbox, gpointer data)
 {
 	uiCombobox *c = uiCombobox(data);
@@ -49,14 +47,12 @@ void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), v
 	c->onSelectedData = data;
 }
 
-uiUnixDefineControlFunctions(uiCombobox)
+uiUnixControlDefaultHandle(uiCombobox)
+uiUnixControlFunctionsDefault(uiCombobox)
 
 uiCombobox *uiNewCombobox(void)
 {
-	uiCombobox *c;
-
-	uiUnixNewControl(uiCombobox, c);
-
+	uiCombobox *c = uiUnixNewControl(uiCombobox);
 	c->widget = gtk_combo_box_text_new();
 	c->combobox = GTK_COMBO_BOX(c->widget);
 	c->comboboxText = GTK_COMBO_BOX_TEXT(c->widget);

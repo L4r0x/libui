@@ -14,8 +14,6 @@ struct uiRadioButtons {
 	gboolean changing;
 };
 
-uiUnixControlAllDefaultsExceptDestroy(uiRadioButtons)
-
 static void defaultOnSelected(uiRadioButtons *r, void *data)
 {
 	// do nothing
@@ -103,14 +101,12 @@ void uiRadioButtonsOnSelected(uiRadioButtons *r, void (*f)(uiRadioButtons *, voi
 	r->onSelectedData = data;
 }
 
-uiUnixDefineControlFunctions(uiRadioButtons)
+uiUnixControlDefaultHandle(uiRadioButtons)
+uiUnixControlFunctionsDefaultExceptDestroy(uiRadioButtons)
 
 uiRadioButtons *uiNewRadioButtons(void)
 {
-	uiRadioButtons *r;
-
-	uiUnixNewControl(uiRadioButtons, r);
-
+	uiRadioButtons *r = uiUnixNewControl(uiRadioButtons);
 	r->widget = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	r->container = GTK_CONTAINER(r->widget);
 	r->box = GTK_BOX(r->widget);

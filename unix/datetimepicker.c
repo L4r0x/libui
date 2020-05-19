@@ -561,8 +561,6 @@ struct uiDateTimePicker {
 	gulong setBlock;
 };
 
-uiUnixControlAllDefaults(uiDateTimePicker)
-
 static void defaultOnChanged(uiDateTimePicker *d, void *data)
 {
 	// do nothing
@@ -645,14 +643,12 @@ static GtkWidget *newTP(void)
 	return w;
 }
 
-uiUnixDefineControlFunctions(uiDateTimePicker)
+uiUnixControlDefaultHandle(uiDateTimePicker)
+uiUnixControlFunctionsDefault(uiDateTimePicker)
 
 uiDateTimePicker *finishNewDateTimePicker(GtkWidget *(*fn)(void))
 {
-	uiDateTimePicker *d;
-
-	uiUnixNewControl(uiDateTimePicker, d);
-
+	uiDateTimePicker *d = uiUnixNewControl(uiDateTimePicker);
 	d->widget = (*fn)();
 	d->d = uiprivDateTimePickerWidget(d->widget);
 	d->setBlock = g_signal_connect(d->widget, "changed", G_CALLBACK(onChanged), d);

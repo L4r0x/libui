@@ -11,8 +11,6 @@ struct uiColorButton {
 	void *onChangedData;
 };
 
-uiUnixControlAllDefaults(uiColorButton)
-
 static void onColorSet(GtkColorButton *button, gpointer data)
 {
 	uiColorButton *b = uiColorButton(data);
@@ -54,14 +52,13 @@ void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *)
 	b->onChangedData = data;
 }
 
-uiUnixDefineControlFunctions(uiColorButton)
+uiUnixControlDefaultHandle(uiColorButton)
+uiUnixControlFunctionsDefault(uiColorButton)
 
 uiColorButton *uiNewColorButton(void)
 {
-	uiColorButton *b;
+	uiColorButton *b = uiUnixNewControl(uiColorButton);
 	GdkRGBA black;
-
-	uiUnixNewControl(uiColorButton, b);
 
 	// I'm not sure what the initial color is; set up a real one
 	black.red = 0.0;

@@ -11,8 +11,6 @@ struct uiEntry {
 	gulong onChangedSignal;
 };
 
-uiUnixControlAllDefaults(uiEntry)
-
 static void onChanged(GtkEditable *editable, gpointer data)
 {
 	uiEntry *e = uiEntry(data);
@@ -60,14 +58,12 @@ void uiEntrySetReadOnly(uiEntry *e, int readonly)
 	gtk_editable_set_editable(e->editable, editable);
 }
 
-uiUnixDefineControlFunctions(uiEntry)
+uiUnixControlDefaultHandle(uiEntry)
+uiUnixControlFunctionsDefault(uiEntry)
 
 static uiEntry *finishNewEntry(GtkWidget *w, const gchar *signal)
 {
-	uiEntry *e;
-
-	uiUnixNewControl(uiEntry, e);
-
+	uiEntry *e = uiUnixNewControl(uiEntry);
 	e->widget = w;
 	e->entry = GTK_ENTRY(e->widget);
 	e->editable = GTK_EDITABLE(e->widget);
