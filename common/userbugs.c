@@ -1,5 +1,3 @@
-// 22 may 2016
-#include "../ui.h"
 #include "uipriv.h"
 
 void uiUserBugCannotSetParentOnToplevel(const char *type)

@@ -1,4 +1,3 @@
-// 15 may 2016
 #include "uipriv_unix.h"
 
 struct uiColorButton {

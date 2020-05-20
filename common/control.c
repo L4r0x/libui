@@ -1,5 +1,3 @@
-// 26 may 2015
-#include "../ui.h"
 #include "uipriv.h"
 
 void uiControlDestroy(uiControl *c)

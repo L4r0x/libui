@@ -1,5 +1,6 @@
-// 29 june 2016
 #include "uipriv_unix.h"
+
+#include <dlfcn.h>
 
 // functions FROM THE FUTURE!
 // in some cases, because being held back by LTS releases sucks :/

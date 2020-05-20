@@ -1,4 +1,3 @@
-// 11 june 2015
 #include "uipriv_unix.h"
 
 // The window consists of an outer box holding the menubar and the content box.

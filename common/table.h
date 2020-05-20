@@ -1,5 +1,3 @@
-// 23 june 2018
-
 #ifndef __LIBUI_UI_COMMON_TABLE_H__
 #define __LIBUI_UI_COMMON_TABLE_H__
 

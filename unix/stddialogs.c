@@ -1,4 +1,3 @@
-// 26 june 2015
 #include "uipriv_unix.h"
 
 // LONGTERM figure out why, and describe, that this is the desired behavior

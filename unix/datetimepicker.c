@@ -1,5 +1,6 @@
-// 4 september 2015
 #include "uipriv_unix.h"
+
+#include <langinfo.h>
 
 // LONGTERM imitate gnome-calendar's day/month/year entries above the calendar
 // LONGTERM allow entering a 24-hour hour in the hour spinbutton and adjust accordingly
@@ -52,7 +53,7 @@ static int realSpinValue(GtkSpinButton *spinButton)
 	GtkAdjustment *adj;
 
 	adj = gtk_spin_button_get_adjustment(spinButton);
-	return (int) gtk_adjustment_get_value(adj);
+	return (int)gtk_adjustment_get_value(adj);
 }
 
 static void setRealSpinValue(GtkSpinButton *spinButton, int value, gulong block)
@@ -73,7 +74,7 @@ static GDateTime *selected(uiprivDateTimePickerWidget *d)
 
 	if (d->hasDate) {
 		gtk_calendar_get_date(GTK_CALENDAR(d->calendar), &year, &month, &day);
-		month++;		// GtkCalendar/GDateTime differences
+		month++; // GtkCalendar/GDateTime differences
 	}
 	if (d->hasTime) {
 		hour = realSpinValue(GTK_SPIN_BUTTON(d->hours));
@@ -164,7 +165,7 @@ static gboolean startGrab(uiprivDateTimePickerWidget *d)
 		disp = gtk_widget_get_display(GTK_WIDGET(d));
 		dm = gdk_display_get_device_manager(disp);
 		list = gdk_device_manager_list_devices(dm, GDK_DEVICE_TYPE_MASTER);
-		dev = (GdkDevice *) (list->data);
+		dev = (GdkDevice *)(list->data);
 		g_list_free(list);
 	}
 
@@ -180,15 +181,15 @@ static gboolean startGrab(uiprivDateTimePickerWidget *d)
 	window = gtk_widget_get_window(d->window);
 	if (keyboard != NULL)
 		if (gdk_device_grab(keyboard, window,
-			GDK_OWNERSHIP_WINDOW, TRUE,
-			GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK,
-			NULL, time) != GDK_GRAB_SUCCESS)
+				GDK_OWNERSHIP_WINDOW, TRUE,
+				GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK,
+				NULL, time) != GDK_GRAB_SUCCESS)
 			return FALSE;
 	if (mouse != NULL)
 		if (gdk_device_grab(mouse, window,
-			GDK_OWNERSHIP_WINDOW, TRUE,
-			GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK,
-			NULL, time) != GDK_GRAB_SUCCESS) {
+				GDK_OWNERSHIP_WINDOW, TRUE,
+				GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK,
+				NULL, time) != GDK_GRAB_SUCCESS) {
 			if (keyboard != NULL)
 				gdk_device_ungrab(keyboard, time);
 			return FALSE;
@@ -228,9 +229,9 @@ static void allocationToScreen(uiprivDateTimePickerWidget *d, gint *x, gint *y)
 	gdk_screen_get_monitor_workarea(screen,
 		gdk_screen_get_monitor_at_window(screen, window),
 		&workarea);
-	if (*x < workarea.x)					// too far to the left?
+	if (*x < workarea.x) // too far to the left?
 		*x = workarea.x;
-	else if (*x + aWin.width > (workarea.x + workarea.width))	// too far to the right?
+	else if (*x + aWin.width > (workarea.x + workarea.width)) // too far to the right?
 		*x = (workarea.x + workarea.width) - aWin.width;
 	// this isn't the same algorithm used by GtkComboBox
 	// first, get our two choices; *y for down and otherY for up
@@ -276,7 +277,7 @@ static gboolean grabBroken(GtkWidget *w, GdkEventGrabBroken *e, gpointer data)
 	uiprivDateTimePickerWidget *d = uiprivDateTimePickerWidget(data);
 
 	hidePopup(d);
-	return TRUE;		// this is what GtkComboBox does
+	return TRUE; // this is what GtkComboBox does
 }
 
 static gboolean buttonReleased(GtkWidget *w, GdkEventButton *e, gpointer data)
@@ -305,22 +306,22 @@ static gboolean buttonReleased(GtkWidget *w, GdkEventButton *e, gpointer data)
 		in = FALSE;
 	if (!in)
 		hidePopup(d);
-	return TRUE;		// this is what GtkComboBox does
+	return TRUE; // this is what GtkComboBox does
 }
 
 static gint hoursSpinboxInput(GtkSpinButton *sb, gpointer ptr, gpointer data)
 {
-	double *out = (double *) ptr;
+	double *out = (double *)ptr;
 	const gchar *text;
 	int value;
 
 	text = gtk_entry_get_text(GTK_ENTRY(sb));
-	value = (int) g_strtod(text, NULL);
+	value = (int)g_strtod(text, NULL);
 	if (value < 0 || value > 12)
 		return GTK_INPUT_ERROR;
-	if (value == 12)		// 12 to the user is 0 internally
+	if (value == 12) // 12 to the user is 0 internally
 		value = 0;
-	*out = (double) value;
+	*out = (double)value;
 	return TRUE;
 }
 
@@ -330,7 +331,7 @@ static gboolean hoursSpinboxOutput(GtkSpinButton *sb, gpointer data)
 	int value;
 
 	value = realSpinValue(sb);
-	if (value == 0)		// 0 internally is 12 to the user
+	if (value == 0) // 0 internally is 12 to the user
 		value = 12;
 	text = g_strdup_printf("%d", value);
 	gtk_entry_set_text(GTK_ENTRY(sb), text);
@@ -353,7 +354,7 @@ static gboolean zeroPadSpinbox(GtkSpinButton *sb, gpointer data)
 // this is really hacky but we can't use GtkCombobox here :(
 static gint ampmSpinboxInput(GtkSpinButton *sb, gpointer ptr, gpointer data)
 {
-	double *out = (double *) ptr;
+	double *out = (double *)ptr;
 	const gchar *text;
 	char firstAM, firstPM;
 
@@ -434,7 +435,7 @@ static void uiprivDateTimePickerWidget_setTime(uiprivDateTimePickerWidget *d, GD
 	// notice how we block signals from firing
 	if (d->hasDate) {
 		g_date_time_get_ymd(dt, &year, &month, &day);
-		month--;			// GDateTime/GtkCalendar differences
+		month--; // GDateTime/GtkCalendar differences
 		g_signal_handler_block(d->calendar, d->calendarBlock);
 		gtk_calendar_select_month(GTK_CALENDAR(d->calendar), month, year);
 		gtk_calendar_select_day(GTK_CALENDAR(d->calendar), day);
@@ -579,7 +580,7 @@ void uiDateTimePickerTime(uiDateTimePicker *d, struct tm *time)
 	// Copy time to minimize a race condition
 	// time.h functions use global non-thread-safe data
 	tmbuf = *localtime(&t);
-	memcpy(time, &tmbuf, sizeof (struct tm));
+	memcpy(time, &tmbuf, sizeof(struct tm));
 }
 
 void uiDateTimePickerSetTime(uiDateTimePicker *d, const struct tm *time)
@@ -591,7 +592,7 @@ void uiDateTimePickerSetTime(uiDateTimePicker *d, const struct tm *time)
 	g_signal_handler_block(d->d, d->setBlock);
 
 	// Copy time because mktime() modifies its argument
-	memcpy(&tmbuf, time, sizeof (struct tm));
+	memcpy(&tmbuf, time, sizeof(struct tm));
 	t = mktime(&tmbuf);
 
 	uiprivDateTimePickerWidget_setTime(d->d, g_date_time_new_from_unix_local(t));
@@ -644,9 +645,9 @@ static GtkWidget *newTP(void)
 }
 
 uiUnixControlDefaultHandle(uiDateTimePicker)
-uiUnixControlFunctionsDefault(uiDateTimePicker)
+	uiUnixControlFunctionsDefault(uiDateTimePicker)
 
-uiDateTimePicker *finishNewDateTimePicker(GtkWidget *(*fn)(void))
+		uiDateTimePicker *finishNewDateTimePicker(GtkWidget *(*fn)(void))
 {
 	uiDateTimePicker *d = uiUnixNewControl(uiDateTimePicker);
 	d->widget = (*fn)();

@@ -2,6 +2,6 @@
 .vscode/
 .vs/
 CMakeSettings.json
-build/
+/build*/
 *.obj
 *.pdb

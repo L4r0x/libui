@@ -1,4 +1,3 @@
-// 10 june 2015
 #include "uipriv_unix.h"
 
 struct uiButton {

@@ -1,5 +1,4 @@
 // utf by pietro gagliardi (andlabs) — https://github.com/andlabs/utf/
-// 10 november 2016
 // function names have been altered to avoid namespace collisions in libui static builds (see utf.h)
 #include "utf.h"
 

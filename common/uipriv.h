@@ -1,11 +1,9 @@
-// 6 april 2015
 // note: this file should not include ui.h, as the OS-specific ui_*.h files are included between that one and this one in the OS-specific uipriv_*.h* files
 
 #ifndef __LIBUI_UI_COMMON_UIPRIV_H__
 #define __LIBUI_UI_COMMON_UIPRIV_H__
 
 #include <stdarg.h>
-#include <string.h>
 
 #include "../ui.h"
 

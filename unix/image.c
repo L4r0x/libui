@@ -1,5 +1,6 @@
-// 27 june 2016
 #include "uipriv_unix.h"
+
+#include <stdlib.h>
 
 struct uiImage {
 	double width;

@@ -1,4 +1,3 @@
-// 28 june 2016
 #include "uipriv_unix.h"
 
 // TODOs

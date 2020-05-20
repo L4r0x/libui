@@ -1,4 +1,3 @@
-// 18 april 2015
 #include "uipriv_unix.h"
 
 void uiprivWidgetSetMargined(GtkWidget *widget, int margined)

@@ -1,8 +1,6 @@
-// 11 june 2015
 #include "uipriv_unix.h"
 
 // on GTK+ a uiRadioButtons is a GtkBox with each of the GtkRadioButtons as children
-
 struct uiRadioButtons {
 	uiUnixControl c;
 	GtkWidget *widget;

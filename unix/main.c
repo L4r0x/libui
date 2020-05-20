@@ -1,4 +1,3 @@
-// 6 april 2015
 #include "uipriv_unix.h"
 
 uiInitOptions uiprivOptions;

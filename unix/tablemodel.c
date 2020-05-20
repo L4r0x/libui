@@ -1,4 +1,3 @@
-// 26 june 2016
 #include "uipriv_unix.h"
 #include "table.h"
 

@@ -1,4 +1,3 @@
-// 13 may 2016
 #include "uipriv_unix.h"
 
 // LONGTERM don't halt on release builds

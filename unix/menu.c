@@ -1,4 +1,3 @@
-// 23 april 2015
 #include "uipriv_unix.h"
 
 static GArray *menus = NULL;

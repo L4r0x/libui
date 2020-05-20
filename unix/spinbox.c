@@ -1,4 +1,3 @@
-// 11 june 2015
 #include "uipriv_unix.h"
 
 struct uiSpinbox {
