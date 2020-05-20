@@ -16,7 +16,8 @@ struct uiTable {
 	int backgroundColumn;
 };
 
-static void applyColor(GtkTreeModel *model, GtkTreeIter *iter, int modelColumn, GtkCellRenderer *renderer, const char *prop, const char *propSet)
+static void applyColor(GtkTreeModel *model, GtkTreeIter *iter, int modelColumn,
+	GtkCellRenderer *renderer, const char *prop, const char *propSet)
 {
 	GValue value = G_VALUE_INIT;
 	gtk_tree_model_get_value(model, iter, modelColumn, &value);
@@ -28,23 +29,27 @@ static void applyColor(GtkTreeModel *model, GtkTreeIter *iter, int modelColumn, 
 	g_value_unset(&value);
 }
 
-static void setEditable(uiTableModel *model, GtkTreeIter *iter, int modelColumn, GtkCellRenderer *renderer, const char *prop)
+static void setEditable(uiTableModel *model, GtkTreeIter *iter, int modelColumn,
+	GtkCellRenderer *renderer, const char *prop)
 {
 	// TODO avoid the need for this
 	GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(model), iter);
 	int row = gtk_tree_path_get_indices(path)[0];
+	gtk_tree_path_free(path);
 	gboolean editable = uiprivTableModelCellEditable(model, row, modelColumn) != 0;
 	g_object_set(renderer, prop, editable, NULL);
 }
 
-static void applyBackgroundColor(uiTable *table, GtkTreeModel *model, GtkTreeIter *iter, GtkCellRenderer *renderer)
+static void applyBackgroundColor(uiTable *table, GtkTreeModel *model,
+	GtkTreeIter *iter, GtkCellRenderer *renderer)
 {
 	if (table->backgroundColumn != -1)
 		applyColor(model, iter, table->backgroundColumn,
 			renderer, "cell-background-rgba", "cell-background-set");
 }
 
-static void onEdited(uiTableModel *model, int column, const char *pathstr, const uiTableValue *tvalue, GtkTreeIter *iter)
+static void onEdited(uiTableModel *model, int column, const char *pathstr,
+	const uiTableValue *tvalue, GtkTreeIter *iter)
 {
 	GtkTreePath *path = gtk_tree_path_new_from_string(pathstr);
 	int row = gtk_tree_path_get_indices(path)[0];
@@ -62,7 +67,8 @@ struct textColumnParams {
 	uiTableTextColumnOptionalParams params;
 };
 
-static void textColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+static void textColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+	GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	struct textColumnParams *p = (struct textColumnParams *)data;
 	GValue value = G_VALUE_INIT;
@@ -82,7 +88,8 @@ static void textColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *rende
 	applyBackgroundColor(p->table, model, iter, renderer);
 }
 
-static void textColumnEdited(GtkCellRendererText *renderer, gchar *path, gchar *newText, gpointer data)
+static void textColumnEdited(GtkCellRendererText *renderer, gchar *path,
+	gchar *newText, gpointer data)
 {
 	struct textColumnParams *params = (struct textColumnParams *)data;
 
@@ -99,7 +106,8 @@ struct imageColumnParams {
 	int modelColumn;
 };
 
-static void imageColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+static void imageColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+	GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	struct imageColumnParams *params = (struct imageColumnParams *)data;
 
@@ -122,7 +130,8 @@ struct checkboxColumnParams {
 	int editableColumn;
 };
 
-static void checkboxColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+static void checkboxColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+	GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	struct checkboxColumnParams *params = (struct checkboxColumnParams *)data;
 	GValue value = G_VALUE_INIT;
@@ -166,7 +175,8 @@ struct buttonColumnParams {
 	int clickableColumn;
 };
 
-static void buttonColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer, GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+static void buttonColumnDataFunc(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+	GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	struct buttonColumnParams *params = (struct buttonColumnParams *)data;
 
@@ -200,7 +210,8 @@ static GtkTreeViewColumn *addColumn(uiTable *t, const char *name)
 	return c;
 }
 
-static void addTextColumn(uiTable *table, GtkTreeViewColumn *column, int textModelColumn, int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
+static void addTextColumn(uiTable *table, GtkTreeViewColumn *column, int textModelColumn,
+	int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
 {
 	struct textColumnParams *params = uiprivNew(struct textColumnParams);
 	params->table = table;
@@ -221,7 +232,8 @@ static void addTextColumn(uiTable *table, GtkTreeViewColumn *column, int textMod
 }
 
 // TODO rename modelCOlumn and params everywhere
-void uiTableAppendTextColumn(uiTable *table, const char *name, int textModelColumn, int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
+void uiTableAppendTextColumn(uiTable *table, const char *name, int textModelColumn,
+	int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
 {
 	GtkTreeViewColumn *column = addColumn(table, name);
 	addTextColumn(table, column, textModelColumn, textEditableModelColumn, textParams);
@@ -245,14 +257,16 @@ void uiTableAppendImageColumn(uiTable *table, const char *name, int imageModelCo
 	addImageColumn(table, column, imageModelColumn);
 }
 
-void uiTableAppendImageTextColumn(uiTable *table, const char *name, int imageModelColumn, int textModelColumn, int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
+void uiTableAppendImageTextColumn(uiTable *table, const char *name, int imageModelColumn,
+	int textModelColumn, int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
 {
 	GtkTreeViewColumn *column = addColumn(table, name);
 	addImageColumn(table, column, imageModelColumn);
 	addTextColumn(table, column, textModelColumn, textEditableModelColumn, textParams);
 }
 
-static void addCheckboxColumn(uiTable *table, GtkTreeViewColumn *column, int checkboxModelColumn, int checkboxEditableModelColumn)
+static void addCheckboxColumn(uiTable *table, GtkTreeViewColumn *column,
+	int checkboxModelColumn, int checkboxEditableModelColumn)
 {
 	struct checkboxColumnParams *params = uiprivNew(struct checkboxColumnParams);
 	params->table = table;
@@ -273,14 +287,17 @@ void uiTableAppendCheckboxColumn(uiTable *table, const char *name, int checkboxM
 	addCheckboxColumn(table, column, checkboxModelColumn, checkboxEditableModelColumn);
 }
 
-void uiTableAppendCheckboxTextColumn(uiTable *table, const char *name, int checkboxModelColumn, int checkboxEditableModelColumn, int textModelColumn, int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
+void uiTableAppendCheckboxTextColumn(uiTable *table, const char *name,
+	int checkboxModelColumn, int checkboxEditableModelColumn, int textModelColumn,
+	int textEditableModelColumn, uiTableTextColumnOptionalParams *textParams)
 {
 	GtkTreeViewColumn *column = addColumn(table, name);
 	addCheckboxColumn(table, column, checkboxModelColumn, checkboxEditableModelColumn);
 	addTextColumn(table, column, textModelColumn, textEditableModelColumn, textParams);
 }
 
-void uiTableAppendButtonColumn(uiTable *table, const char *name, int buttonModelColumn, int buttonClickableModelColumn)
+void uiTableAppendButtonColumn(uiTable *table, const char *name,
+	int buttonModelColumn, int buttonClickableModelColumn)
 {
 	struct buttonColumnParams *params = uiprivNew(struct buttonColumnParams);
 	params->table = table;
