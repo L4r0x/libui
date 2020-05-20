@@ -81,11 +81,7 @@ void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *, void *), void *data)
 }
 
 #define uiButtonSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiButtonSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiButtonMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiButtonLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiButtonAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiButtonChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiButton)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiButton)
 

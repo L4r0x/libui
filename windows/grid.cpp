@@ -621,10 +621,6 @@ static void onResize(uiWindowsControl *c)
 	gridRelayout(uiGrid(c));
 }
 
-#define uiGridSetParentHWND uiWindowsControlDefaultSetParentHWND
-#define uiGridLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiGridAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiGridChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiGrid)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiGrid)
 

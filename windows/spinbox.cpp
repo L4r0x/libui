@@ -180,11 +180,7 @@ static void onResize(uiWindowsControl *c)
 }
 
 #define uiSpinboxSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiSpinboxSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiSpinboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiSpinboxLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiSpinboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiSpinboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiSpinbox)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiSpinbox)
 

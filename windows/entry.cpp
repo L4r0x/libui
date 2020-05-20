@@ -91,11 +91,7 @@ void uiEntrySetReadOnly(uiEntry *e, int readonly)
 }
 
 #define uiEntrySyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiEntrySetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiEntryMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiEntryLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiEntryAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiEntryChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiEntry)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiEntry)
 

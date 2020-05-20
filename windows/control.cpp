@@ -66,11 +66,6 @@ void uiWindowsControlDefaultSyncEnableState(uiWindowsControl *c, int enabled)
 	EnableWindow((HWND)uiControlHandle(uiControl(c)), enabled);
 }
 
-void uiWindowsControlDefaultSetParentHWND(uiWindowsControl *c, HWND parent)
-{
-	uiWindowsEnsureSetParentHWND((HWND)uiControlHandle(uiControl(c)), parent);
-}
-
 // note that there is no uiWindowsControlDefaultMinimumSize(); you MUST define this yourself!
 void uiWindowsControlDefaultMinimumSizeChanged(uiWindowsControl *c)
 {
@@ -81,30 +76,9 @@ void uiWindowsControlDefaultMinimumSizeChanged(uiWindowsControl *c)
 	/* otherwise do nothing; we have no children */
 }
 
-void uiWindowsControlDefaultLayoutRect(uiWindowsControl *c, RECT *r)
-{
-	/* use the window rect as we include the non-client area in the sizes */
-	uiWindowsEnsureGetWindowRect((HWND)uiControlHandle(uiControl(c)), r);
-}
-
-void uiWindowsControlDefaultAssignControlIDZOrder(uiWindowsControl *c, LONG_PTR *controlID, HWND *insertAfter)
-{
-	uiWindowsEnsureAssignControlIDZOrder((HWND)uiControlHandle(uiControl(c)), controlID, insertAfter);
-}
-
-void uiWindowsControlDefaultChildVisibilityChanged(uiWindowsControl *c)
-{
-	/* do nothing */
-}
-
 void uiWindowsControlSyncEnableState(uiWindowsControl *c, int enabled)
 {
 	(*(((uiWindowsControlFunctions *)c->c.functions)->SyncEnableState))(c, enabled);
-}
-
-void uiWindowsControlSetParentHWND(uiWindowsControl *c, HWND parent)
-{
-	(*(((uiWindowsControlFunctions *)c->c.functions)->SetParentHWND))(c, parent);
 }
 
 void uiWindowsControlMinimumSize(uiWindowsControl *c, int *width, int *height)
@@ -117,20 +91,14 @@ void uiWindowsControlMinimumSizeChanged(uiWindowsControl *c)
 	(*(((uiWindowsControlFunctions *)c->c.functions)->MinimumSizeChanged))(c);
 }
 
-// TODO get rid of this
-void uiWindowsControlLayoutRect(uiWindowsControl *c, RECT *r)
+void uiWindowsControlSetParentHWND(uiWindowsControl *c, HWND parent)
 {
-	(*(((uiWindowsControlFunctions *)c->c.functions)->LayoutRect))(c, r);
+	uiWindowsEnsureSetParentHWND((HWND)uiControlHandle(uiControl(c)), parent);
 }
 
 void uiWindowsControlAssignControlIDZOrder(uiWindowsControl *c, LONG_PTR *controlID, HWND *insertAfter)
 {
-	(*(((uiWindowsControlFunctions *)c->c.functions)->AssignControlIDZOrder))(c, controlID, insertAfter);
-}
-
-void uiWindowsControlChildVisibilityChanged(uiWindowsControl *c)
-{
-	(*(((uiWindowsControlFunctions *)c->c.functions)->ChildVisibilityChanged))(c);
+	uiWindowsEnsureAssignControlIDZOrder((HWND)uiControlHandle(uiControl(c)), controlID, insertAfter);
 }
 
 HWND uiWindowsEnsureCreateControlHWND(
@@ -195,7 +163,7 @@ BOOL uiWindowsControlTooSmall(uiWindowsControl *c)
 	RECT r;
 	int width, height;
 
-	uiWindowsControlLayoutRect(c, &r);
+	uiWindowsEnsureGetWindowRect((HWND)uiControlHandle(uiControl(c)), &r);
 	uiWindowsControlMinimumSize(c, &width, &height);
 	if ((r.right - r.left) < width)
 		return TRUE;

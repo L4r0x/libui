@@ -94,11 +94,7 @@ void uiCheckboxSetChecked(uiCheckbox *c, int checked)
 }
 
 #define uiCheckboxSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiCheckboxSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiCheckboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiCheckboxLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiCheckboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiCheckboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiCheckbox)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiCheckbox)
 

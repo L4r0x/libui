@@ -90,11 +90,7 @@ void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), v
 }
 
 #define uiComboboxSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiComboboxSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiComboboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiComboboxLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiComboboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiComboboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiCombobox)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiCombobox)
 

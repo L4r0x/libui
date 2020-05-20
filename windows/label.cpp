@@ -35,11 +35,7 @@ void uiLabelSetText(uiLabel *l, const char *text)
 }
 
 #define uiLabelSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiLabelSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiLabelMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiLabelLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiLabelAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiLabelChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiLabel)
 uiWindowsControlFunctionsDefault(uiLabel)
 

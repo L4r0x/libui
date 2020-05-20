@@ -40,11 +40,7 @@ static void uiSeparatorMinimumSize(uiWindowsControl *c, int *width, int *height)
 }
 
 #define uiSeparatorSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiSeparatorSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiSeparatorMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiSeparatorLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiSeparatorAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiSeparatorChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiSeparator)
 uiWindowsControlFunctionsDefault(uiSeparator)
 

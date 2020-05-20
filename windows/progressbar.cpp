@@ -66,11 +66,7 @@ void uiProgressBarSetValue(uiProgressBar *p, int value)
 }
 
 #define uiProgressBarSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiProgressBarSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiProgressBarMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiProgressBarLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiProgressBarAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiProgressBarChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiProgressBar)
 uiWindowsControlFunctionsDefault(uiProgressBar)
 

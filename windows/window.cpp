@@ -240,11 +240,25 @@ static void uiWindowMinimumSize(uiWindowsControl *c, int *width, int *height)
 	*height += 2 * my;
 }
 
+static BOOL uiprivWindowTooSmall(uiWindow *w)
+{
+	RECT r;
+	int width, height;
+
+	uiWindowsEnsureGetClientRect(w->hwnd, &r);
+	uiWindowsControlMinimumSize(uiWindowsControl(w), &width, &height);
+	if ((r.right - r.left) < width)
+		return TRUE;
+	if ((r.bottom - r.top) < height)
+		return TRUE;
+	return FALSE;
+}
+
 static void uiWindowMinimumSizeChanged(uiWindowsControl *c)
 {
 	uiWindow *w = uiWindow(c);
 
-	if (uiWindowsControlTooSmall(uiWindowsControl(w))) {
+	if (uiprivWindowTooSmall(w)) {
 		// TODO figure out what to do with this function
 		// maybe split it into two so WM_GETMINMAXINFO can use it?
 		ensureMinimumWindowSize(w);
@@ -252,14 +266,6 @@ static void uiWindowMinimumSizeChanged(uiWindowsControl *c)
 	}
 	// otherwise we only need to re-layout everything
 	windowRelayout(w);
-}
-
-static void uiWindowLayoutRect(uiWindowsControl *c, RECT *r)
-{
-	uiWindow *w = uiWindow(c);
-
-	// the layout rect is the client rect in this case
-	uiWindowsEnsureGetClientRect(w->hwnd, r);
 }
 
 char *uiWindowTitle(uiWindow *w)
@@ -437,9 +443,6 @@ static void setClientSize(uiWindow *w, int width, int height, BOOL hasMenubar, D
 #define uiWindowEnabled uiWindowsControlDefaultEnabled
 #define uiWindowDisable uiWindowsControlDefaultDisable
 #define uiWindowSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiWindowSetParentHWND uiWindowsControlDefaultSetParentHWND
-#define uiWindowAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiWindowChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiWindow)
 uiWindowsControlFunctions(uiWindow)
 

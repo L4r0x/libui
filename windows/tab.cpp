@@ -243,10 +243,6 @@ static void onResize(uiWindowsControl *c)
 	tabRelayout(uiTab(c));
 }
 
-#define uiTabSetParentHWND uiWindowsControlDefaultSetParentHWND
-#define uiTabLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiTabAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiTabChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiTab)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiTab)
 

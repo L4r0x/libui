@@ -21,12 +21,8 @@ typedef struct uiWindowsControl uiWindowsControl;
 struct uiWindowsControlFunctions {
 	uiControlFunctions c;
 	void (*SyncEnableState)(uiWindowsControl *, int);
-	void (*SetParentHWND)(uiWindowsControl *, HWND);
 	void (*MinimumSize)(uiWindowsControl *, int *, int *);
 	void (*MinimumSizeChanged)(uiWindowsControl *);
-	void (*LayoutRect)(uiWindowsControl *c, RECT *r);
-	void (*AssignControlIDZOrder)(uiWindowsControl *, LONG_PTR *, HWND *);
-	void (*ChildVisibilityChanged)(uiWindowsControl *);
 };
 
 struct uiWindowsControl {
@@ -87,12 +83,8 @@ _UI_EXTERN void uiWindowsControlChildVisibilityChanged(uiWindowsControl *);
 			uiWindowsControlDefaultDisable,              \
 		},                                               \
 		type##SyncEnableState,                           \
-		type##SetParentHWND,                             \
 		type##MinimumSize,                               \
 		type##MinimumSizeChanged,                        \
-		type##LayoutRect,                                \
-		type##AssignControlIDZOrder,                     \
-		type##ChildVisibilityChanged,                    \
 	};
 
 #define uiWindowsControlFunctionsDefaultExceptDestroy(type) \
@@ -111,12 +103,8 @@ _UI_EXTERN void uiWindowsControlChildVisibilityChanged(uiWindowsControl *);
 			uiWindowsControlDefaultDisable,                 \
 		},                                                  \
 		type##SyncEnableState,                              \
-		type##SetParentHWND,                                \
 		type##MinimumSize,                                  \
 		type##MinimumSizeChanged,                           \
-		type##LayoutRect,                                   \
-		type##AssignControlIDZOrder,                        \
-		type##ChildVisibilityChanged,                       \
 	};
 
 #define uiWindowsControlFunctions(type)                  \
@@ -135,12 +123,8 @@ _UI_EXTERN void uiWindowsControlChildVisibilityChanged(uiWindowsControl *);
 			type##Disable,                               \
 		},                                               \
 		type##SyncEnableState,                           \
-		type##SetParentHWND,                             \
 		type##MinimumSize,                               \
 		type##MinimumSizeChanged,                        \
-		type##LayoutRect,                                \
-		type##AssignControlIDZOrder,                     \
-		type##ChildVisibilityChanged,                    \
 	};
 
 // TODO document

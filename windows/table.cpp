@@ -406,11 +406,7 @@ void uiTableAppendButtonColumn(uiTable *t, const char *name, int buttonModelColu
 }
 
 #define uiTableSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiTableSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiTableMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiTableLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiTableAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiTableChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiTable)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiTable)
 

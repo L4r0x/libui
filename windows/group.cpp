@@ -173,10 +173,6 @@ static LRESULT CALLBACK groupSubProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 	return DefSubclassProc(hwnd, uMsg, wParam, lParam);
 }
 
-#define uiGroupSetParentHWND uiWindowsControlDefaultSetParentHWND
-#define uiGroupLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiGroupAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiGroupChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiGroup)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiGroup)
 

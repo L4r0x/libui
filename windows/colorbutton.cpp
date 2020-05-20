@@ -165,11 +165,7 @@ void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *)
 }
 
 #define uiColorButtonSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiColorButtonSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiColorButtonMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiColorButtonLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiColorButtonAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiColorButtonChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiColorButton)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiColorButton)
 

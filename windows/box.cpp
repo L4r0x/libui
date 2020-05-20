@@ -221,12 +221,6 @@ static void uiBoxMinimumSizeChanged(uiWindowsControl *c)
 	boxRelayout(b);
 }
 
-static void uiBoxChildVisibilityChanged(uiWindowsControl *c)
-{
-	// TODO eliminate the redundancy
-	uiWindowsControlMinimumSizeChanged(c);
-}
-
 static void boxArrangeChildren(uiBox *b)
 {
 	LONG_PTR controlID;
@@ -279,9 +273,6 @@ static void onResize(uiWindowsControl *c)
 	boxRelayout(uiBox(c));
 }
 
-#define uiBoxLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiBoxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiBoxSetParentHWND uiWindowsControlDefaultSetParentHWND
 uiWindowsControlDefaultHandle(uiBox)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiBox)
 

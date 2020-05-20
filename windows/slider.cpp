@@ -67,11 +67,7 @@ void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *, void *), void *data)
 }
 
 #define uiSliderSyncEnableState uiWindowsControlDefaultSyncEnableState
-#define uiSliderSetParentHWND uiWindowsControlDefaultSetParentHWND
 #define uiSliderMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
-#define uiSliderLayoutRect uiWindowsControlDefaultLayoutRect
-#define uiSliderAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
-#define uiSliderChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
 uiWindowsControlDefaultHandle(uiSlider)
 uiWindowsControlFunctionsDefaultExceptDestroy(uiSlider)
 
