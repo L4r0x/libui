@@ -103,17 +103,6 @@ static void uiTabDestroy(uiControl *c)
 	uiFreeControl(uiControl(t));
 }
 
-uiWindowsControlDefaultHandle(uiTab)
-uiWindowsControlDefaultParent(uiTab)
-uiWindowsControlDefaultSetParent(uiTab)
-uiWindowsControlDefaultToplevel(uiTab)
-uiWindowsControlDefaultVisible(uiTab)
-uiWindowsControlDefaultShow(uiTab)
-uiWindowsControlDefaultHide(uiTab)
-uiWindowsControlDefaultEnabled(uiTab)
-uiWindowsControlDefaultEnable(uiTab)
-uiWindowsControlDefaultDisable(uiTab)
-
 static void uiTabSyncEnableState(uiWindowsControl *c, int enabled)
 {
 	uiTab *t = uiTab(c);
@@ -125,8 +114,6 @@ static void uiTabSyncEnableState(uiWindowsControl *c, int enabled)
 		if (page->child != NULL)
 			uiWindowsControlSyncEnableState(uiWindowsControl(page->child), enabled);
 }
-
-uiWindowsControlDefaultSetParentHWND(uiTab)
 
 static void uiTabMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
@@ -162,15 +149,6 @@ static void uiTabMinimumSizeChanged(uiWindowsControl *c)
 		return;
 	}
 	tabRelayout(t);
-}
-
-uiWindowsControlDefaultLayoutRect(uiTab)
-uiWindowsControlDefaultAssignControlIDZOrder(uiTab)
-
-static void uiTabChildVisibilityChanged(uiWindowsControl *c)
-{
-	// TODO eliminate the redundancy
-	uiWindowsControlMinimumSizeChanged(c);
 }
 
 static void tabArrangePages(uiTab *t)
@@ -265,14 +243,17 @@ static void onResize(uiWindowsControl *c)
 	tabRelayout(uiTab(c));
 }
 
+#define uiTabSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiTabLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiTabAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiTabChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiTab)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiTab)
+
 uiTab *uiNewTab(void)
 {
-	uiTab *t;
-
-	uiWindowsNewControl(uiTab, t);
-
+	uiTab *t = uiWindowsNewControl(uiTab);
 	t->hwnd = uiWindowsMakeContainer(uiWindowsControl(t), onResize);
-
 	t->tabHWND = uiWindowsEnsureCreateControlHWND(0,
 		WC_TABCONTROLW, L"",
 		TCS_TOOLTIPS | WS_TABSTOP,

@@ -65,17 +65,6 @@ static void uiGroupDestroy(uiControl *c)
 	uiFreeControl(uiControl(g));
 }
 
-uiWindowsControlDefaultHandle(uiGroup)
-uiWindowsControlDefaultParent(uiGroup)
-uiWindowsControlDefaultSetParent(uiGroup)
-uiWindowsControlDefaultToplevel(uiGroup)
-uiWindowsControlDefaultVisible(uiGroup)
-uiWindowsControlDefaultShow(uiGroup)
-uiWindowsControlDefaultHide(uiGroup)
-uiWindowsControlDefaultEnabled(uiGroup)
-uiWindowsControlDefaultEnable(uiGroup)
-uiWindowsControlDefaultDisable(uiGroup)
-
 static void uiGroupSyncEnableState(uiWindowsControl *c, int enabled)
 {
 	uiGroup *g = uiGroup(c);
@@ -86,8 +75,6 @@ static void uiGroupSyncEnableState(uiWindowsControl *c, int enabled)
 	if (g->child != NULL)
 		uiWindowsControlSyncEnableState(uiWindowsControl(g->child), enabled);
 }
-
-uiWindowsControlDefaultSetParentHWND(uiGroup)
 
 static void uiGroupMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
@@ -116,15 +103,6 @@ static void uiGroupMinimumSizeChanged(uiWindowsControl *c)
 		return;
 	}
 	groupRelayout(g);
-}
-
-uiWindowsControlDefaultLayoutRect(uiGroup)
-uiWindowsControlDefaultAssignControlIDZOrder(uiGroup)
-
-static void uiGroupChildVisibilityChanged(uiWindowsControl *c)
-{
-	// TODO eliminate the redundancy
-	uiWindowsControlMinimumSizeChanged(c);
 }
 
 char *uiGroupTitle(uiGroup *g)
@@ -195,12 +173,18 @@ static LRESULT CALLBACK groupSubProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM
 	return DefSubclassProc(hwnd, uMsg, wParam, lParam);
 }
 
+#define uiGroupSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiGroupLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiGroupAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiGroupChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiGroup)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiGroup)
+
 uiGroup *uiNewGroup(const char *text)
 {
-	uiGroup *g;
+	uiGroup *g = uiWindowsNewControl(uiGroup);
 	WCHAR *wtext;
 
-	uiWindowsNewControl(uiGroup, g);
 
 	wtext = toUTF16(text);
 	g->hwnd = uiWindowsEnsureCreateControlHWND(WS_EX_CONTROLPARENT,

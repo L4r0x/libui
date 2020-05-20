@@ -30,8 +30,6 @@ void uiComboboxDestroy(uiControl *cc)
 	uiFreeControl(uiControl(c));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiCombobox)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define comboboxWidth 107	/* this is actually the shorter progress bar width, but Microsoft only indicates as wide as necessary; LONGTERM */
 #define comboboxHeight 14	/* LONGTERM: is this too high? */
@@ -91,11 +89,18 @@ void uiComboboxOnSelected(uiCombobox *c, void (*f)(uiCombobox *c, void *data), v
 	c->onSelectedData = data;
 }
 
+#define uiComboboxSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiComboboxSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiComboboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiComboboxLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiComboboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiComboboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiCombobox)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiCombobox)
+
 uiCombobox *uiNewCombobox(void)
 {
-	uiCombobox *c;
-
-	uiWindowsNewControl(uiCombobox, c);
+	uiCombobox *c = uiWindowsNewControl(uiCombobox);
 
 	c->hwnd = uiWindowsEnsureCreateControlHWND(WS_EX_CLIENTEDGE,
 		L"combobox", L"",

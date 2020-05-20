@@ -15,8 +15,6 @@ struct uiSeparator {
 	BOOL vertical;
 };
 
-uiWindowsControlAllDefaults(uiSeparator)
-
 // via https://msdn.microsoft.com/en-us/library/windows/desktop/bb226818%28v=vs.85%29.aspx
 #define separatorHeight 1
 
@@ -41,12 +39,18 @@ static void uiSeparatorMinimumSize(uiWindowsControl *c, int *width, int *height)
 		*height = y;
 }
 
+#define uiSeparatorSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiSeparatorSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiSeparatorMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiSeparatorLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiSeparatorAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiSeparatorChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiSeparator)
+uiWindowsControlFunctionsDefault(uiSeparator)
+
 uiSeparator *uiNewHorizontalSeparator(void)
 {
-	uiSeparator *s;
-
-	uiWindowsNewControl(uiSeparator, s);
-
+	uiSeparator *s = uiWindowsNewControl(uiSeparator);
 	s->hwnd = uiWindowsEnsureCreateControlHWND(0,
 		L"static", L"",
 		SS_ETCHEDHORZ,
@@ -58,10 +62,7 @@ uiSeparator *uiNewHorizontalSeparator(void)
 
 uiSeparator *uiNewVerticalSeparator(void)
 {
-	uiSeparator *s;
-
-	uiWindowsNewControl(uiSeparator, s);
-
+	uiSeparator *s = uiWindowsNewControl(uiSeparator);
 	s->hwnd = uiWindowsEnsureCreateControlHWND(0,
 		L"static", L"",
 		SS_ETCHEDHORZ,

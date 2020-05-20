@@ -33,8 +33,6 @@ static void uiMultilineEntryDestroy(uiControl *c)
 	uiFreeControl(uiControl(e));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiMultilineEntry)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define entryWidth 107 /* this is actually the shorter progress bar width, but Microsoft only indicates as wide as necessary */
 // LONGTERM change this for multiline text boxes (longterm because how?)
@@ -123,11 +121,18 @@ void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 		logLastError(L"error making uiMultilineEntry read-only");
 }
 
+#define uiMultilineEntrySyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiMultilineEntrySetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiMultilineEntryMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiMultilineEntryLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiMultilineEntryAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiMultilineEntryChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiMultilineEntry)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiMultilineEntry)
+
 static uiMultilineEntry *finishMultilineEntry(DWORD style)
 {
-	uiMultilineEntry *e;
-
-	uiWindowsNewControl(uiMultilineEntry, e);
+	uiMultilineEntry *e = uiWindowsNewControl(uiMultilineEntry);
 
 	e->hwnd = uiWindowsEnsureCreateControlHWND(WS_EX_CLIENTEDGE,
 		L"edit", L"",

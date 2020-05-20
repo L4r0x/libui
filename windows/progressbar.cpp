@@ -6,8 +6,6 @@ struct uiProgressBar {
 	HWND hwnd;
 };
 
-uiWindowsControlAllDefaults(uiProgressBar)
-
 // via http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define pbarWidth 237
 #define pbarHeight 8
@@ -67,11 +65,18 @@ void uiProgressBarSetValue(uiProgressBar *p, int value)
 	SendMessageW(p->hwnd, PBM_SETPOS, (WPARAM) value, 0);
 }
 
+#define uiProgressBarSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiProgressBarSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiProgressBarMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiProgressBarLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiProgressBarAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiProgressBarChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiProgressBar)
+uiWindowsControlFunctionsDefault(uiProgressBar)
+
 uiProgressBar *uiNewProgressBar(void)
 {
-	uiProgressBar *p;
-
-	uiWindowsNewControl(uiProgressBar, p);
+	uiProgressBar *p = uiWindowsNewControl(uiProgressBar);
 
 	p->hwnd = uiWindowsEnsureCreateControlHWND(0,
 		PROGRESS_CLASSW, L"",

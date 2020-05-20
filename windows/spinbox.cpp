@@ -21,10 +21,10 @@ static int value(uiSpinbox *s)
 	// This verifies the value put in, capping it automatically.
 	// We don't need to worry about checking for an error; that flag should really be called "did we have to cap?".
 	// We DO need to set the value in case of a cap though.
-	val = SendMessageW(s->updown, UDM_GETPOS32, 0, (LPARAM) (&neededCap));
+	val = SendMessageW(s->updown, UDM_GETPOS32, 0, (LPARAM)(&neededCap));
 	if (neededCap) {
 		s->inhibitChanged = TRUE;
-		SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM) val);
+		SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM)val);
 		s->inhibitChanged = FALSE;
 	}
 	return val;
@@ -35,7 +35,7 @@ static int value(uiSpinbox *s)
 // TODO assign lResult
 static BOOL onWM_COMMAND(uiControl *c, HWND hwnd, WORD code, LRESULT *lResult)
 {
-	uiSpinbox *s = (uiSpinbox *) c;
+	uiSpinbox *s = (uiSpinbox *)c;
 	WCHAR *wtext;
 
 	if (code != EN_CHANGE)
@@ -70,7 +70,6 @@ static void uiSpinboxDestroy(uiControl *c)
 }
 
 // TODO SyncEnableState
-uiWindowsControlAllDefaultsExceptDestroy(uiSpinbox)
 
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 // TODO reduce this?
@@ -116,7 +115,7 @@ static void recreateUpDown(uiSpinbox *s)
 	if (s->updown != NULL) {
 		preserve = TRUE;
 		current = value(s);
-		SendMessageW(s->updown, UDM_GETRANGE32, (WPARAM) (&min), (LPARAM) (&max));
+		SendMessageW(s->updown, UDM_GETRANGE32, (WPARAM)(&min), (LPARAM)(&max));
 		uiWindowsEnsureDestroyWindow(s->updown);
 	}
 	s->inhibitChanged = TRUE;
@@ -130,10 +129,10 @@ static void recreateUpDown(uiSpinbox *s)
 		s->hwnd, NULL, hInstance, NULL);
 	if (s->updown == NULL)
 		logLastError(L"error creating updown");
-	SendMessageW(s->updown, UDM_SETBUDDY, (WPARAM) (s->edit), 0);
+	SendMessageW(s->updown, UDM_SETBUDDY, (WPARAM)(s->edit), 0);
 	if (preserve) {
-		SendMessageW(s->updown, UDM_SETRANGE32, (WPARAM) min, (LPARAM) max);
-		SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM) current);
+		SendMessageW(s->updown, UDM_SETRANGE32, (WPARAM)min, (LPARAM)max);
+		SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM)current);
 	}
 	// preserve the Z-order
 	spinboxArrangeChildren(s);
@@ -165,7 +164,7 @@ int uiSpinboxValue(uiSpinbox *s)
 void uiSpinboxSetValue(uiSpinbox *s, int value)
 {
 	s->inhibitChanged = TRUE;
-	SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM) value);
+	SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM)value);
 	s->inhibitChanged = FALSE;
 }
 
@@ -180,18 +179,23 @@ static void onResize(uiWindowsControl *c)
 	spinboxRelayout(uiSpinbox(c));
 }
 
+#define uiSpinboxSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiSpinboxSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiSpinboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiSpinboxLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiSpinboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiSpinboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiSpinbox)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiSpinbox)
+
 uiSpinbox *uiNewSpinbox(int min, int max)
 {
-	uiSpinbox *s;
-	int temp;
-
 	if (min >= max) {
-		temp = min;
+		int temp = min;
 		min = max;
 		max = temp;
 	}
-
-	uiWindowsNewControl(uiSpinbox, s);
+	uiSpinbox *s = uiWindowsNewControl(uiSpinbox);
 
 	s->hwnd = uiWindowsMakeContainer(uiWindowsControl(s), onResize);
 
@@ -208,8 +212,8 @@ uiSpinbox *uiNewSpinbox(int min, int max)
 
 	recreateUpDown(s);
 	s->inhibitChanged = TRUE;
-	SendMessageW(s->updown, UDM_SETRANGE32, (WPARAM) min, (LPARAM) max);
-	SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM) min);
+	SendMessageW(s->updown, UDM_SETRANGE32, (WPARAM)min, (LPARAM)max);
+	SendMessageW(s->updown, UDM_SETPOS32, 0, (LPARAM)min);
 	s->inhibitChanged = FALSE;
 
 	return s;

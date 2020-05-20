@@ -6,8 +6,6 @@ struct uiLabel {
 	HWND hwnd;
 };
 
-uiWindowsControlAllDefaults(uiLabel)
-
 // via http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define labelHeight 8
 
@@ -36,12 +34,19 @@ void uiLabelSetText(uiLabel *l, const char *text)
 	uiWindowsControlMinimumSizeChanged(uiWindowsControl(l));
 }
 
+#define uiLabelSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiLabelSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiLabelMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiLabelLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiLabelAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiLabelChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiLabel)
+uiWindowsControlFunctionsDefault(uiLabel)
+
 uiLabel *uiNewLabel(const char *text)
 {
-	uiLabel *l;
+	uiLabel *l = uiWindowsNewControl(uiLabel);
 	WCHAR *wtext;
-
-	uiWindowsNewControl(uiLabel, l);
 
 	wtext = toUTF16(text);
 	l->hwnd = uiWindowsEnsureCreateControlHWND(0,

@@ -36,8 +36,6 @@ static void uiCheckboxDestroy(uiControl *cc)
 	uiFreeControl(uiControl(c));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiCheckbox)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define checkboxHeight 10
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/bb226818%28v=vs.85%29.aspx
@@ -95,12 +93,20 @@ void uiCheckboxSetChecked(uiCheckbox *c, int checked)
 	SendMessage(c->hwnd, BM_SETCHECK, check, 0);
 }
 
+#define uiCheckboxSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiCheckboxSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiCheckboxMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiCheckboxLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiCheckboxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiCheckboxChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiCheckbox)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiCheckbox)
+
 uiCheckbox *uiNewCheckbox(const char *text)
 {
-	uiCheckbox *c;
+	uiCheckbox *c = uiWindowsNewControl(uiCheckbox);
 	WCHAR *wtext;
 
-	uiWindowsNewControl(uiCheckbox, c);
 
 	wtext = toUTF16(text);
 	c->hwnd = uiWindowsEnsureCreateControlHWND(0,

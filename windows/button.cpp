@@ -28,8 +28,6 @@ static void uiButtonDestroy(uiControl *c)
 	uiFreeControl(uiControl(b));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiButton)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define buttonHeight 14
 
@@ -82,12 +80,20 @@ void uiButtonOnClicked(uiButton *b, void (*f)(uiButton *, void *), void *data)
 	b->onClickedData = data;
 }
 
+#define uiButtonSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiButtonSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiButtonMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiButtonLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiButtonAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiButtonChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiButton)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiButton)
+
 uiButton *uiNewButton(const char *text)
 {
-	uiButton *b;
+	uiButton *b = uiWindowsNewControl(uiButton);
 	WCHAR *wtext;
 
-	uiWindowsNewControl(uiButton, b);
 
 	wtext = toUTF16(text);
 	b->hwnd = uiWindowsEnsureCreateControlHWND(0,

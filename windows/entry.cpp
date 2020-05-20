@@ -31,8 +31,6 @@ static void uiEntryDestroy(uiControl *c)
 	uiFreeControl(uiControl(e));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiEntry)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define entryWidth 107 /* this is actually the shorter progress bar width, but Microsoft only indicates as wide as necessary */
 #define entryHeight 14
@@ -92,11 +90,18 @@ void uiEntrySetReadOnly(uiEntry *e, int readonly)
 		logLastError(L"error making uiEntry read-only");
 }
 
+#define uiEntrySyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiEntrySetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiEntryMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiEntryLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiEntryAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiEntryChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiEntry)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiEntry)
+
 static uiEntry *finishNewEntry(DWORD style)
 {
-	uiEntry *e;
-
-	uiWindowsNewControl(uiEntry, e);
+	uiEntry *e = uiWindowsNewControl(uiEntry);
 
 	e->hwnd = uiWindowsEnsureCreateControlHWND(WS_EX_CLIENTEDGE,
 		L"edit", L"",

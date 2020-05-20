@@ -1,43 +1,141 @@
 // 16 august 2015
 #include "uipriv_windows.hpp"
 
+void uiWindowsControlDefaultDestroy(uiControl *c)
+{
+	uiWindowsEnsureDestroyWindow((HWND)uiControlHandle(c));
+	uiFreeControl(c);
+}
+
+uiControl *uiWindowsControlDefaultParent(uiControl *c)
+{
+	return uiWindowsControl(c)->parent;
+}
+
+void uiWindowsControlDefaultSetParent(uiControl *c, uiControl *parent)
+{
+	uiControlVerifySetParent(c, parent);
+	uiWindowsControl(c)->parent = parent;
+}
+
+int uiWindowsControlDefaultToplevel(uiControl *c)
+{
+	return 0;
+}
+
+int uiWindowsControlDefaultVisible(uiControl *c)
+{
+	return uiWindowsControl(c)->visible;
+}
+
+void uiWindowsControlDefaultShow(uiControl *c)
+{
+	uiWindowsControl(c)->visible = 1;
+	ShowWindow((HWND)uiControlHandle(c), SW_SHOW);
+	uiWindowsControlNotifyVisibilityChanged(uiWindowsControl(c));
+}
+
+void uiWindowsControlDefaultHide(uiControl *c)
+{
+	uiWindowsControl(c)->visible = 0;
+	ShowWindow((HWND)uiControlHandle(c), SW_HIDE);
+	uiWindowsControlNotifyVisibilityChanged(uiWindowsControl(c));
+}
+
+int uiWindowsControlDefaultEnabled(uiControl *c)
+{
+	return uiWindowsControl(c)->enabled;
+}
+
+void uiWindowsControlDefaultEnable(uiControl *c)
+{
+	uiWindowsControl(c)->enabled = 1;
+	uiWindowsControlSyncEnableState(uiWindowsControl(c), uiControlEnabledToUser(c));
+}
+
+void uiWindowsControlDefaultDisable(uiControl *c)
+{
+	uiWindowsControl(c)->enabled = 0;
+	uiWindowsControlSyncEnableState(uiWindowsControl(c), uiControlEnabledToUser(c));
+}
+
+void uiWindowsControlDefaultSyncEnableState(uiWindowsControl *c, int enabled)
+{
+	if (uiWindowsShouldStopSyncEnableState(c, enabled))
+		return;
+	EnableWindow((HWND)uiControlHandle(uiControl(c)), enabled);
+}
+
+void uiWindowsControlDefaultSetParentHWND(uiWindowsControl *c, HWND parent)
+{
+	uiWindowsEnsureSetParentHWND((HWND)uiControlHandle(uiControl(c)), parent);
+}
+
+// note that there is no uiWindowsControlDefaultMinimumSize(); you MUST define this yourself!
+void uiWindowsControlDefaultMinimumSizeChanged(uiWindowsControl *c)
+{
+	if (uiWindowsControlTooSmall(c)) {
+		uiWindowsControlContinueMinimumSizeChanged(c);
+		return;
+	}
+	/* otherwise do nothing; we have no children */
+}
+
+void uiWindowsControlDefaultLayoutRect(uiWindowsControl *c, RECT *r)
+{
+	/* use the window rect as we include the non-client area in the sizes */
+	uiWindowsEnsureGetWindowRect((HWND)uiControlHandle(uiControl(c)), r);
+}
+
+void uiWindowsControlDefaultAssignControlIDZOrder(uiWindowsControl *c, LONG_PTR *controlID, HWND *insertAfter)
+{
+	uiWindowsEnsureAssignControlIDZOrder((HWND)uiControlHandle(uiControl(c)), controlID, insertAfter);
+}
+
+void uiWindowsControlDefaultChildVisibilityChanged(uiWindowsControl *c)
+{
+	/* do nothing */
+}
+
 void uiWindowsControlSyncEnableState(uiWindowsControl *c, int enabled)
 {
-	(*(c->SyncEnableState))(c, enabled);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->SyncEnableState))(c, enabled);
 }
 
 void uiWindowsControlSetParentHWND(uiWindowsControl *c, HWND parent)
 {
-	(*(c->SetParentHWND))(c, parent);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->SetParentHWND))(c, parent);
 }
 
 void uiWindowsControlMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
-	(*(c->MinimumSize))(c, width, height);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->MinimumSize))(c, width, height);
 }
 
 void uiWindowsControlMinimumSizeChanged(uiWindowsControl *c)
 {
-	(*(c->MinimumSizeChanged))(c);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->MinimumSizeChanged))(c);
 }
 
 // TODO get rid of this
 void uiWindowsControlLayoutRect(uiWindowsControl *c, RECT *r)
 {
-	(*(c->LayoutRect))(c, r);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->LayoutRect))(c, r);
 }
 
 void uiWindowsControlAssignControlIDZOrder(uiWindowsControl *c, LONG_PTR *controlID, HWND *insertAfter)
 {
-	(*(c->AssignControlIDZOrder))(c, controlID, insertAfter);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->AssignControlIDZOrder))(c, controlID, insertAfter);
 }
 
 void uiWindowsControlChildVisibilityChanged(uiWindowsControl *c)
 {
-	(*(c->ChildVisibilityChanged))(c);
+	(*(((uiWindowsControlFunctions *)c->c.functions)->ChildVisibilityChanged))(c);
 }
 
-HWND uiWindowsEnsureCreateControlHWND(DWORD dwExStyle, LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD dwStyle, HINSTANCE hInstance, LPVOID lpParam, BOOL useStandardControlFont)
+HWND uiWindowsEnsureCreateControlHWND(
+	DWORD dwExStyle, LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD dwStyle,
+	HINSTANCE hInstance, LPVOID lpParam, BOOL useStandardControlFont)
 {
 	HWND hwnd;
 
@@ -56,16 +154,18 @@ HWND uiWindowsEnsureCreateControlHWND(DWORD dwExStyle, LPCWSTR lpClassName, LPCW
 		// TODO return a decoy window
 	}
 	if (useStandardControlFont)
-		SendMessageW(hwnd, WM_SETFONT, (WPARAM) hMessageFont, (LPARAM) TRUE);
+		SendMessageW(hwnd, WM_SETFONT, (WPARAM)hMessageFont, (LPARAM)TRUE);
 	return hwnd;
 }
 
 // choose a value distinct from uiWindowSignature
-#define uiWindowsControlSignature 0x4D53576E
 
-uiWindowsControl *uiWindowsAllocControl(size_t n, uint32_t typesig, const char *typenamestr)
+uiWindowsControl *uiWindowsAllocControl(size_t n, uint32_t typesig, const char *typenamestr, uiWindowsControlFunctions *functions)
 {
-	return uiWindowsControl(uiAllocControl(n, uiWindowsControlSignature, typesig, typenamestr));
+	uiWindowsControl *control = uiWindowsControl(uiAllocControl(n, typesig, typenamestr, (uiControlFunctions *)functions));
+	control->visible = 1;
+	control->enabled = 1;
+	return control;
 }
 
 BOOL uiWindowsShouldStopSyncEnableState(uiWindowsControl *c, BOOL enabled)

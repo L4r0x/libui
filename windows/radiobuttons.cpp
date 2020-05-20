@@ -53,7 +53,6 @@ static void uiRadioButtonsDestroy(uiControl *c)
 }
 
 // TODO SyncEnableState
-uiWindowsControlAllDefaultsExceptDestroy(uiRadioButtons)
 
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define radiobuttonHeight 10
@@ -180,14 +179,19 @@ static void onResize(uiWindowsControl *c)
 	radiobuttonsRelayout(uiRadioButtons(c));
 }
 
+#define uiRadioButtonsSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiRadioButtonsSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiRadioButtonsMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiRadioButtonsLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiRadioButtonsAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiRadioButtonsChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiRadioButtons)
+uiWindowsControlFunctionsDefault(uiRadioButtons)
+
 uiRadioButtons *uiNewRadioButtons(void)
 {
-	uiRadioButtons *r;
-
-	uiWindowsNewControl(uiRadioButtons, r);
-
+	uiRadioButtons *r = uiWindowsNewControl(uiRadioButtons);
 	r->hwnd = uiWindowsMakeContainer(uiWindowsControl(r), onResize);
-
 	r->hwnds = new std::vector<HWND>;
 
 	uiRadioButtonsOnSelected(r, defaultOnSelected, NULL);

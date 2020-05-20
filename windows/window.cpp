@@ -176,8 +176,6 @@ static void uiWindowDestroy(uiControl *c)
 	uiFreeControl(uiControl(w));
 }
 
-uiWindowsControlDefaultHandle(uiWindow)
-
 uiControl *uiWindowParent(uiControl *c)
 {
 	return NULL;
@@ -228,15 +226,6 @@ static void uiWindowHide(uiControl *c)
 	ShowWindow(w->hwnd, SW_HIDE);
 }
 
-// TODO we don't want the window to be disabled completely; that would prevent it from being moved! ...would it?
-uiWindowsControlDefaultEnabled(uiWindow)
-uiWindowsControlDefaultEnable(uiWindow)
-uiWindowsControlDefaultDisable(uiWindow)
-// TODO we need to do something about undocumented fields in the OS control types
-uiWindowsControlDefaultSyncEnableState(uiWindow)
-// TODO
-uiWindowsControlDefaultSetParentHWND(uiWindow)
-
 static void uiWindowMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
 	uiWindow *w = uiWindow(c);
@@ -271,14 +260,6 @@ static void uiWindowLayoutRect(uiWindowsControl *c, RECT *r)
 
 	// the layout rect is the client rect in this case
 	uiWindowsEnsureGetClientRect(w->hwnd, r);
-}
-
-uiWindowsControlDefaultAssignControlIDZOrder(uiWindow)
-
-static void uiWindowChildVisibilityChanged(uiWindowsControl *c)
-{
-	// TODO eliminate the redundancy
-	uiWindowsControlMinimumSizeChanged(c);
 }
 
 char *uiWindowTitle(uiWindow *w)
@@ -452,13 +433,22 @@ static void setClientSize(uiWindow *w, int width, int height, BOOL hasMenubar, D
 		logLastError(L"error resizing window");
 }
 
+#define uiWindowEnable uiWindowsControlDefaultEnable
+#define uiWindowEnabled uiWindowsControlDefaultEnabled
+#define uiWindowDisable uiWindowsControlDefaultDisable
+#define uiWindowSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiWindowSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiWindowAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiWindowChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiWindow)
+uiWindowsControlFunctions(uiWindow)
+
 uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 {
-	uiWindow *w;
 	WCHAR *wtitle;
 	BOOL hasMenubarBOOL;
 
-	uiWindowsNewControl(uiWindow, w);
+	uiWindow *w = uiWindowsNewControl(uiWindow);
 
 	hasMenubarBOOL = FALSE;
 	if (hasMenubar)

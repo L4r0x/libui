@@ -306,8 +306,6 @@ static void uiTableDestroy(uiControl *c)
 	uiFreeControl(uiControl(table));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiTable)
-
 // suggested listview sizing from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing:
 // "columns widths that avoid truncated data x an integral number of items"
 // Don't think that'll cut it when some cells have overlong data (eg
@@ -407,11 +405,18 @@ void uiTableAppendButtonColumn(uiTable *t, const char *name, int buttonModelColu
 	params->buttonClickableModelColumn = buttonClickableModelColumn;
 }
 
+#define uiTableSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiTableSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiTableMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiTableLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiTableAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiTableChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiTable)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiTable)
+
 uiTable *uiNewTable(uiTableParams *params)
 {
-	uiTable *table;
-	uiWindowsNewControl(uiTable, table);
-
+	uiTable *table= uiWindowsNewControl(uiTable);
 	table->columns = new std::vector<uiprivTableColumnParams *>;
 	table->model = params->Model;
 	table->backgroundColumn = params->RowBackgroundColorModelColumn;

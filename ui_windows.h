@@ -16,14 +16,10 @@ extern "C" {
 #endif
 
 typedef struct uiWindowsSizing uiWindowsSizing;
-
 typedef struct uiWindowsControl uiWindowsControl;
-struct uiWindowsControl {
-	uiControl c;
-	uiControl *parent;
-	// TODO this should be int on both os x and windows
-	BOOL enabled;
-	BOOL visible;
+
+struct uiWindowsControlFunctions {
+	uiControlFunctions c;
 	void (*SyncEnableState)(uiWindowsControl *, int);
 	void (*SetParentHWND)(uiWindowsControl *, HWND);
 	void (*MinimumSize)(uiWindowsControl *, int *, int *);
@@ -32,8 +28,35 @@ struct uiWindowsControl {
 	void (*AssignControlIDZOrder)(uiWindowsControl *, LONG_PTR *, HWND *);
 	void (*ChildVisibilityChanged)(uiWindowsControl *);
 };
-#define uiWindowsControl(this) ((uiWindowsControl *) (this))
-// TODO document
+
+struct uiWindowsControl {
+	uiControl c;
+	uiControl *parent;
+	BOOL enabled;
+	BOOL visible;
+};
+
+#define uiWindowsControl(this) ((uiWindowsControl *)(this))
+// Default functions
+_UI_EXTERN void uiWindowsControlDefaultDestroy(uiControl *c);
+_UI_EXTERN uiControl *uiWindowsControlDefaultParent(uiControl *c);
+_UI_EXTERN void uiWindowsControlDefaultSetParent(uiControl *c, uiControl *parent);
+_UI_EXTERN int uiWindowsControlDefaultToplevel(uiControl *c);
+_UI_EXTERN int uiWindowsControlDefaultVisible(uiControl *c);
+_UI_EXTERN void uiWindowsControlDefaultShow(uiControl *c);
+_UI_EXTERN void uiWindowsControlDefaultHide(uiControl *c);
+_UI_EXTERN int uiWindowsControlDefaultEnabled(uiControl *c);
+_UI_EXTERN void uiWindowsControlDefaultEnable(uiControl *c);
+_UI_EXTERN void uiWindowsControlDefaultDisable(uiControl *c);
+// Windows specific default functions
+_UI_EXTERN void uiWindowsControlDefaultSyncEnableState(uiWindowsControl *, int);
+_UI_EXTERN void uiWindowsControlDefaultSetParentHWND(uiWindowsControl *, HWND);
+_UI_EXTERN void uiWindowsControlDefaultMinimumSize(uiWindowsControl *, int *, int *);
+_UI_EXTERN void uiWindowsControlDefaultMinimumSizeChanged(uiWindowsControl *);
+_UI_EXTERN void uiWindowsControlDefaultLayoutRect(uiWindowsControl *, RECT *);
+_UI_EXTERN void uiWindowsControlDefaultAssignControlIDZOrder(uiWindowsControl *, LONG_PTR *, HWND *);
+_UI_EXTERN void uiWindowsControlDefaultChildVisibilityChanged(uiWindowsControl *);
+// Calls the specified handler on the given control
 _UI_EXTERN void uiWindowsControlSyncEnableState(uiWindowsControl *, int);
 _UI_EXTERN void uiWindowsControlSetParentHWND(uiWindowsControl *, HWND);
 _UI_EXTERN void uiWindowsControlMinimumSize(uiWindowsControl *, int *, int *);
@@ -42,156 +65,91 @@ _UI_EXTERN void uiWindowsControlLayoutRect(uiWindowsControl *, RECT *);
 _UI_EXTERN void uiWindowsControlAssignControlIDZOrder(uiWindowsControl *, LONG_PTR *, HWND *);
 _UI_EXTERN void uiWindowsControlChildVisibilityChanged(uiWindowsControl *);
 
-// TODO document
-#define uiWindowsControlDefaultDestroy(type) \
-	static void type ## Destroy(uiControl *c) \
-	{ \
-		uiWindowsEnsureDestroyWindow(type(c)->hwnd); \
-		uiFreeControl(c); \
-	}
-#define uiWindowsControlDefaultHandle(type) \
-	static uintptr_t type ## Handle(uiControl *c) \
-	{ \
-		return (uintptr_t) (type(c)->hwnd); \
-	}
-#define uiWindowsControlDefaultParent(type) \
-	static uiControl *type ## Parent(uiControl *c) \
-	{ \
-		return uiWindowsControl(c)->parent; \
-	}
-#define uiWindowsControlDefaultSetParent(type) \
-	static void type ## SetParent(uiControl *c, uiControl *parent) \
-	{ \
-		uiControlVerifySetParent(c, parent); \
-		uiWindowsControl(c)->parent = parent; \
-	}
-#define uiWindowsControlDefaultToplevel(type) \
-	static int type ## Toplevel(uiControl *c) \
-	{ \
-		return 0; \
-	}
-#define uiWindowsControlDefaultVisible(type) \
-	static int type ## Visible(uiControl *c) \
-	{ \
-		return uiWindowsControl(c)->visible; \
-	}
-#define uiWindowsControlDefaultShow(type) \
-	static void type ## Show(uiControl *c) \
-	{ \
-		uiWindowsControl(c)->visible = 1; \
-		ShowWindow(type(c)->hwnd, SW_SHOW); \
-		uiWindowsControlNotifyVisibilityChanged(uiWindowsControl(c)); \
-	}
-#define uiWindowsControlDefaultHide(type) \
-	static void type ## Hide(uiControl *c) \
-	{ \
-		uiWindowsControl(c)->visible = 0; \
-		ShowWindow(type(c)->hwnd, SW_HIDE); \
-		uiWindowsControlNotifyVisibilityChanged(uiWindowsControl(c)); \
-	}
-#define uiWindowsControlDefaultEnabled(type) \
-	static int type ## Enabled(uiControl *c) \
-	{ \
-		return uiWindowsControl(c)->enabled; \
-	}
-#define uiWindowsControlDefaultEnable(type) \
-	static void type ## Enable(uiControl *c) \
-	{ \
-		uiWindowsControl(c)->enabled = 1; \
-		uiWindowsControlSyncEnableState(uiWindowsControl(c), uiControlEnabledToUser(c)); \
-	}
-#define uiWindowsControlDefaultDisable(type) \
-	static void type ## Disable(uiControl *c) \
-	{ \
-		uiWindowsControl(c)->enabled = 0; \
-		uiWindowsControlSyncEnableState(uiWindowsControl(c), uiControlEnabledToUser(c)); \
-	}
-#define uiWindowsControlDefaultSyncEnableState(type) \
-	static void type ## SyncEnableState(uiWindowsControl *c, int enabled) \
-	{ \
-		if (uiWindowsShouldStopSyncEnableState(c, enabled)) \
-			return; \
-		EnableWindow(type(c)->hwnd, enabled); \
-	}
-#define uiWindowsControlDefaultSetParentHWND(type) \
-	static void type ## SetParentHWND(uiWindowsControl *c, HWND parent) \
-	{ \
-		uiWindowsEnsureSetParentHWND(type(c)->hwnd, parent); \
-	}
-// note that there is no uiWindowsControlDefaultMinimumSize(); you MUST define this yourself!
-#define uiWindowsControlDefaultMinimumSizeChanged(type) \
-	static void type ## MinimumSizeChanged(uiWindowsControl *c) \
-	{ \
-		if (uiWindowsControlTooSmall(c)) { \
-			uiWindowsControlContinueMinimumSizeChanged(c); \
-			return; \
-		} \
-		/* otherwise do nothing; we have no children */ \
-	}
-#define uiWindowsControlDefaultLayoutRect(type) \
-	static void type ## LayoutRect(uiWindowsControl *c, RECT *r) \
-	{ \
-		/* use the window rect as we include the non-client area in the sizes */ \
-		uiWindowsEnsureGetWindowRect(type(c)->hwnd, r); \
-	}
-#define uiWindowsControlDefaultAssignControlIDZOrder(type) \
-	static void type ## AssignControlIDZOrder(uiWindowsControl *c, LONG_PTR *controlID, HWND *insertAfter) \
-	{ \
-		uiWindowsEnsureAssignControlIDZOrder(type(c)->hwnd, controlID, insertAfter); \
-	}
-#define uiWindowsControlDefaultChildVisibilityChanged(type) \
-	static void type ## ChildVisibilityChanged(uiWindowsControl *c) \
-	{ \
-		/* do nothing */ \
+#define uiWindowsControlDefaultHandle(type)     \
+	static uintptr_t type##Handle(uiControl *c) \
+	{                                           \
+		return (uintptr_t)(type(c)->hwnd);      \
 	}
 
-#define uiWindowsControlAllDefaultsExceptDestroy(type) \
-	uiWindowsControlDefaultHandle(type) \
-	uiWindowsControlDefaultParent(type) \
-	uiWindowsControlDefaultSetParent(type) \
-	uiWindowsControlDefaultToplevel(type) \
-	uiWindowsControlDefaultVisible(type) \
-	uiWindowsControlDefaultShow(type) \
-	uiWindowsControlDefaultHide(type) \
-	uiWindowsControlDefaultEnabled(type) \
-	uiWindowsControlDefaultEnable(type) \
-	uiWindowsControlDefaultDisable(type) \
-	uiWindowsControlDefaultSyncEnableState(type) \
-	uiWindowsControlDefaultSetParentHWND(type) \
-	uiWindowsControlDefaultMinimumSizeChanged(type) \
-	uiWindowsControlDefaultLayoutRect(type) \
-	uiWindowsControlDefaultAssignControlIDZOrder(type) \
-	uiWindowsControlDefaultChildVisibilityChanged(type)
+#define uiWindowsControlFunctionsDefault(type)           \
+	static uiWindowsControlFunctions type##Functions = { \
+		{                                                \
+			uiWindowsControlDefaultDestroy,              \
+			type##Handle,                                \
+			uiWindowsControlDefaultParent,               \
+			uiWindowsControlDefaultSetParent,            \
+			uiWindowsControlDefaultToplevel,             \
+			uiWindowsControlDefaultVisible,              \
+			uiWindowsControlDefaultShow,                 \
+			uiWindowsControlDefaultHide,                 \
+			uiWindowsControlDefaultEnabled,              \
+			uiWindowsControlDefaultEnable,               \
+			uiWindowsControlDefaultDisable,              \
+		},                                               \
+		type##SyncEnableState,                           \
+		type##SetParentHWND,                             \
+		type##MinimumSize,                               \
+		type##MinimumSizeChanged,                        \
+		type##LayoutRect,                                \
+		type##AssignControlIDZOrder,                     \
+		type##ChildVisibilityChanged,                    \
+	};
 
-#define uiWindowsControlAllDefaults(type) \
-	uiWindowsControlDefaultDestroy(type) \
-	uiWindowsControlAllDefaultsExceptDestroy(type)
+#define uiWindowsControlFunctionsDefaultExceptDestroy(type) \
+	static uiWindowsControlFunctions type##Functions = {    \
+		{                                                   \
+			type##Destroy,                                  \
+			type##Handle,                                   \
+			uiWindowsControlDefaultParent,                  \
+			uiWindowsControlDefaultSetParent,               \
+			uiWindowsControlDefaultToplevel,                \
+			uiWindowsControlDefaultVisible,                 \
+			uiWindowsControlDefaultShow,                    \
+			uiWindowsControlDefaultHide,                    \
+			uiWindowsControlDefaultEnabled,                 \
+			uiWindowsControlDefaultEnable,                  \
+			uiWindowsControlDefaultDisable,                 \
+		},                                                  \
+		type##SyncEnableState,                              \
+		type##SetParentHWND,                                \
+		type##MinimumSize,                                  \
+		type##MinimumSizeChanged,                           \
+		type##LayoutRect,                                   \
+		type##AssignControlIDZOrder,                        \
+		type##ChildVisibilityChanged,                       \
+	};
+
+#define uiWindowsControlFunctions(type)                  \
+	static uiWindowsControlFunctions type##Functions = { \
+		{                                                \
+			type##Destroy,                               \
+			type##Handle,                                \
+			type##Parent,                                \
+			type##SetParent,                             \
+			type##Toplevel,                              \
+			type##Visible,                               \
+			type##Show,                                  \
+			type##Hide,                                  \
+			type##Enabled,                               \
+			type##Enable,                                \
+			type##Disable,                               \
+		},                                               \
+		type##SyncEnableState,                           \
+		type##SetParentHWND,                             \
+		type##MinimumSize,                               \
+		type##MinimumSizeChanged,                        \
+		type##LayoutRect,                                \
+		type##AssignControlIDZOrder,                     \
+		type##ChildVisibilityChanged,                    \
+	};
 
 // TODO document
-#define uiWindowsNewControl(type, var) \
-	var = type(uiWindowsAllocControl(sizeof (type), type ## Signature, #type)); \
-	uiControl(var)->Destroy = type ## Destroy; \
-	uiControl(var)->Handle = type ## Handle; \
-	uiControl(var)->Parent = type ## Parent; \
-	uiControl(var)->SetParent = type ## SetParent; \
-	uiControl(var)->Toplevel = type ## Toplevel; \
-	uiControl(var)->Visible = type ## Visible; \
-	uiControl(var)->Show = type ## Show; \
-	uiControl(var)->Hide = type ## Hide; \
-	uiControl(var)->Enabled = type ## Enabled; \
-	uiControl(var)->Enable = type ## Enable; \
-	uiControl(var)->Disable = type ## Disable; \
-	uiWindowsControl(var)->SyncEnableState = type ## SyncEnableState; \
-	uiWindowsControl(var)->SetParentHWND = type ## SetParentHWND; \
-	uiWindowsControl(var)->MinimumSize = type ## MinimumSize; \
-	uiWindowsControl(var)->MinimumSizeChanged = type ## MinimumSizeChanged; \
-	uiWindowsControl(var)->LayoutRect = type ## LayoutRect; \
-	uiWindowsControl(var)->AssignControlIDZOrder = type ## AssignControlIDZOrder; \
-	uiWindowsControl(var)->ChildVisibilityChanged = type ## ChildVisibilityChanged; \
-	uiWindowsControl(var)->visible = 1; \
-	uiWindowsControl(var)->enabled = 1;
+#define uiWindowsNewControl(type) \
+	type(uiWindowsAllocControl(sizeof(type), type##Signature, #type, &type##Functions))
+
 // TODO document
-_UI_EXTERN uiWindowsControl *uiWindowsAllocControl(size_t n, uint32_t typesig, const char *typenamestr);
+_UI_EXTERN uiWindowsControl *uiWindowsAllocControl(
+	size_t n, uint32_t typesig, const char *typenamestr, uiWindowsControlFunctions *functions);
 
 // TODO document
 _UI_EXTERN HWND uiWindowsEnsureCreateControlHWND(DWORD dwExStyle, LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD dwStyle, HINSTANCE hInstance, LPVOID lpParam, BOOL useStandardControlFont);

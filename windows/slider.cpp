@@ -26,8 +26,6 @@ static void uiSliderDestroy(uiControl *c)
 	uiFreeControl(uiControl(s));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiSlider);
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define sliderWidth 107 /* this is actually the shorter progress bar width, but Microsoft doesn't indicate a width */
 #define sliderHeight 15
@@ -59,7 +57,7 @@ int uiSliderValue(uiSlider *s)
 void uiSliderSetValue(uiSlider *s, int value)
 {
 	// don't use TBM_SETPOSNOTIFY; that triggers an event
-	SendMessageW(s->hwnd, TBM_SETPOS, (WPARAM) TRUE, (LPARAM) value);
+	SendMessageW(s->hwnd, TBM_SETPOS, (WPARAM)TRUE, (LPARAM)value);
 }
 
 void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *, void *), void *data)
@@ -68,18 +66,23 @@ void uiSliderOnChanged(uiSlider *s, void (*f)(uiSlider *, void *), void *data)
 	s->onChangedData = data;
 }
 
+#define uiSliderSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiSliderSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiSliderMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiSliderLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiSliderAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiSliderChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiSlider)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiSlider)
+
 uiSlider *uiNewSlider(int min, int max)
 {
-	uiSlider *s;
-	int temp;
-
 	if (min >= max) {
-		temp = min;
+		int temp = min;
 		min = max;
 		max = temp;
 	}
-
-	uiWindowsNewControl(uiSlider, s);
+	uiSlider *s = uiWindowsNewControl(uiSlider);
 
 	s->hwnd = uiWindowsEnsureCreateControlHWND(0,
 		TRACKBAR_CLASSW, L"",
@@ -90,9 +93,9 @@ uiSlider *uiNewSlider(int min, int max)
 	uiWindowsRegisterWM_HSCROLLHandler(s->hwnd, onWM_HSCROLL, uiControl(s));
 	uiSliderOnChanged(s, defaultOnChanged, NULL);
 
-	SendMessageW(s->hwnd, TBM_SETRANGEMIN, (WPARAM) TRUE, (LPARAM) min);
-	SendMessageW(s->hwnd, TBM_SETRANGEMAX, (WPARAM) TRUE, (LPARAM) max);
-	SendMessageW(s->hwnd, TBM_SETPOS, (WPARAM) TRUE, (LPARAM) min);
+	SendMessageW(s->hwnd, TBM_SETRANGEMIN, (WPARAM)TRUE, (LPARAM)min);
+	SendMessageW(s->hwnd, TBM_SETRANGEMAX, (WPARAM)TRUE, (LPARAM)max);
+	SendMessageW(s->hwnd, TBM_SETPOS, (WPARAM)TRUE, (LPARAM)min);
 
 	return s;
 }

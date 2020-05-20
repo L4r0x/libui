@@ -426,17 +426,6 @@ static void uiGridDestroy(uiControl *c)
 	uiFreeControl(uiControl(g));
 }
 
-uiWindowsControlDefaultHandle(uiGrid)
-uiWindowsControlDefaultParent(uiGrid)
-uiWindowsControlDefaultSetParent(uiGrid)
-uiWindowsControlDefaultToplevel(uiGrid)
-uiWindowsControlDefaultVisible(uiGrid)
-uiWindowsControlDefaultShow(uiGrid)
-uiWindowsControlDefaultHide(uiGrid)
-uiWindowsControlDefaultEnabled(uiGrid)
-uiWindowsControlDefaultEnable(uiGrid)
-uiWindowsControlDefaultDisable(uiGrid)
-
 static void uiGridSyncEnableState(uiWindowsControl *c, int enabled)
 {
 	uiGrid *g = uiGrid(c);
@@ -446,8 +435,6 @@ static void uiGridSyncEnableState(uiWindowsControl *c, int enabled)
 	for (const struct gridChild *gc : *(g->children))
 		uiWindowsControlSyncEnableState(uiWindowsControl(gc->c), enabled);
 }
-
-uiWindowsControlDefaultSetParentHWND(uiGrid)
 
 static void uiGridMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
@@ -513,15 +500,6 @@ static void uiGridMinimumSizeChanged(uiWindowsControl *c)
 		return;
 	}
 	gridRelayout(g);
-}
-
-uiWindowsControlDefaultLayoutRect(uiGrid)
-uiWindowsControlDefaultAssignControlIDZOrder(uiGrid)
-
-static void uiGridChildVisibilityChanged(uiWindowsControl *c)
-{
-	// TODO eliminate the redundancy
-	uiWindowsControlMinimumSizeChanged(c);
 }
 
 // must have called gridRecomputeMinMax() first
@@ -643,11 +621,16 @@ static void onResize(uiWindowsControl *c)
 	gridRelayout(uiGrid(c));
 }
 
+#define uiGridSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiGridLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiGridAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiGridChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiGrid)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiGrid)
+
 uiGrid *uiNewGrid(void)
 {
-	uiGrid *g;
-
-	uiWindowsNewControl(uiGrid, g);
+	uiGrid *g = uiWindowsNewControl(uiGrid);
 
 	g->hwnd = uiWindowsMakeContainer(uiWindowsControl(g), onResize);
 

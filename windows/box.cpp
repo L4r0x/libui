@@ -67,17 +67,17 @@ static void boxRelayout(uiBox *b)
 			continue;
 		}
 		uiWindowsControlMinimumSize(uiWindowsControl(bc.c), &minimumWidth, &minimumHeight);
-		if (b->vertical) {		// all controls have same width
+		if (b->vertical) { // all controls have same width
 			bc.width = width;
 			bc.height = minimumHeight;
 			stretchyht -= minimumHeight;
-		} else {				// all controls have same height
+		} else { // all controls have same height
 			bc.width = minimumWidth;
 			bc.height = height;
 			stretchywid -= minimumWidth;
 		}
 	}
-	if (nVisible == 0)			// nothing to do
+	if (nVisible == 0) // nothing to do
 		return;
 
 	// 2) now inset the available rect by the needed padding
@@ -112,7 +112,7 @@ static void boxRelayout(uiBox *b)
 	for (const struct boxChild &bc : *(b->controls)) {
 		if (!uiControlVisible(bc.c))
 			continue;
-		uiWindowsEnsureMoveWindowDuringResize((HWND) uiControlHandle(bc.c), x, y, bc.width, bc.height);
+		uiWindowsEnsureMoveWindowDuringResize((HWND)uiControlHandle(bc.c), x, y, bc.width, bc.height);
 		if (b->vertical)
 			y += bc.height + ypadding;
 		else
@@ -133,17 +133,6 @@ static void uiBoxDestroy(uiControl *c)
 	uiFreeControl(uiControl(b));
 }
 
-uiWindowsControlDefaultHandle(uiBox)
-uiWindowsControlDefaultParent(uiBox)
-uiWindowsControlDefaultSetParent(uiBox)
-uiWindowsControlDefaultToplevel(uiBox)
-uiWindowsControlDefaultVisible(uiBox)
-uiWindowsControlDefaultShow(uiBox)
-uiWindowsControlDefaultHide(uiBox)
-uiWindowsControlDefaultEnabled(uiBox)
-uiWindowsControlDefaultEnable(uiBox)
-uiWindowsControlDefaultDisable(uiBox)
-
 static void uiBoxSyncEnableState(uiWindowsControl *c, int enabled)
 {
 	uiBox *b = uiBox(c);
@@ -153,8 +142,6 @@ static void uiBoxSyncEnableState(uiWindowsControl *c, int enabled)
 	for (const struct boxChild &bc : *(b->controls))
 		uiWindowsControlSyncEnableState(uiWindowsControl(bc.c), enabled);
 }
-
-uiWindowsControlDefaultSetParentHWND(uiBox)
 
 static void uiBoxMinimumSize(uiWindowsControl *c, int *width, int *height)
 {
@@ -207,7 +194,7 @@ static void uiBoxMinimumSize(uiWindowsControl *c, int *width, int *height)
 				*height = minimumHeight;
 		}
 	}
-	if (nVisible == 0)		// just return 0x0
+	if (nVisible == 0) // just return 0x0
 		return;
 
 	// 2) now outset the desired rect with the needed padding
@@ -233,9 +220,6 @@ static void uiBoxMinimumSizeChanged(uiWindowsControl *c)
 	}
 	boxRelayout(b);
 }
-
-uiWindowsControlDefaultLayoutRect(uiBox)
-uiWindowsControlDefaultAssignControlIDZOrder(uiBox)
 
 static void uiBoxChildVisibilityChanged(uiWindowsControl *c)
 {
@@ -295,11 +279,15 @@ static void onResize(uiWindowsControl *c)
 	boxRelayout(uiBox(c));
 }
 
+#define uiBoxLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiBoxAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiBoxSetParentHWND uiWindowsControlDefaultSetParentHWND
+uiWindowsControlDefaultHandle(uiBox)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiBox)
+
 static uiBox *finishNewBox(int vertical)
 {
-	uiBox *b;
-
-	uiWindowsNewControl(uiBox, b);
+	uiBox *b = uiWindowsNewControl(uiBox);
 
 	b->hwnd = uiWindowsMakeContainer(uiWindowsControl(b), onResize);
 

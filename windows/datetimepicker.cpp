@@ -110,8 +110,6 @@ static void uiDateTimePickerDestroy(uiControl *c)
 	uiFreeControl(uiControl(d));
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiDateTimePicker)
-
 // the height returned from DTM_GETIDEALSIZE is unreliable; see http://stackoverflow.com/questions/30626549/what-is-the-proper-use-of-dtm-getidealsize-treating-the-returned-size-as-pixels
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define entryHeight 14
@@ -199,11 +197,18 @@ void uiDateTimePickerOnChanged(uiDateTimePicker *d, void (*f)(uiDateTimePicker *
 	d->onChangedData = data;
 }
 
+#define uiDateTimePickerSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiDateTimePickerSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiDateTimePickerMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiDateTimePickerLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiDateTimePickerAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiDateTimePickerChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiDateTimePicker)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiDateTimePicker)
+
 static uiDateTimePicker *finishNewDateTimePicker(DWORD style)
 {
-	uiDateTimePicker *d;
-
-	uiWindowsNewControl(uiDateTimePicker, d);
+	uiDateTimePicker *d = uiWindowsNewControl(uiDateTimePicker);
 
 	d->hwnd = uiWindowsEnsureCreateControlHWND(WS_EX_CLIENTEDGE,
 		DATETIMEPICK_CLASSW, L"",

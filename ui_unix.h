@@ -16,23 +16,24 @@ extern "C" {
 #endif
 
 typedef struct uiUnixControl uiUnixControl;
+
 struct uiUnixControl {
 	uiControl c;
 	uiControl *parent;
 	gboolean explicitlyHidden;
 };
-#define uiUnixControl(this) ((uiUnixControl *)(this))
 
-void uiUnixControlDestroy(uiControl *c);
-uiControl *uiUnixControlParent(uiControl *c);
-void uiUnixControlSetParent(uiControl *c, uiControl *parent);
-int uiUnixControlToplevel(uiControl *c);
-int uiUnixControlVisible(uiControl *c);
-void uiUnixControlShow(uiControl *c);
-void uiUnixControlHide(uiControl *c);
-int uiUnixControlEnabled(uiControl *c);
-void uiUnixControlEnable(uiControl *c);
-void uiUnixControlDisable(uiControl *c);
+#define uiUnixControl(this) ((uiUnixControl *)(this))
+_UI_EXTERN void uiUnixControlDestroy(uiControl *c);
+_UI_EXTERN uiControl *uiUnixControlParent(uiControl *c);
+_UI_EXTERN void uiUnixControlSetParent(uiControl *c, uiControl *parent);
+_UI_EXTERN int uiUnixControlToplevel(uiControl *c);
+_UI_EXTERN int uiUnixControlVisible(uiControl *c);
+_UI_EXTERN void uiUnixControlShow(uiControl *c);
+_UI_EXTERN void uiUnixControlHide(uiControl *c);
+_UI_EXTERN int uiUnixControlEnabled(uiControl *c);
+_UI_EXTERN void uiUnixControlEnable(uiControl *c);
+_UI_EXTERN void uiUnixControlDisable(uiControl *c);
 
 #define uiUnixControlDefaultHandle(type)        \
 	static uintptr_t type##Handle(uiControl *c) \

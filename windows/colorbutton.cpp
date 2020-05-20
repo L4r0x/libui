@@ -106,8 +106,6 @@ static BOOL onWM_NOTIFY(uiControl *c, HWND hwnd, NMHDR *nmhdr, LRESULT *lResult)
 	return TRUE;
 }
 
-uiWindowsControlAllDefaultsExceptDestroy(uiColorButton)
-
 // from http://msdn.microsoft.com/en-us/library/windows/desktop/dn742486.aspx#sizingandspacing
 #define buttonHeight 14
 
@@ -166,11 +164,18 @@ void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *)
 	b->onChangedData = data;
 }
 
+#define uiColorButtonSyncEnableState uiWindowsControlDefaultSyncEnableState
+#define uiColorButtonSetParentHWND uiWindowsControlDefaultSetParentHWND
+#define uiColorButtonMinimumSizeChanged uiWindowsControlDefaultMinimumSizeChanged
+#define uiColorButtonLayoutRect uiWindowsControlDefaultLayoutRect
+#define uiColorButtonAssignControlIDZOrder uiWindowsControlDefaultAssignControlIDZOrder
+#define uiColorButtonChildVisibilityChanged uiWindowsControlDefaultChildVisibilityChanged
+uiWindowsControlDefaultHandle(uiColorButton)
+uiWindowsControlFunctionsDefaultExceptDestroy(uiColorButton)
+
 uiColorButton *uiNewColorButton(void)
 {
-	uiColorButton *b;
-
-	uiWindowsNewControl(uiColorButton, b);
+	uiColorButton *b = uiWindowsNewControl(uiColorButton);
 
 	// initial color is black
 	b->r = 0.0;
