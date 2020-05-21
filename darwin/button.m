@@ -57,8 +57,6 @@ struct uiButton {
 
 static buttonDelegateClass *buttonDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiButton, button)
-
 static void uiButtonDestroy(uiControl *c)
 {
 	uiButton *b = uiButton(c);
@@ -89,11 +87,20 @@ static void defaultOnClicked(uiButton *b, void *data)
 	// do nothing
 }
 
+#define uiButtonSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiButtonSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiButtonHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiButtonHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiButtonChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiButtonHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiButtonSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiButtonChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiButton, button)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiButton)
+
 uiButton *uiNewButton(const char *text)
 {
-	uiButton *b;
-
-	uiDarwinNewControl(uiButton, b);
+	uiButton *b = uiDarwinNewControl(uiButton);
 
 	b->button = [[NSButton alloc] initWithFrame:NSZeroRect];
 	[b->button setTitle:uiprivToNSString(text)];

@@ -57,8 +57,6 @@ struct uiCheckbox {
 
 static checkboxDelegateClass *checkboxDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiCheckbox, button)
-
 static void uiCheckboxDestroy(uiControl *cc)
 {
 	uiCheckbox *c = uiCheckbox(cc);
@@ -104,11 +102,20 @@ static void defaultOnToggled(uiCheckbox *c, void *data)
 	// do nothing
 }
 
+#define uiCheckboxSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiCheckboxSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiCheckboxHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiCheckboxHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiCheckboxChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiCheckboxHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiCheckboxSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiCheckboxChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiCheckbox, button)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiCheckbox)
+
 uiCheckbox *uiNewCheckbox(const char *text)
 {
-	uiCheckbox *c;
-
-	uiDarwinNewControl(uiCheckbox, c);
+	uiCheckbox *c = uiDarwinNewControl(uiCheckbox);
 
 	c->button = [[NSButton alloc] initWithFrame:NSZeroRect];
 	[c->button setTitle:uiprivToNSString(text)];

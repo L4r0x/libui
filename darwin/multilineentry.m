@@ -49,8 +49,6 @@ struct uiMultilineEntry {
 
 @end
 
-uiDarwinControlAllDefaultsExceptDestroy(uiMultilineEntry, sv)
-
 static void uiMultilineEntryDestroy(uiControl *c)
 {
 	uiMultilineEntry *e = uiMultilineEntry(c);
@@ -108,10 +106,20 @@ void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 	[e->tv setEditable:editable];
 }
 
+#define uiMultilineEntrySyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiMultilineEntrySetSuperview uiDarwinControlDefaultSetSuperview
+#define uiMultilineEntryHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiMultilineEntryHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiMultilineEntryChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiMultilineEntryHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiMultilineEntrySetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiMultilineEntryChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiMultilineEntry, tv)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiMultilineEntry)
+
 static uiMultilineEntry *uiprivNewMultilineEntry(BOOL hscroll)
 {
-	uiMultilineEntry *entry;
-	uiDarwinNewControl(uiMultilineEntry, entry);
+	uiMultilineEntry *entry = uiDarwinNewControl(uiMultilineEntry);
 
 	entry->tv = [[intrinsicSizeTextView alloc] initWithFrame:NSZeroRect e:entry];
 

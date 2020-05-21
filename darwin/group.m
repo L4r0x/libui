@@ -33,17 +33,6 @@ static void uiGroupDestroy(uiControl *c)
 	uiFreeControl(uiControl(g));
 }
 
-uiDarwinControlDefaultHandle(uiGroup, box)
-uiDarwinControlDefaultParent(uiGroup, box)
-uiDarwinControlDefaultSetParent(uiGroup, box)
-uiDarwinControlDefaultToplevel(uiGroup, box)
-uiDarwinControlDefaultVisible(uiGroup, box)
-uiDarwinControlDefaultShow(uiGroup, box)
-uiDarwinControlDefaultHide(uiGroup, box)
-uiDarwinControlDefaultEnabled(uiGroup, box)
-uiDarwinControlDefaultEnable(uiGroup, box)
-uiDarwinControlDefaultDisable(uiGroup, box)
-
 static void uiGroupSyncEnableState(uiDarwinControl *c, int enabled)
 {
 	uiGroup *g = uiGroup(c);
@@ -53,8 +42,6 @@ static void uiGroupSyncEnableState(uiDarwinControl *c, int enabled)
 	if (g->child != NULL)
 		uiDarwinControlSyncEnableState(uiDarwinControl(g->child), enabled);
 }
-
-uiDarwinControlDefaultSetSuperview(uiGroup, box)
 
 static void groupRelayout(uiGroup *g)
 {
@@ -171,12 +158,13 @@ void uiGroupSetMargined(uiGroup *g, int margined)
 	uiprivSingleChildConstraintsSetMargined(&(g->constraints), g->margined);
 }
 
+#define uiGroupSetSuperview uiDarwinControlDefaultSetSuperview
+uiDarwinControlDefaultHandle(uiGroup, box)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiGroup)
+
 uiGroup *uiNewGroup(const char *title)
 {
-	uiGroup *g;
-
-	uiDarwinNewControl(uiGroup, g);
-
+	uiGroup *g = uiDarwinNewControl(uiGroup);
 	g->box = [[NSBox alloc] initWithFrame:NSZeroRect];
 	[g->box setTitle:uiprivToNSString(title)];
 	[g->box setBoxType:NSBoxPrimary];

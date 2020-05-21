@@ -113,8 +113,6 @@ struct uiColorButton {
 
 @end
 
-uiDarwinControlAllDefaults(uiColorButton, button)
-
 // we do not want color change events to be sent to any controls other than the color buttons
 // see main.m for more details
 BOOL uiprivColorButtonInhibitSendAction(SEL sel, id from, id to)
@@ -145,12 +143,20 @@ void uiColorButtonOnChanged(uiColorButton *b, void (*f)(uiColorButton *, void *)
 	b->onChangedData = data;
 }
 
+#define uiColorButtonSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiColorButtonSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiColorButtonHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiColorButtonHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiColorButtonChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiColorButtonHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiColorButtonSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiColorButtonChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiColorButton, button)
+uiDarwinControlFunctionsDefault(uiColorButton)
+
 uiColorButton *uiNewColorButton(void)
 {
-	uiColorButton *b;
-
-	uiDarwinNewControl(uiColorButton, b);
-
+	uiColorButton *b = uiDarwinNewControl(uiColorButton);
 	b->button = [[colorButton alloc] initWithFrame:NSZeroRect libuiColorButton:b];
 
 	uiColorButtonOnChanged(b, defaultOnChanged, NULL);

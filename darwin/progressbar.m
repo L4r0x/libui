@@ -25,8 +25,6 @@ struct uiProgressBar {
 	NSProgressIndicator *pi;
 };
 
-uiDarwinControlAllDefaults(uiProgressBar, pi)
-
 int uiProgressBarValue(uiProgressBar *p)
 {
 	if ([p->pi isIndeterminate])
@@ -62,12 +60,20 @@ void uiProgressBarSetValue(uiProgressBar *p, int value)
 	[p->pi setDoubleValue:((double) value)];
 }
 
+#define uiProgressBarSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiProgressBarSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiProgressBarHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiProgressBarHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiProgressBarChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiProgressBarHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiProgressBarSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiProgressBarChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiProgressBar, pi)
+uiDarwinControlFunctionsDefault(uiProgressBar)
+
 uiProgressBar *uiNewProgressBar(void)
 {
-	uiProgressBar *p;
-
-	uiDarwinNewControl(uiProgressBar, p);
-
+	uiProgressBar *p = uiDarwinNewControl(uiProgressBar);
 	p->pi = [[intrinsicWidthNSProgressIndicator alloc] initWithFrame:NSZeroRect];
 	[p->pi setControlSize:NSControlSizeRegular];
 	[p->pi setBezeled:YES];

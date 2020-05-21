@@ -127,8 +127,6 @@ static BOOL isSearchField(NSTextField *tf)
 
 static entryDelegateClass *entryDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiEntry, textfield)
-
 static void uiEntryDestroy(uiControl *c)
 {
 	uiEntry *e = uiEntry(c);
@@ -206,12 +204,20 @@ NSTextField *uiprivNewEditableTextField(void)
 	return realNewEditableTextField([libui_intrinsicWidthNSTextField class]);
 }
 
+#define uiEntrySyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiEntrySetSuperview uiDarwinControlDefaultSetSuperview
+#define uiEntryHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiEntryHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiEntryChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiEntryHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiEntrySetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiEntryChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiEntry, textfield)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiEntry)
+
 static uiEntry *finishNewEntry(Class class)
 {
-	uiEntry *e;
-
-	uiDarwinNewControl(uiEntry, e);
-
+	uiEntry *e = uiDarwinNewControl(uiEntry);
 	e->textfield = realNewEditableTextField(class);
 
 	if (entryDelegate == nil) {

@@ -156,8 +156,6 @@ struct uiSpinbox {
 
 @end
 
-uiDarwinControlAllDefaults(uiSpinbox, spinbox)
-
 int uiSpinboxValue(uiSpinbox *s)
 {
 	return [s->spinbox libui_value];
@@ -179,19 +177,26 @@ static void defaultOnChanged(uiSpinbox *s, void *data)
 	// do nothing
 }
 
+#define uiSpinboxSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiSpinboxSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiSpinboxHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiSpinboxHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiSpinboxChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiSpinboxHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiSpinboxSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiSpinboxChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiSpinbox, spinbox)
+uiDarwinControlFunctionsDefault(uiSpinbox)
+
 uiSpinbox *uiNewSpinbox(int min, int max)
 {
-	uiSpinbox *s;
-	int temp;
-
 	if (min >= max) {
-		temp = min;
+		int temp = min;
 		min = max;
 		max = temp;
 	}
 
-	uiDarwinNewControl(uiSpinbox, s);
-
+	uiSpinbox *s = uiDarwinNewControl(uiSpinbox);
 	s->spinbox = [[libui_spinbox alloc] initWithFrame:NSZeroRect spinbox:s];
 	[s->spinbox setMinimum:min];
 	[s->spinbox setMaximum:max];

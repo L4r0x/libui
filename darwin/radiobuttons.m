@@ -46,8 +46,6 @@ struct uiRadioButtons {
 
 @end
 
-uiDarwinControlAllDefaultsExceptDestroy(uiRadioButtons, view)
-
 static void defaultOnSelected(uiRadioButtons *r, void *data)
 {
 	// do nothing
@@ -189,11 +187,20 @@ void uiRadioButtonsOnSelected(uiRadioButtons *r, void (*f)(uiRadioButtons *, voi
 	r->onSelectedData = data;
 }
 
+#define uiRadioButtonsSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiRadioButtonsSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiRadioButtonsHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiRadioButtonsHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiRadioButtonsChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiRadioButtonsHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiRadioButtonsSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiRadioButtonsChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiRadioButtons, view)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiRadioButtons)
+
 uiRadioButtons *uiNewRadioButtons(void)
 {
-	uiRadioButtons *r;
-
-	uiDarwinNewControl(uiRadioButtons, r);
+	uiRadioButtons *r = uiDarwinNewControl(uiRadioButtons);
 
 	r->view = [[NSView alloc] initWithFrame:NSZeroRect];
 	r->buttons = [NSMutableArray new];

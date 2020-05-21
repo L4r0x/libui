@@ -1,15 +1,11 @@
 // 6 january 2015
 // note: as of OS X Sierra, the -mmacosx-version-min compiler options governs deprecation warnings; keep these around anyway just in case
-#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_8
-#define MAC_OS_X_VERSION_MAX_ALLOWED MAC_OS_X_VERSION_10_8
+#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_13
+#define MAC_OS_X_VERSION_MAX_ALLOWED MAC_OS_X_VERSION_10_13
 #import <Cocoa/Cocoa.h>
-#import <dlfcn.h>		// see future.m
 #import "../ui.h"
 #import "../ui_darwin.h"
 #import "../common/uipriv.h"
-
-// TODO should we rename the uiprivMk things or not
-// TODO what about renaming class wrapper functions that return the underlying class (like uiprivNewLabel())
 
 #if __has_feature(objc_arc)
 #error Sorry, libui cannot be compiled with ARC.

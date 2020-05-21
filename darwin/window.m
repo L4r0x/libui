@@ -134,8 +134,6 @@ static void uiWindowDestroy(uiControl *c)
 	uiFreeControl(uiControl(w));
 }
 
-uiDarwinControlDefaultHandle(uiWindow, window)
-
 uiControl *uiWindowParent(uiControl *c)
 {
 	return NULL;
@@ -172,10 +170,6 @@ static void uiWindowHide(uiControl *c)
 	[w->window orderOut:w->window];
 }
 
-uiDarwinControlDefaultEnabled(uiWindow, window)
-uiDarwinControlDefaultEnable(uiWindow, window)
-uiDarwinControlDefaultDisable(uiWindow, window)
-
 static void uiWindowSyncEnableState(uiDarwinControl *c, int enabled)
 {
 	uiWindow *w = uiWindow(c);
@@ -209,20 +203,12 @@ static void windowRelayout(uiWindow *w)
 		@"uiWindow");
 }
 
-uiDarwinControlDefaultHugsTrailingEdge(uiWindow, window)
-uiDarwinControlDefaultHugsBottom(uiWindow, window)
-
 static void uiWindowChildEdgeHuggingChanged(uiDarwinControl *c)
 {
 	uiWindow *w = uiWindow(c);
 
 	windowRelayout(w);
 }
-
-// TODO
-uiDarwinControlDefaultHuggingPriority(uiWindow, window)
-uiDarwinControlDefaultSetHuggingPriority(uiWindow, window)
-// end TODO
 
 static void uiWindowChildVisibilityChanged(uiDarwinControl *c)
 {
@@ -353,14 +339,20 @@ static void defaultOnPositionContentSizeChanged(uiWindow *w, void *data)
 	// do nothing
 }
 
+#define uiWindowEnabled uiDarwinControlDefaultEnabled
+#define uiWindowEnable uiDarwinControlDefaultEnable
+#define uiWindowDisable uiDarwinControlDefaultDisable
+#define uiWindowHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiWindowHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiWindowHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiWindowSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+uiDarwinControlDefaultHandle(uiWindow, window)
+uiDarwinControlFunctions(uiWindow)
+
 uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 {
-	uiWindow *w;
-
 	uiprivFinalizeMenus();
-
-	uiDarwinNewControl(uiWindow, w);
-
+	uiWindow *w = uiDarwinNewControl(uiWindow);
 	w->window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, (CGFloat) width, (CGFloat) height)
 		styleMask:defaultStyleMask
 		backing:NSBackingStoreBuffered

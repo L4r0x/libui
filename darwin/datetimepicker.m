@@ -78,8 +78,6 @@ struct uiDateTimePicker {
 
 static uiprivDatePickerDelegateClass *datePickerDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiDateTimePicker, dp)
-
 static void uiDateTimePickerDestroy(uiControl *c)
 {
 	uiDateTimePicker *d = uiDateTimePicker(c);
@@ -130,11 +128,20 @@ void uiDateTimePickerOnChanged(uiDateTimePicker *d, void (*f)(uiDateTimePicker *
 	d->onChangedData = data;
 }
 
+#define uiDateTimePickerSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiDateTimePickerSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiDateTimePickerHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiDateTimePickerHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiDateTimePickerChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiDateTimePickerHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiDateTimePickerSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiDateTimePickerChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiDateTimePicker, dp)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiDateTimePicker)
+
 static uiDateTimePicker *finishNewDateTimePicker(NSDatePickerElementFlags elements)
 {
-	uiDateTimePicker *d;
-
-	uiDarwinNewControl(uiDateTimePicker, d);
+	uiDateTimePicker *d = uiDarwinNewControl(uiDateTimePicker);
 
 	d->dp = [[NSDatePicker alloc] initWithFrame:NSZeroRect];
 	[d->dp setDateValue:[NSDate date]];

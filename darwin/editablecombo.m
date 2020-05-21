@@ -94,8 +94,6 @@ struct uiEditableCombobox {
 
 static editableComboboxDelegateClass *comboboxDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiEditableCombobox, cb)
-
 static void uiEditableComboboxDestroy(uiControl *cc)
 {
 	uiEditableCombobox *c = uiEditableCombobox(cc);
@@ -163,12 +161,20 @@ static void defaultOnChanged(uiEditableCombobox *c, void *data)
 	// do nothing
 }
 
+#define uiEditableComboboxSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiEditableComboboxSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiEditableComboboxHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiEditableComboboxHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiEditableComboboxChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiEditableComboboxHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiEditableComboboxSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiEditableComboboxChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiEditableCombobox, cb)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiEditableCombobox)
+
 uiEditableCombobox *uiNewEditableCombobox(void)
 {
-	uiEditableCombobox *c;
-
-	uiDarwinNewControl(uiEditableCombobox, c);
-
+	uiEditableCombobox *c = uiDarwinNewControl(uiEditableCombobox);
 	c->cb = [[libui_intrinsicWidthNSComboBox alloc] initWithFrame:NSZeroRect];
 	[c->cb setUsesDataSource:NO];
 	[c->cb setButtonBordered:YES];

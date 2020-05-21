@@ -6,8 +6,6 @@ struct uiLabel {
 	NSTextField *textfield;
 };
 
-uiDarwinControlAllDefaults(uiLabel, textfield)
-
 char *uiLabelText(uiLabel *l)
 {
 	return uiDarwinNSStringToText([l->textfield stringValue]);
@@ -31,12 +29,20 @@ NSTextField *uiprivNewLabel(NSString *str)
 	return tf;
 }
 
+#define uiLabelSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiLabelSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiLabelHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiLabelHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiLabelChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiLabelHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiLabelSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiLabelChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiLabel, textfield)
+uiDarwinControlFunctionsDefault(uiLabel)
+
 uiLabel *uiNewLabel(const char *text)
 {
-	uiLabel *l;
-
-	uiDarwinNewControl(uiLabel, l);
-
+	uiLabel *l = uiDarwinNewControl(uiLabel);
 	l->textfield = uiprivNewLabel(uiprivToNSString(text));
 
 	return l;

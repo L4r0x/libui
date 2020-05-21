@@ -77,8 +77,6 @@ struct uiSlider {
 
 static sliderDelegateClass *sliderDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiSlider, slider)
-
 static void uiSliderDestroy(uiControl *c)
 {
 	uiSlider *s = uiSlider(c);
@@ -109,20 +107,26 @@ static void defaultOnChanged(uiSlider *s, void *data)
 	// do nothing
 }
 
+#define uiSliderSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiSliderSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiSliderHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiSliderHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiSliderChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiSliderHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiSliderSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiSliderChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiSlider, slider)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiSlider)
+
 uiSlider *uiNewSlider(int min, int max)
 {
-	uiSlider *s;
-	NSSliderCell *cell;
-	int temp;
-
 	if (min >= max) {
-		temp = min;
+		int temp = min;
 		min = max;
 		max = temp;
 	}
 
-	uiDarwinNewControl(uiSlider, s);
-
+	uiSlider *s = uiDarwinNewControl(uiSlider);
 	// a horizontal slider is defined as one where the width > height, not by a flag
 	// to be safe, don't use NSZeroRect, but make it horizontal from the get-go
 	s->slider = [[libui_intrinsicWidthNSSlider alloc]
@@ -133,7 +137,7 @@ uiSlider *uiNewSlider(int min, int max)
 	[s->slider setNumberOfTickMarks:0];
 	[s->slider setTickMarkPosition:NSTickMarkPositionAbove];
 
-	cell = (NSSliderCell *) [s->slider cell];
+	NSSliderCell *cell = (NSSliderCell *) [s->slider cell];
 	[cell setSliderType:NSSliderTypeLinear];
 
 	if (sliderDelegate == nil) {

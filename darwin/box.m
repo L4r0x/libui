@@ -1,4 +1,5 @@
 // 15 august 2015
+#include "ui_darwin.h"
 #import "uipriv_darwin.h"
 
 // TODO hiding all stretchy controls still hugs trailing edge
@@ -370,17 +371,6 @@ static void uiBoxDestroy(uiControl *c)
 	uiFreeControl(uiControl(b));
 }
 
-uiDarwinControlDefaultHandle(uiBox, view)
-uiDarwinControlDefaultParent(uiBox, view)
-uiDarwinControlDefaultSetParent(uiBox, view)
-uiDarwinControlDefaultToplevel(uiBox, view)
-uiDarwinControlDefaultVisible(uiBox, view)
-uiDarwinControlDefaultShow(uiBox, view)
-uiDarwinControlDefaultHide(uiBox, view)
-uiDarwinControlDefaultEnabled(uiBox, view)
-uiDarwinControlDefaultEnable(uiBox, view)
-uiDarwinControlDefaultDisable(uiBox, view)
-
 static void uiBoxSyncEnableState(uiDarwinControl *c, int enabled)
 {
 	uiBox *b = uiBox(c);
@@ -389,8 +379,6 @@ static void uiBoxSyncEnableState(uiDarwinControl *c, int enabled)
 		return;
 	[b->view syncEnableStates:enabled];
 }
-
-uiDarwinControlDefaultSetSuperview(uiBox, view)
 
 static BOOL uiBoxHugsTrailingEdge(uiDarwinControl *c)
 {
@@ -412,9 +400,6 @@ static void uiBoxChildEdgeHuggingChanged(uiDarwinControl *c)
 
 	[b->view establishOurConstraints];
 }
-
-uiDarwinControlDefaultHuggingPriority(uiBox, view)
-uiDarwinControlDefaultSetHuggingPriority(uiBox, view)
 
 static void uiBoxChildVisibilityChanged(uiDarwinControl *c)
 {
@@ -447,14 +432,16 @@ void uiBoxSetPadded(uiBox *b, int padded)
 	[b->view setPadded:padded];
 }
 
+#define uiBoxSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiBoxHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiBoxSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+uiDarwinControlDefaultHandle(uiBox, view)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiBox)
+
 static uiBox *finishNewBox(BOOL vertical)
 {
-	uiBox *b;
-
-	uiDarwinNewControl(uiBox, b);
-
+	uiBox *b = uiDarwinNewControl(uiBox);
 	b->view = [[boxView alloc] initWithVertical:vertical b:b];
-
 	return b;
 }
 

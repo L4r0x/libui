@@ -62,8 +62,6 @@ struct uiCombobox {
 
 static comboboxDelegateClass *comboboxDelegate = nil;
 
-uiDarwinControlAllDefaultsExceptDestroy(uiCombobox, pb)
-
 static void uiComboboxDestroy(uiControl *cc)
 {
 	uiCombobox *c = uiCombobox(cc);
@@ -102,13 +100,22 @@ static void defaultOnSelected(uiCombobox *c, void *data)
 	// do nothing
 }
 
+#define uiComboboxSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiComboboxSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiComboboxHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiComboboxHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiComboboxChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiComboboxHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiComboboxSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiComboboxChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiCombobox, pb)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiCombobox)
+
 uiCombobox *uiNewCombobox(void)
 {
-	uiCombobox *c;
 	NSPopUpButtonCell *pbcell;
 
-	uiDarwinNewControl(uiCombobox, c);
-
+	uiCombobox *c = uiDarwinNewControl(uiCombobox);
 	c->pb = [[NSPopUpButton alloc] initWithFrame:NSZeroRect pullsDown:NO];
 	[c->pb setPreferredEdge:NSMinYEdge];
 	pbcell = (NSPopUpButtonCell *) [c->pb cell];

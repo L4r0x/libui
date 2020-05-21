@@ -105,17 +105,6 @@ static void uiTabDestroy(uiControl *c)
 	uiFreeControl(uiControl(t));
 }
 
-uiDarwinControlDefaultHandle(uiTab, tabview)
-uiDarwinControlDefaultParent(uiTab, tabview)
-uiDarwinControlDefaultSetParent(uiTab, tabview)
-uiDarwinControlDefaultToplevel(uiTab, tabview)
-uiDarwinControlDefaultVisible(uiTab, tabview)
-uiDarwinControlDefaultShow(uiTab, tabview)
-uiDarwinControlDefaultHide(uiTab, tabview)
-uiDarwinControlDefaultEnabled(uiTab, tabview)
-uiDarwinControlDefaultEnable(uiTab, tabview)
-uiDarwinControlDefaultDisable(uiTab, tabview)
-
 static void uiTabSyncEnableState(uiDarwinControl *c, int enabled)
 {
 	uiTab *t = uiTab(c);
@@ -126,8 +115,6 @@ static void uiTabSyncEnableState(uiDarwinControl *c, int enabled)
 	for (page in t->pages)
 		uiDarwinControlSyncEnableState(uiDarwinControl(page.c), enabled);
 }
-
-uiDarwinControlDefaultSetSuperview(uiTab, tabview)
 
 static void tabRelayout(uiTab *t)
 {
@@ -272,11 +259,13 @@ void uiTabSetMargined(uiTab *t, int n, int margined)
 	[page setMargined:margined];
 }
 
+#define uiTabSetSuperview uiDarwinControlDefaultSetSuperview
+uiDarwinControlDefaultHandle(uiTab, tabview)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiTab)
+
 uiTab *uiNewTab(void)
 {
-	uiTab *t;
-
-	uiDarwinNewControl(uiTab, t);
+	uiTab *t = uiDarwinNewControl(uiTab);
 
 	t->tabview = [[NSTabView alloc] initWithFrame:NSZeroRect];
 	// also good for NSTabView (same selector and everything)

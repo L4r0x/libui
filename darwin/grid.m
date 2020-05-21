@@ -684,17 +684,6 @@ static void uiGridDestroy(uiControl *c)
 	uiFreeControl(uiControl(g));
 }
 
-uiDarwinControlDefaultHandle(uiGrid, view)
-uiDarwinControlDefaultParent(uiGrid, view)
-uiDarwinControlDefaultSetParent(uiGrid, view)
-uiDarwinControlDefaultToplevel(uiGrid, view)
-uiDarwinControlDefaultVisible(uiGrid, view)
-uiDarwinControlDefaultShow(uiGrid, view)
-uiDarwinControlDefaultHide(uiGrid, view)
-uiDarwinControlDefaultEnabled(uiGrid, view)
-uiDarwinControlDefaultEnable(uiGrid, view)
-uiDarwinControlDefaultDisable(uiGrid, view)
-
 static void uiGridSyncEnableState(uiDarwinControl *c, int enabled)
 {
 	uiGrid *g = uiGrid(c);
@@ -703,8 +692,6 @@ static void uiGridSyncEnableState(uiDarwinControl *c, int enabled)
 		return;
 	[g->view syncEnableStates:enabled];
 }
-
-uiDarwinControlDefaultSetSuperview(uiGrid, view)
 
 static BOOL uiGridHugsTrailingEdge(uiDarwinControl *c)
 {
@@ -726,9 +713,6 @@ static void uiGridChildEdgeHuggingChanged(uiDarwinControl *c)
 
 	[g->view establishOurConstraints];
 }
-
-uiDarwinControlDefaultHuggingPriority(uiGrid, view)
-uiDarwinControlDefaultSetHuggingPriority(uiGrid, view)
 
 static void uiGridChildVisibilityChanged(uiDarwinControl *c)
 {
@@ -788,11 +772,15 @@ void uiGridSetPadded(uiGrid *g, int padded)
 	[g->view setPadded:padded];
 }
 
+#define uiGridSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiGridHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiGridSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+uiDarwinControlDefaultHandle(uiGrid, view)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiGrid)
+
 uiGrid *uiNewGrid(void)
 {
-	uiGrid *g;
-
-	uiDarwinNewControl(uiGrid, g);
+	uiGrid *g = uiDarwinNewControl(uiGrid);
 
 	g->view = [[gridView alloc] initWithG:g];
 

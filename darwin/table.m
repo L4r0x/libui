@@ -163,8 +163,6 @@ void *uiprivTableModelData(uiTableModel *m)
 	return m->data;
 }
 
-uiDarwinControlAllDefaultsExceptDestroy(uiTable, sv)
-
 static void uiTableDestroy(uiControl *c)
 {
 	uiTable *t = uiTable(c);
@@ -176,12 +174,20 @@ static void uiTableDestroy(uiControl *c)
 	uiFreeControl(uiControl(t));
 }
 
+#define uiTableSyncEnableState uiDarwinControlDefaultSyncEnableState
+#define uiTableSetSuperview uiDarwinControlDefaultSetSuperview
+#define uiTableHugsTrailingEdge uiDarwinControlDefaultHugsTrailingEdge
+#define uiTableHugsBottom uiDarwinControlDefaultHugsBottom
+#define uiTableChildEdgeHuggingChanged uiDarwinControlDefaultChildEdgeHuggingChanged
+#define uiTableHuggingPriority uiDarwinControlDefaultHuggingPriority
+#define uiTableSetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
+#define uiTableChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
+uiDarwinControlDefaultHandle(uiTable, sv)
+uiDarwinControlFunctionsDefaultExceptDestroy(uiTable)
+
 uiTable *uiNewTable(uiTableParams *p)
 {
-	uiTable *t;
-	uiprivScrollViewCreateParams sp;
-
-	uiDarwinNewControl(uiTable, t);
+	uiTable *t = uiDarwinNewControl(uiTable);
 	t->m = p->Model;
 	t->backgroundColumn = p->RowBackgroundColorModelColumn;
 
@@ -204,6 +210,7 @@ uiTable *uiNewTable(uiTableParams *p)
 	[t->tv setAllowsTypeSelect:YES];
 	// TODO floatsGroupRows — do we even allow group rows?
 
+	uiprivScrollViewCreateParams sp;
 	memset(&sp, 0, sizeof (uiprivScrollViewCreateParams));
 	sp.DocumentView = t->tv;
 	// this is what Interface Builder sets it to
