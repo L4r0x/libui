@@ -357,6 +357,7 @@ uiWindow *uiNewWindow(const char *title, int width, int height, int hasMenubar)
 		styleMask:defaultStyleMask
 		backing:NSBackingStoreBuffered
 		defer:YES];
+	[w->window center];
 	[w->window setTitle:uiprivToNSString(title)];
 
 	// do NOT release when closed
