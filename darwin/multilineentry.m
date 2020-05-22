@@ -114,7 +114,7 @@ void uiMultilineEntrySetReadOnly(uiMultilineEntry *e, int readonly)
 #define uiMultilineEntryHuggingPriority uiDarwinControlDefaultHuggingPriority
 #define uiMultilineEntrySetHuggingPriority uiDarwinControlDefaultSetHuggingPriority
 #define uiMultilineEntryChildVisibilityChanged uiDarwinControlDefaultChildVisibilityChanged
-uiDarwinControlDefaultHandle(uiMultilineEntry, tv)
+uiDarwinControlDefaultHandle(uiMultilineEntry, sv)
 uiDarwinControlFunctionsDefaultExceptDestroy(uiMultilineEntry)
 
 static uiMultilineEntry *uiprivNewMultilineEntry(BOOL hscroll)
