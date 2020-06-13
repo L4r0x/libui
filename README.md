@@ -40,6 +40,12 @@ Windows | Unix | macOS
 * Unix: GTK+ 3.18 (Ubuntu 16.04) or newer
 * Mac OS X: macOs 10.13 (High Sierra) or newer
 
+> Only modern currently maintained os versions are guaranted to work.
+>
+> This decision was made to reduce the amount of legecy and compatability code
+> necessary to support older os versions and speed up the development of new
+> features.
+
 ## Build Requirements
 
 * All platforms:
