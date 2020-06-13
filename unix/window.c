@@ -208,8 +208,10 @@ int uiWindowMargined(uiWindow *window)
 void uiWindowSetMargined(uiWindow *window, int margined)
 {
 	window->margined = margined;
-	GtkWidget *widget = GTK_WIDGET(uiControlHandle(window->child));
-	uiprivWidgetSetMargined(widget, margined);
+	if (window->child != NULL) {
+		GtkWidget *widget = GTK_WIDGET(uiControlHandle(window->child));
+		uiprivWidgetSetMargined(widget, margined);
+	}
 }
 
 #define uiWindowHandle uiUnixControlHandle

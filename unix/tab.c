@@ -64,13 +64,18 @@ int uiTabNumPages(uiTab *tab)
 int uiTabMargined(uiTab *tab, int n)
 {
 	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
-	return uiprivWidgetMargined(widget);
+	if (widget) {
+		return uiprivWidgetMargined(widget);
+	}
+	return FALSE;
 }
 
 void uiTabSetMargined(uiTab *tab, int n, int margined)
 {
 	GtkWidget *widget = gtk_notebook_get_nth_page(GTK_NOTEBOOK(tab->widget), n);
-	uiprivWidgetSetMargined(widget, margined);
+	if (widget != NULL) {
+		uiprivWidgetSetMargined(widget, margined);
+	}
 }
 
 uiUnixControlDefaultHandle(uiTab)
