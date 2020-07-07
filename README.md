@@ -84,6 +84,23 @@ Project file generators should work, but are untested by me.
 
 On Windows, I use the `Unix Makefiles` generator and GNU make (built using the `build_w32.bat` script included in the source and run in the Visual Studio command line). In this state, if MinGW-w64 (either 32-bit or 64-bit) is not in your `%PATH%`, cmake will use MSVC by default; otherwise, cmake will use with whatever MinGW-w64 is in your path. `set PATH=%PATH%;c:\msys2\mingw(32/64)\bin` should be enough to temporarily change to a MinGW-w64 build for the current command line session only if you installed MinGW-w64 through [MSYS2](https://msys2.github.io/); no need to change global environment variables constantly.
 
+### Cross-Compilation: Linux to Windows
+
+There is a [Dockerfile](docker/cross-win/Dockerfile) provided for cross-compilation.
+However, it is also possible to install the mingw-gcc toolchain locally for cross-compilation without docker (Look into the [build.sh](docker/cross-win/build.sh) script for the actual build commands).
+
+First the docker image has to be build. This has to be executed only on the first time.
+```bash
+docker build -t custom/cross-win-libui docker/cross-win
+```
+
+Then the build process can be started by executing:
+```bash
+./docker/cross-win/run.sh
+```
+> Any additional argument for the `run.sh` script is directly passed down to the `make` command.
+> So `./docker/cross-win/run.sh clean` or `./docker/cross-win/run.sh -j 4` also works as expected.
+
 ## Installation
 
 #### Arch Linux

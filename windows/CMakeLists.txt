@@ -66,11 +66,3 @@ set(_LIBUI_INCLUDEDIRS _LIBUI_INCLUDEDIRS PARENT_SCOPE)
 set(_LIBUI_LIBS
 	user32 kernel32 gdi32 comctl32 uxtheme msimg32 comdlg32 d2d1 dwrite ole32 oleaut32 oleacc uuid windowscodecs
 PARENT_SCOPE)
-
-if(NOT MSVC)
-	if(BUILD_SHARED_LIBS)
-		message(FATAL_ERROR
-			"Sorry, but libui for Windows can currently only be built as a static library with MinGW. You will need to either build as a static library or switch to MSVC."
-		)
-	endif()
-endif()
