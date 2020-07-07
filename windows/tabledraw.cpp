@@ -251,6 +251,8 @@ static HRESULT drawTextPart(HRESULT hr, struct drawState *s)
 
 static HRESULT drawButtonPart(HRESULT hr, struct drawState *s)
 {
+	RECT rect;
+
 	if (hr != S_OK)
 		return hr;
 	if (s->p->buttonModelColumn == -1)
@@ -269,7 +271,7 @@ static HRESULT drawButtonPart(HRESULT hr, struct drawState *s)
 		hr = E_FAIL;
 		goto fail;
 	}
-	RECT rect = s->metrics->subitemBounds;
+	rect = s->metrics->subitemBounds;
 
 	if (theme != NULL) {
 		int state;

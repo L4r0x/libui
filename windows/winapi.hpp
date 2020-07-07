@@ -57,6 +57,7 @@
 #include <float.h>
 #include <inttypes.h>
 
+#include <algorithm>
 #include <vector>
 #include <map>
 #include <unordered_map>
